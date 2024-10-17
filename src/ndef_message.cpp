@@ -86,7 +86,7 @@ ndefRecord *NdefClass::ndefAllocRecord(void)
 ReturnCode NdefClass::ndefMessageInit(ndefMessage *message)
 {
   if (message == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   message->record           = NULL;
@@ -95,7 +95,7 @@ ReturnCode NdefClass::ndefMessageInit(ndefMessage *message)
 
   ndefRecordPoolIndex = 0;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -107,7 +107,7 @@ ReturnCode NdefClass::ndefMessageGetInfo(const ndefMessage *message, ndefMessage
   uint32_t    recordCount = 0;
 
   if ((message == NULL) || (info == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   record = message->record;
@@ -122,7 +122,7 @@ ReturnCode NdefClass::ndefMessageGetInfo(const ndefMessage *message, ndefMessage
   info->length      = length;
   info->recordCount = recordCount;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -131,7 +131,7 @@ uint32_t NdefClass::ndefMessageGetRecordCount(const ndefMessage *message)
 {
   ndefMessageInfo info;
 
-  if (ndefMessageGetInfo(message, &info) == ERR_NONE) {
+  if (ndefMessageGetInfo(message, &info) == ST_ERR_NONE) {
     return info.recordCount;
   }
 
@@ -143,7 +143,7 @@ uint32_t NdefClass::ndefMessageGetRecordCount(const ndefMessage *message)
 ReturnCode NdefClass::ndefMessageAppend(ndefMessage *message, ndefRecord *record)
 {
   if ((message == NULL) || (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Clear the Message Begin bit */
@@ -177,7 +177,7 @@ ReturnCode NdefClass::ndefMessageAppend(ndefMessage *message, ndefRecord *record
   message->info.length      += ndefRecordGetLength(record);
   message->info.recordCount += 1U;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -188,11 +188,11 @@ ReturnCode NdefClass::ndefMessageDecode(const ndefConstBuffer *bufPayload, ndefM
   uint32_t offset;
 
   if ((bufPayload == NULL) || (bufPayload->buffer == NULL) || (message == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   err = ndefMessageInit(message);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
 
@@ -201,23 +201,23 @@ ReturnCode NdefClass::ndefMessageDecode(const ndefConstBuffer *bufPayload, ndefM
     ndefConstBuffer bufRecord;
     ndefRecord *record = ndefAllocRecord();
     if (record == NULL) {
-      return ERR_NOMEM;
+      return ST_ERR_NOMEM;
     }
     bufRecord.buffer = &bufPayload->buffer[offset];
     bufRecord.length =  bufPayload->length - offset;
     err = ndefRecordDecode(&bufRecord, record);
-    if (err != ERR_NONE) {
+    if (err != ST_ERR_NONE) {
       return err;
     }
     offset += ndefRecordGetLength(record);
 
     err = ndefMessageAppend(message, record);
-    if (err != ERR_NONE) {
+    if (err != ST_ERR_NONE) {
       return err;
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -231,13 +231,13 @@ ReturnCode NdefClass::ndefMessageEncode(const ndefMessage *message, ndefBuffer *
   uint32_t        remainingLength;
 
   if ((message == NULL) || (bufPayload == NULL) || (bufPayload->buffer == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   err = ndefMessageGetInfo(message, &info);
-  if ((err != ERR_NONE) || (bufPayload->length < info.length)) {
+  if ((err != ST_ERR_NONE) || (bufPayload->length < info.length)) {
     bufPayload->length = info.length;
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Get the first record */
@@ -250,7 +250,7 @@ ReturnCode NdefClass::ndefMessageEncode(const ndefMessage *message, ndefBuffer *
     bufRecord.buffer = &bufPayload->buffer[offset];
     bufRecord.length = remainingLength;
     err = ndefRecordEncode(record, &bufRecord);
-    if (err != ERR_NONE) {
+    if (err != ST_ERR_NONE) {
       bufPayload->length = info.length;
       return err;
     }
@@ -261,5 +261,5 @@ ReturnCode NdefClass::ndefMessageEncode(const ndefMessage *message, ndefBuffer *
   }
 
   bufPayload->length = offset;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

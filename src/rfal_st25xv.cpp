@@ -91,15 +91,15 @@ ReturnCode RfalNfcClass::rfalST25xVPollerGenericReadConfiguration(uint8_t cmd, u
   rfalNfcvGenericRes res;
 
   if (regValue == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   p = pointer;
 
   ret = rfalNfcvPollerTransceiveReq(cmd, flags, RFAL_NFCV_ST_IC_MFG_CODE, uid, &p, sizeof(uint8_t), (uint8_t *)&res, sizeof(rfalNfcvGenericRes), &rcvLen);
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     if (rcvLen < RFAL_ST25xV_READ_CONFIG_LEN) {
-      ret = ERR_PROTO;
+      ret = ST_ERR_PROTO;
     } else {
       *regValue = res.data[0];
     }
@@ -132,13 +132,13 @@ ReturnCode RfalNfcClass::rfalST25xVPollerGenericReadMessageLength(uint8_t cmd, u
   rfalNfcvGenericRes res;
 
   if (msgLen == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ret = rfalNfcvPollerTransceiveReq(cmd, flags, RFAL_NFCV_ST_IC_MFG_CODE, uid, NULL, 0, (uint8_t *)&res, sizeof(rfalNfcvGenericRes), &rcvLen);
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     if (rcvLen < RFAL_ST25xV_READ_MSG_LEN_LEN) {
-      ret = ERR_PROTO;
+      ret = ST_ERR_PROTO;
     } else {
       *msgLen = res.data[0];
     }
@@ -177,7 +177,7 @@ ReturnCode RfalNfcClass::rfalST25xVPollerGenericWriteMessage(uint8_t cmd, uint8_
 
   /* Check for valid parameters */
   if ((txBuf == NULL) || (msgData == NULL) || (msgLen == 0U) || (msgLen == 0xFFU) || (txBufLen < msgIt)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt    = 0;
@@ -217,21 +217,21 @@ ReturnCode RfalNfcClass::rfalST25xVPollerGenericWriteMessage(uint8_t cmd, uint8_
     rfalRfDev->rfalSetBitRate(RFAL_BR_KEEP, rxBR);
   }
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   /* Check if the response minimum length has been received */
   if (rcvLen < (uint8_t)RFAL_NFCV_FLAG_LEN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Check if an error has been signalled */
   if ((res.RES_FLAG & (uint8_t)RFAL_NFCV_RES_FLAG_ERROR) != 0U) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*
@@ -265,7 +265,7 @@ ReturnCode RfalNfcClass::rfalST25xVPollerM24LRWriteSingleBlock(uint8_t flags, co
 
   /* Check for valid parameters */
   if ((blockLen == 0U) || (blockLen > (uint8_t)RFAL_NFCV_MAX_BLOCK_LEN) || (wrData == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   dataLen = 0U;
@@ -428,7 +428,7 @@ ReturnCode RfalNfcClass::rfalST25xVPollerPresentPassword(uint8_t flags, const ui
   rfalNfcvGenericRes res;
 
   if ((pwdLen > RFAL_ST25xV_PWD_LEN) || (pwd == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   dataLen = 0U;

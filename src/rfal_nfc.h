@@ -281,9 +281,9 @@ class RfalNfcClass {
      *
      * It initializes this module and its dependencies
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcInitialize(void);
@@ -302,9 +302,9 @@ class RfalNfcClass {
      *
      * \param[in]  disParams    : discovery configuration parameters
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcDiscover(const rfalNfcDiscoverParam *disParams);
@@ -330,10 +330,10 @@ class RfalNfcClass {
      * \param[out]  devList     : device list location
      * \param[out]  devCnt      : number of devices found
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
      *                            Discovery still ongoing
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcGetDevicesFound(rfalNfcDevice **devList, uint8_t *devCnt);
@@ -346,10 +346,10 @@ class RfalNfcClass {
      *
      * \param[out]  dev           : device info location
      *
-     * \return ERR_WRONG_STATE    : Incorrect state for this operation
+     * \return ST_ERR_WRONG_STATE    : Incorrect state for this operation
      *                              No device activated
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcGetActiveDevice(rfalNfcDevice **dev);
@@ -364,10 +364,10 @@ class RfalNfcClass {
      *
      * \param[in]  devIdx       : device index to be activated
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
      *                            Not in select state
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcSelect(uint8_t devIdx);
@@ -391,9 +391,9 @@ class RfalNfcClass {
      * \param[in]  fwt          : FWT to be used in case of RF interface.
      *                            If ISO-DEP or NFC-DEP interface is used, this will be ignored
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcDataExchangeStart(uint8_t *txData, uint16_t txDataLen, uint8_t **rxData, uint16_t **rvdLen, uint32_t fwt);
@@ -404,19 +404,19 @@ class RfalNfcClass {
      *
      * Gets current Data Exchange status
      *
-     * \return  ERR_NONE         : Transceive done with no error
-     * \return  ERR_BUSY         : Transceive ongoing
-     *  \return ERR_AGAIN        : received one chaining block, copy received data
+     * \return  ST_ERR_NONE         : Transceive done with no error
+     * \return  ST_ERR_BUSY         : Transceive ongoing
+     *  \return ST_ERR_AGAIN        : received one chaining block, copy received data
      *                             and continue to call this method to retrieve the
      *                             remaining blocks
-     * \return  ERR_XXXX         : Error occurred
-     * \return  ERR_TIMEOUT      : No response
-     * \return  ERR_FRAMING      : Framing error detected
-     * \return  ERR_PAR          : Parity error detected
-     * \return  ERR_CRC          : CRC error detected
-     * \return  ERR_LINK_LOSS    : Link Loss - External Field is Off
-     * \return  ERR_RF_COLLISION : Collision detected
-     * \return  ERR_IO           : Internal error
+     * \return  ST_ERR_XXXX         : Error occurred
+     * \return  ST_ERR_TIMEOUT      : No response
+     * \return  ST_ERR_FRAMING      : Framing error detected
+     * \return  ST_ERR_PAR          : Parity error detected
+     * \return  ST_ERR_CRC          : CRC error detected
+     * \return  ST_ERR_LINK_LOSS    : Link Loss - External Field is Off
+     * \return  ST_ERR_RF_COLLISION : Collision detected
+     * \return  ST_ERR_IO           : Internal error
      *****************************************************************************
      */
     ReturnCode rfalNfcDataExchangeGetStatus(void);
@@ -431,8 +431,8 @@ class RfalNfcClass {
      * \param[in]  discovery    : TRUE if after deactivation go back into discovery
      *                          : FALSE if after deactivation remain in idle
      *
-     * \return ERR_WRONG_STATE  : Incorrect state for this operation
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : Incorrect state for this operation
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcDeactivate(bool discovery);
@@ -576,10 +576,10 @@ class RfalNfcClass {
      *  The first data will be processed (I-Block or S-DSL) by rfalIsoDepGetTransceiveStatus()
      *  inform the caller and then for the next transaction use rfalIsoDepStartTransceive()
      *
-     *  \return ERR_NONE    : RATS/ATTRIB is valid and activation has started
-     *  \return ERR_PARAM   : Invalid parameters
-     *  \return ERR_PROTO   : Invalid request
-     *  \return ERR_NOTSUPP : Feature not supported
+     *  \return ST_ERR_NONE    : RATS/ATTRIB is valid and activation has started
+     *  \return ST_ERR_PARAM   : Invalid parameters
+     *  \return ST_ERR_PROTO   : Invalid request
+     *  \return ST_ERR_NOTSUPP : Feature not supported
      *****************************************************************************
      */
     ReturnCode rfalIsoDepListenStartActivation(rfalIsoDepAtsParam *atsParam, const rfalIsoDepAttribResParam *attribResParam, uint8_t *buf, uint16_t bufLen, rfalIsoDepListenActvParam actParam);
@@ -589,9 +589,9 @@ class RfalNfcClass {
      *****************************************************************************
      *  \brief Get the current Activation Status
      *
-     *  \return ERR_NONE if Activation is already completed
-     *  \return ERR_BUSY if Activation is ongoing
-     *  \return ERR_LINK_LOSS if Remote Field is turned off
+     *  \return ST_ERR_NONE if Activation is already completed
+     *  \return ST_ERR_BUSY if Activation is ongoing
+     *  \return ST_ERR_LINK_LOSS if Remote Field is turned off
      *****************************************************************************
      */
     ReturnCode rfalIsoDepListenGetActivationStatus(void);
@@ -627,9 +627,9 @@ class RfalNfcClass {
      *
      *  \param[in] param: reference parameters to be used for the Transceive
      *
-     *  \return ERR_PARAM       : Bad request
-     *  \return ERR_WRONG_STATE : The module is not in a proper state
-     *  \return ERR_NONE        : The Transceive request has been started
+     *  \return ST_ERR_PARAM       : Bad request
+     *  \return ST_ERR_WRONG_STATE : The module is not in a proper state
+     *  \return ST_ERR_NONE        : The Transceive request has been started
      *****************************************************************************
      */
     ReturnCode rfalIsoDepStartTransceive(rfalIsoDepTxRxParam param);
@@ -642,24 +642,24 @@ class RfalNfcClass {
      *  Returns the status of the ISO-DEP Transceive
      *
      *  \warning  When the other device is performing chaining once a chained
-     *            block is received the error ERR_AGAIN is sent. At this point
+     *            block is received the error ST_ERR_AGAIN is sent. At this point
      *            caller must handle the received data immediately.
-     *            When ERR_AGAIN is returned an ACK has already been sent to
+     *            When ST_ERR_AGAIN is returned an ACK has already been sent to
      *            the other device and the next block might be incoming.
      *            If rfalWorker() is called frequently it will place the next
      *            block on the given buffer
      *
      *
-     *  \return ERR_NONE      : Transceive has been completed successfully
-     *  \return ERR_BUSY      : Transceive is ongoing
-     *  \return ERR_PROTO     : Protocol error occurred
-     *  \return ERR_TIMEOUT   : Timeout error occurred
-     *  \return ERR_SLEEP_REQ : Deselect has been received and responded
-     *  \return ERR_NOMEM     : The received INF does not fit into the
+     *  \return ST_ERR_NONE      : Transceive has been completed successfully
+     *  \return ST_ERR_BUSY      : Transceive is ongoing
+     *  \return ST_ERR_PROTO     : Protocol error occurred
+     *  \return ST_ERR_TIMEOUT   : Timeout error occurred
+     *  \return ST_ERR_SLEEP_REQ : Deselect has been received and responded
+     *  \return ST_ERR_NOMEM     : The received INF does not fit into the
      *                            receive buffer
-     *  \return ERR_LINK_LOSS : Communication is lost because Reader/Writer
+     *  \return ST_ERR_LINK_LOSS : Communication is lost because Reader/Writer
      *                            has turned off its field
-     *  \return ERR_AGAIN     : received one chaining block, continue to call
+     *  \return ST_ERR_AGAIN     : received one chaining block, continue to call
      *                            this method to retrieve the remaining blocks
      *****************************************************************************
      */
@@ -682,9 +682,9 @@ class RfalNfcClass {
      *
      *  \param[in] param: reference parameters to be used for the Transceive
      *
-     *  \return ERR_PARAM       : Bad request
-     *  \return ERR_WRONG_STATE : The module is not in a proper state
-     *  \return ERR_NONE        : The Transceive request has been started
+     *  \return ST_ERR_PARAM       : Bad request
+     *  \return ST_ERR_WRONG_STATE : The module is not in a proper state
+     *  \return ST_ERR_NONE        : The Transceive request has been started
      *****************************************************************************
      */
     ReturnCode rfalIsoDepStartApduTransceive(rfalIsoDepApduTxRxParam param);
@@ -694,14 +694,14 @@ class RfalNfcClass {
      *****************************************************************************
      *  \brief Get the APDU Transceive status
      *
-     *  \return ERR_NONE      : if Transceive has been completed successfully
-     *  \return ERR_BUSY      : if Transceive is ongoing
-     *  \return ERR_PROTO     : if a protocol error occurred
-     *  \return ERR_TIMEOUT   : if a timeout error occurred
-     *  \return ERR_SLEEP_REQ : if Deselect is received and responded
-     *  \return ERR_NOMEM     : if the received INF does not fit into the
+     *  \return ST_ERR_NONE      : if Transceive has been completed successfully
+     *  \return ST_ERR_BUSY      : if Transceive is ongoing
+     *  \return ST_ERR_PROTO     : if a protocol error occurred
+     *  \return ST_ERR_TIMEOUT   : if a timeout error occurred
+     *  \return ST_ERR_SLEEP_REQ : if Deselect is received and responded
+     *  \return ST_ERR_NOMEM     : if the received INF does not fit into the
      *                            receive buffer
-     *  \return ERR_LINK_LOSS : if communication is lost because Reader/Writer
+     *  \return ST_ERR_LINK_LOSS : if communication is lost because Reader/Writer
      *                            has turned off its field
      *****************************************************************************
      */
@@ -719,15 +719,15 @@ class RfalNfcClass {
      *  \param[out] ats    : pointer to place the ATS Response
      *  \param[out] atsLen : pointer to place the ATS length
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_PAR          : Parity error detected
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, ATS received
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_PAR          : Parity error detected
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, ATS received
      *****************************************************************************
      */
     ReturnCode rfalIsoDepRATS(rfalIsoDepFSxI FSDI, uint8_t DID, rfalIsoDepAts *ats, uint8_t *atsLen);
@@ -746,15 +746,15 @@ class RfalNfcClass {
      *  \param[in]  DRI    : DRI code the divisor from Poller (PCD) to Listener (PICC)
      *  \param[out] ppsRes : pointer to place the PPS Response
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_PAR          : Parity error detected
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, PPS Response received
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_PAR          : Parity error detected
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, PPS Response received
      *****************************************************************************
      */
     ReturnCode rfalIsoDepPPS(uint8_t DID, rfalBitRate DSI, rfalBitRate DRI, rfalIsoDepPpsRes *ppsRes);
@@ -780,14 +780,14 @@ class RfalNfcClass {
      *  \param[out] attribRes    : pointer to place the ATTRIB Response
      *  \param[out] attribResLen : pointer to place the ATTRIB Response length
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, ATTRIB Response received
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, ATTRIB Response received
      *****************************************************************************
      */
     ReturnCode rfalIsoDepATTRIB(const uint8_t *nfcid0, uint8_t PARAM1, rfalBitRate DSI, rfalBitRate DRI, rfalIsoDepFSxI FSDI, uint8_t PARAM3, uint8_t DID, const uint8_t *HLInfo, uint8_t HLInfoLen, uint32_t fwt, rfalIsoDepAttribRes *attribRes, uint8_t *attribResLen);
@@ -800,8 +800,8 @@ class RfalNfcClass {
      *  This function sends a deselect command to PICC and waits for it`s
      *  response in a blocking way
      *
-     *  \return ERR_NONE   : Deselect successfully sent and acknowledged by PICC
-     *  \return ERR_TIMEOUT: No response rcvd from PICC
+     *  \return ST_ERR_NONE   : Deselect successfully sent and acknowledged by PICC
+     *  \return ST_ERR_TIMEOUT: No response rcvd from PICC
      *
      *****************************************************************************
      */
@@ -822,15 +822,15 @@ class RfalNfcClass {
      *  \param[in]  maxBR     : Max bit rate supported by the Poller
      *  \param[out] isoDepDev : ISO-DEP information of the activated Listen device
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_PAR          : Parity error detected
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, activation successful
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_PAR          : Parity error detected
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, activation successful
      *****************************************************************************
      */
     ReturnCode rfalIsoDepPollAHandleActivation(rfalIsoDepFSxI FSDI, uint8_t DID, rfalBitRate maxBR, rfalIsoDepDevice *isoDepDev);
@@ -854,15 +854,15 @@ class RfalNfcClass {
      *  \param[in]  HLInfoLen    : Length HLInfo
      *  \param[out] isoDepDev    : ISO-DEP information of the activated Listen device
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_PAR          : Parity error detected
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, activation successful
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_PAR          : Parity error detected
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, activation successful
      *****************************************************************************
      */
     ReturnCode rfalIsoDepPollBHandleActivation(rfalIsoDepFSxI FSDI, uint8_t DID, rfalBitRate maxBR, uint8_t PARAM1, const rfalNfcbListenDevice *nfcbDev, const uint8_t *HLInfo, uint8_t HLInfoLen, rfalIsoDepDevice *isoDepDev);
@@ -880,13 +880,13 @@ class RfalNfcClass {
      *  \param[in]  maxTxBR      : Maximum Tx bit rate supported by PCD
      *  \param[in]  maxRxBR      : Maximum Rx bit rate supported by PCD
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, S(PARAMETERS) selection successful
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, S(PARAMETERS) selection successful
      *****************************************************************************
      */
     ReturnCode rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDepDev, rfalBitRate maxTxBR, rfalBitRate maxRxBR);
@@ -907,8 +907,8 @@ class RfalNfcClass {
      * to 106 kbps
 
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerInitialize(void);
@@ -924,16 +924,16 @@ class RfalNfcClass {
      * \param[in]  cmd     : Indicate if to send an ALL_REQ or a SENS_REQ
      * \param[out] sensRes : If received, the SENS_RES
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_RF_COLLISION : Collision detected one or more device in the field
-     * \return ERR_PAR          : Parity error detected, one or more device in the field
-     * \return ERR_CRC          : CRC error detected, one or more device in the field
-     * \return ERR_FRAMING      : Framing error detected, one or more device in the field
-     * \return ERR_PROTO        : Protocol error detected, one or more device in the field
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_NONE         : No error, one or more device in the field
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_RF_COLLISION : Collision detected one or more device in the field
+     * \return ST_ERR_PAR          : Parity error detected, one or more device in the field
+     * \return ST_ERR_CRC          : CRC error detected, one or more device in the field
+     * \return ST_ERR_FRAMING      : Framing error detected, one or more device in the field
+     * \return ST_ERR_PROTO        : Protocol error detected, one or more device in the field
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_NONE         : No error, one or more device in the field
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerCheckPresence(rfal14443AShortFrameCmd cmd, rfalNfcaSensRes *sensRes);
@@ -949,15 +949,15 @@ class RfalNfcClass {
      * \param[in]  nfcidLen : Length of the NFCID1 to be selected
      * \param[out] selRes   : pointer to place the SEL_RES
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_PAR          : Parity error detected
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error, SEL_RES received
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_PAR          : Parity error detected
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error, SEL_RES received
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerSelect(const uint8_t *nfcid1, uint8_t nfcidLen, rfalNfcaSelRes *selRes);
@@ -970,10 +970,10 @@ class RfalNfcClass {
      * This method sends a SLP_REQ (HLTA)
      * No response is expected afterwards   Digital 1.1  6.9.2.1
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerSleep(void);
@@ -993,10 +993,10 @@ class RfalNfcClass {
      * after detection. When set to EMV a ALL_REQ (WUPA) is sent instead of
      * a SENS_REQ (REQA)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error, one or more device in the field
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error, one or more device in the field
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerTechnologyDetection(rfalComplianceMode compMode, rfalNfcaSensRes *sensRes);
@@ -1021,12 +1021,12 @@ class RfalNfcClass {
      * \param[out] nfcId1      : location to store the NFCID1 (UID), ensure RFAL_NFCA_CASCADE_3_UID_LEN
      * \param[out] nfcId1Len   : pointer to length of NFCID1 (UID)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_PROTO        : Card length invalid
-     * \return ERR_IGNORE       : conDevLimit is 0 and there is a collision
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_PROTO        : Card length invalid
+     * \return ST_ERR_IGNORE       : conDevLimit is 0 and there is a collision
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerSingleCollisionResolution(uint8_t devLimit, bool *collPending, rfalNfcaSelRes *selRes, uint8_t *nfcId1, uint8_t *nfcId1Len);
@@ -1059,10 +1059,10 @@ class RfalNfcClass {
      * with no collisions, it will properly resolved.
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcaPollerFullCollisionResolution(rfalComplianceMode compMode, uint8_t devLimit, rfalNfcaListenDevice *nfcaDevList, uint8_t *devCnt);
@@ -1098,8 +1098,8 @@ class RfalNfcClass {
      *
      * It sets NFC-B parameters (AFI, PARAM) to default values
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerInitialize(void);
@@ -1119,8 +1119,8 @@ class RfalNfcClass {
      * \param[in]  PARAM : PARAM to be used, it announces whether Advanced
      *                     Features or Extended SENSB_RES is supported
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerInitializeWithParams(uint8_t AFI, uint8_t PARAM);
@@ -1139,16 +1139,16 @@ class RfalNfcClass {
      * \param[out] sensbResLen : If received, the SENSB_RES length
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_RF_COLLISION : Collision detected one or more device in the field
-     * \return ERR_PAR          : Parity error detected, one or more device in the field
-     * \return ERR_CRC          : CRC error detected, one or more device in the field
-     * \return ERR_FRAMING      : Framing error detected, one or more device in the field
-     * \return ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
-     * \return ERR_NONE         : No error, SENSB_RES received
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_RF_COLLISION : Collision detected one or more device in the field
+     * \return ST_ERR_PAR          : Parity error detected, one or more device in the field
+     * \return ST_ERR_CRC          : CRC error detected, one or more device in the field
+     * \return ST_ERR_FRAMING      : Framing error detected, one or more device in the field
+     * \return ST_ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
+     * \return ST_ERR_NONE         : No error, SENSB_RES received
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerCheckPresence(rfalNfcbSensCmd cmd, rfalNfcbSlots slots, rfalNfcbSensbRes *sensbRes, uint8_t *sensbResLen);
@@ -1164,10 +1164,10 @@ class RfalNfcClass {
      *
      * \param[in]  nfcid0       : NFCID of the device to be put to Sleep
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerSleep(const uint8_t *nfcid0);
@@ -1183,15 +1183,15 @@ class RfalNfcClass {
      * \param[out] sensbRes     : If received, the SENSB_RES
      * \param[out] sensbResLen  : If received, the SENSB_RES length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_PAR          : Parity error detected
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error, SEL_RES received
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_PAR          : Parity error detected
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error, SEL_RES received
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerSlotMarker(uint8_t slotCode, rfalNfcbSensbRes *sensbRes, uint8_t *sensbResLen);
@@ -1207,10 +1207,10 @@ class RfalNfcClass {
      * \param[out] sensbRes    : location to store the SENSB_RES, if received
      * \param[out] sensbResLen : length of the SENSB_RES, if received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error, one or more device in the field
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error, one or more device in the field
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerTechnologyDetection(rfalComplianceMode compMode, rfalNfcbSensbRes *sensbRes, uint8_t *sensbResLen);
@@ -1231,11 +1231,11 @@ class RfalNfcClass {
      * \param[out] nfcbDevList : NFC-B listener device info
      * \param[out] devCnt      : devices found counter
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerCollisionResolution(rfalComplianceMode compMode, uint8_t devLimit, rfalNfcbListenDevice *nfcbDevList, uint8_t *devCnt);
@@ -1268,11 +1268,11 @@ class RfalNfcClass {
      * \param[out] devCnt      : devices found counter
      * \param[out] colPending  : flag indicating whether collision are still pending
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcbPollerSlottedCollisionResolution(rfalComplianceMode compMode, uint8_t devLimit, rfalNfcbSlots initSlots, rfalNfcbSlots endSlots, rfalNfcbListenDevice *nfcbDevList, uint8_t *devCnt, bool *colPending);
@@ -1349,9 +1349,9 @@ class RfalNfcClass {
      * \param[out]  atrRes    : location to store the ATR_RES
      * \param[out]  atrResLen : length of the ATR_RES received
      *
-     * \return ERR_NONE    : No error
-     * \return ERR_TIMEOUT : Timeout occurred
-     * \return ERR_PROTO   : Protocol error occurred
+     * \return ST_ERR_NONE    : No error
+     * \return ST_ERR_TIMEOUT : Timeout occurred
+     * \return ST_ERR_PROTO   : Protocol error occurred
      ******************************************************************************
      */
     ReturnCode rfalNfcDepATR(const rfalNfcDepAtrParam *param, rfalNfcDepAtrRes *atrRes, uint8_t *atrResLen);
@@ -1369,9 +1369,9 @@ class RfalNfcClass {
      * \param[in] BRS : the selected Bit Rates for Initiator and Target
      * \param[in] FSL : the maximum length of Commands and Responses
      *
-     * \return ERR_NONE    : No error
-     * \return ERR_TIMEOUT : Timeout occurred
-     * \return ERR_PROTO   : Protocol error occurred
+     * \return ST_ERR_NONE    : No error
+     * \return ST_ERR_TIMEOUT : Timeout occurred
+     * \return ST_ERR_PROTO   : Protocol error occurred
      ******************************************************************************
      */
     ReturnCode rfalNfcDepPSL(uint8_t BRS, uint8_t FSL);
@@ -1386,10 +1386,10 @@ class RfalNfcClass {
      *
      * In case of performing as target no action is taken
      *
-     * \return ERR_NONE       : No error
-     * \return ERR_TIMEOUT    : Timeout occurred
-     * \return ERR_MAX_RERUNS : Timeout occurred
-     * \return ERR_PROTO      : Protocol error occurred
+     * \return ST_ERR_NONE       : No error
+     * \return ST_ERR_TIMEOUT    : Timeout occurred
+     * \return ST_ERR_MAX_RERUNS : Timeout occurred
+     * \return ST_ERR_PROTO      : Protocol error occurred
      ******************************************************************************
      */
     ReturnCode rfalNfcDepDSL(void);
@@ -1404,10 +1404,10 @@ class RfalNfcClass {
      *
      * In case of performing as target no action is taken
      *
-     * \return ERR_NONE       : No error
-     * \return ERR_TIMEOUT    : Timeout occurred
-     * \return ERR_MAX_RERUNS : Timeout occurred
-     * \return ERR_PROTO      : Protocol error occurred
+     * \return ST_ERR_NONE       : No error
+     * \return ST_ERR_TIMEOUT    : Timeout occurred
+     * \return ST_ERR_MAX_RERUNS : Timeout occurred
+     * \return ST_ERR_PROTO      : Protocol error occurred
      ******************************************************************************
      */
     ReturnCode rfalNfcDepRLS(void);
@@ -1426,15 +1426,15 @@ class RfalNfcClass {
      *  \param[in]  desiredBR : Desired bit rate supported by the Poller
      *  \param[out] nfcDepDev : NFC-DEP information of the activated Listen device
      *
-     *  \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     *  \return ERR_PARAM        : Invalid parameters
-     *  \return ERR_IO           : Generic internal error
-     *  \return ERR_TIMEOUT      : Timeout error
-     *  \return ERR_PAR          : Parity error detected
-     *  \return ERR_CRC          : CRC error detected
-     *  \return ERR_FRAMING      : Framing error detected
-     *  \return ERR_PROTO        : Protocol error detected
-     *  \return ERR_NONE         : No error, activation successful
+     *  \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     *  \return ST_ERR_PARAM        : Invalid parameters
+     *  \return ST_ERR_IO           : Generic internal error
+     *  \return ST_ERR_TIMEOUT      : Timeout error
+     *  \return ST_ERR_PAR          : Parity error detected
+     *  \return ST_ERR_CRC          : CRC error detected
+     *  \return ST_ERR_FRAMING      : Framing error detected
+     *  \return ST_ERR_PROTO        : Protocol error detected
+     *  \return ST_ERR_NONE         : No error, activation successful
      *****************************************************************************
      */
     ReturnCode rfalNfcDepInitiatorHandleActivation(rfalNfcDepAtrParam *param, rfalBitRate desiredBR, rfalNfcDepDevice *nfcDepDev);
@@ -1490,7 +1490,7 @@ class RfalNfcClass {
      *       ongoing activation
      *
      * \warning nfcDepGetTransceiveStatus() shall be called right after activation
-     * is completed (i.e. rfalNfcDepListenGetActivationStatus() return ERR_NONE)
+     * is completed (i.e. rfalNfcDepListenGetActivationStatus() return ST_ERR_NONE)
      * to check for first received frame.
      *
      * \param[in]  param       : Target parameters to be used
@@ -1499,9 +1499,9 @@ class RfalNfcClass {
      * \param[out] rxParam     : references to buffer, length and chaining indication
      *                           for first complete LLCP to be received
      *
-     * \return ERR_NONE      : ATR_REQ is valid and activation ongoing
-     * \return ERR_PARAM     : ATR_REQ or other params are invalid
-     * \return ERR_LINK_LOSS : Remote Field is turned off
+     * \return ST_ERR_NONE      : ATR_REQ is valid and activation ongoing
+     * \return ST_ERR_PARAM     : ATR_REQ or other params are invalid
+     * \return ST_ERR_LINK_LOSS : Remote Field is turned off
      *****************************************************************************
      */
     ReturnCode rfalNfcDepListenStartActivation(const rfalNfcDepTargetParam *param, const uint8_t *atrReq, uint16_t atrReqLength, rfalNfcDepListenActvParam rxParam);
@@ -1511,9 +1511,9 @@ class RfalNfcClass {
      *****************************************************************************
      * \brief Get the current NFC-DEP Activation Status
      *
-     * \return ERR_NONE      : Activation has completed successfully
-     * \return ERR_BUSY      : Activation is ongoing
-     * \return ERR_LINK_LOSS : Remote Field was turned off
+     * \return ST_ERR_NONE      : Activation has completed successfully
+     * \return ST_ERR_BUSY      : Activation is ongoing
+     * \return ST_ERR_LINK_LOSS : Remote Field was turned off
      *****************************************************************************
      */
     ReturnCode rfalNfcDepListenGetActivationStatus(void);
@@ -1532,9 +1532,9 @@ class RfalNfcClass {
      *
      * \param[in] param: reference parameters to be used for the Transceive
      *
-     * \return ERR_PARAM       : Bad request
-     * \return ERR_WRONG_STATE : The module is not in a proper state
-     * \return ERR_NONE        : The Transceive request has been started
+     * \return ST_ERR_PARAM       : Bad request
+     * \return ST_ERR_WRONG_STATE : The module is not in a proper state
+     * \return ST_ERR_NONE        : The Transceive request has been started
      *****************************************************************************
      */
     ReturnCode rfalNfcDepStartTransceive(rfalNfcDepTxRxParam *param);
@@ -1547,23 +1547,23 @@ class RfalNfcClass {
      * Returns the status of the NFC-DEP Transceive
      *
      * \warning  When the other device is performing chaining once a chained
-     *            block is received the error ERR_AGAIN is sent. At this point
+     *            block is received the error ST_ERR_AGAIN is sent. At this point
      *            caller must handle the received data immediately.
-     *            When ERR_AGAIN is returned an ACK has already been sent to
+     *            When ST_ERR_AGAIN is returned an ACK has already been sent to
      *            the other device and the next block might be incoming.
      *            If rfalWorker() is called frequently it will place the next
      *            block on the given buffer
      *
-     * \return ERR_NONE      : Transceive has been completed successfully
-     * \return ERR_BUSY      : Transceive is ongoing
-     * \return ERR_PROTO     : Protocol error occurred
-     * \return ERR_TIMEOUT   : Timeout error occurred
-     * \return ERR_SLEEP_REQ : Deselect has been received and responded
-     * \return ERR_NOMEM     : The received I-PDU does not fit into the
+     * \return ST_ERR_NONE      : Transceive has been completed successfully
+     * \return ST_ERR_BUSY      : Transceive is ongoing
+     * \return ST_ERR_PROTO     : Protocol error occurred
+     * \return ST_ERR_TIMEOUT   : Timeout error occurred
+     * \return ST_ERR_SLEEP_REQ : Deselect has been received and responded
+     * \return ST_ERR_NOMEM     : The received I-PDU does not fit into the
      *                            receive buffer
-     * \return ERR_LINK_LOSS : Communication is lost because Reader/Writer
+     * \return ST_ERR_LINK_LOSS : Communication is lost because Reader/Writer
      *                            has turned off its field
-     * \return ERR_AGAIN     : received one chaining block, continue to call
+     * \return ST_ERR_AGAIN     : received one chaining block, continue to call
      *                            this method to retrieve the remaining blocks
      *****************************************************************************
      */
@@ -1586,9 +1586,9 @@ class RfalNfcClass {
      *
      * \param[in]  bitRate      : NFC-F bitrate to be initialize (212 or 424)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Incorrect bitrate
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Incorrect bitrate
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcfPollerInitialize(rfalBitRate bitRate);
@@ -1601,14 +1601,14 @@ class RfalNfcClass {
      *  This function sends a Poll/SENSF command according to NFC Activity spec
      *  It detects if a NCF-F device is within range
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_NONE         : No error and some NFC-F device was detected
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_NONE         : No error and some NFC-F device was detected
      *
      *****************************************************************************
      */
@@ -1631,14 +1631,14 @@ class RfalNfcClass {
      *
      * \warning the list cardList has to be as big as the number of slots for the Poll
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_NONE         : No error and some NFC-F device was detected
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_NONE         : No error and some NFC-F device was detected
      *
      *****************************************************************************
      */
@@ -1656,10 +1656,10 @@ class RfalNfcClass {
      * \param[out] nfcfDevList : NFC-F listener devices list
      * \param[out] devCnt      : Devices found counter
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcfPollerCollisionResolution(rfalComplianceMode compMode, uint8_t devLimit, rfalNfcfListenDevice *nfcfDevList, uint8_t *devCnt);
@@ -1680,11 +1680,11 @@ class RfalNfcClass {
      * \param[in]  rxBufLen    : size of the rxBuf
      * \param[out] rcvdLen     : length of data placed in rxBuf
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_REQUEST      : The request was executed with error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_REQUEST      : The request was executed with error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcfPollerCheck(const uint8_t *nfcid2, const rfalNfcfServBlockListParam *servBlock, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvdLen);
@@ -1706,11 +1706,11 @@ class RfalNfcClass {
      * \param[out] rxBuf       : buffer to place check/read data
      * \param[in]  rxBufLen    : size of the rxBuf
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_REQUEST      : The request was executed with error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_REQUEST      : The request was executed with error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcfPollerUpdate(const uint8_t *nfcid2, const rfalNfcfServBlockListParam *servBlock, uint8_t *txBuf, uint16_t txBufLen, const uint8_t *blockData, uint8_t *rxBuf, uint16_t rxBufLen);
@@ -1750,9 +1750,9 @@ class RfalNfcClass {
      * This methods configures RFAL RF layer to perform as a
      * NFC-F Poller/RW (ISO15693) including all default timings
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Incorrect bitrate
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Incorrect bitrate
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerInitialize(void);
@@ -1766,11 +1766,11 @@ class RfalNfcClass {
      *
      * \param[out] invRes : If received, the INVENTORY_RES
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detectedd
-     * \return ERR_NONE         : No error, one or more device in the field
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detectedd
+     * \return ST_ERR_NONE         : No error, one or more device in the field
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerCheckPresence(rfalNfcvInventoryRes *invRes);
@@ -1791,13 +1791,13 @@ class RfalNfcClass {
      * \param[out] invRes  : location to place the INVENTORY_RES
      * \param[out] rcvdLen : number of bits received (without collision)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_RF_COLLISION : Collision detected
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_RF_COLLISION : Collision detected
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerInventory(rfalNfcvNumSlots nSlots, uint8_t maskLen, const uint8_t *maskVal, rfalNfcvInventoryRes *invRes, uint16_t *rcvdLen);
@@ -1818,10 +1818,10 @@ class RfalNfcClass {
      * When compMode is set to ISO the function immediately goes to 16 slots improving
      * chances to detect more than only one strong card.
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerCollisionResolution(rfalComplianceMode compMode, uint8_t devLimit, rfalNfcvListenDevice *nfcvDevList, uint8_t *devCnt);
@@ -1839,10 +1839,10 @@ class RfalNfcClass {
      * \param[out] nfcvDevList  : NFC-v listener devices list
      * \param[out] devCnt       : Devices found counter
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerSleepCollisionResolution(uint8_t devLimit, rfalNfcvListenDevice *nfcvDevList, uint8_t *devCnt);
@@ -1858,10 +1858,10 @@ class RfalNfcClass {
      *                            for NFC-Forum use: RFAL_NFCV_REQ_FLAG_DEFAULT
      * \param[in]  uid          : UID of the device to be put to Sleep
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerSleep(uint8_t flags, const uint8_t *uid);
@@ -1876,14 +1876,14 @@ class RfalNfcClass {
      *                            for NFC-Forum use: RFAL_NFCV_REQ_FLAG_DEFAULT
      * \param[in]  uid          : UID of the device to be put to be Selected
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerSelect(uint8_t flags, const uint8_t *uid);
@@ -1903,14 +1903,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerReadSingleBlock(uint8_t flags, const uint8_t *uid, uint8_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -1929,14 +1929,14 @@ class RfalNfcClass {
      * \param[in]  wrData       : data to be written on the given block
      * \param[in]  blockLen     : number of bytes of a block
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerWriteSingleBlock(uint8_t flags, const uint8_t *uid, uint8_t blockNum, const uint8_t *wrData, uint8_t blockLen);
@@ -1957,14 +1957,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint8_t firstBlockNum, uint8_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -1991,14 +1991,14 @@ class RfalNfcClass {
      *                              aligned with number of blocks to write and
      *                              the size of a block
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerWriteMultipleBlocks(uint8_t flags, const uint8_t *uid, uint8_t firstBlockNum, uint8_t numOfBlocks, uint8_t *txBuf, uint16_t txBufLen, uint8_t blockLen, const uint8_t *wrData, uint16_t wrDataLen);
@@ -2015,14 +2015,14 @@ class RfalNfcClass {
      *                             if not provided Select mode will be used
      * \param[in]  blockNum     : Number of the block to be locked
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerLockBlock(uint8_t flags, const uint8_t *uid, uint8_t blockNum);
@@ -2039,14 +2039,14 @@ class RfalNfcClass {
      *                             if not provided Select mode will be used
      * \param[in]  blockNum     : Number of the block to be locked (16 bits)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedLockSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum);
@@ -2066,14 +2066,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedReadSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2092,14 +2092,14 @@ class RfalNfcClass {
      * \param[in]  wrData       : data to be written on the given block
      * \param[in]  blockLen     : number of bytes of a block
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedWriteSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, const uint8_t *wrData, uint8_t blockLen);
@@ -2120,14 +2120,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint16_t firstBlockNum, uint16_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2154,14 +2154,14 @@ class RfalNfcClass {
      *                              aligned with number of blocks to write and
      *                              the size of a block
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedWriteMultipleBlocks(uint8_t flags, const uint8_t *uid, uint16_t firstBlockNum, uint16_t numOfBlocks, uint8_t *txBuf, uint16_t txBufLen, uint8_t blockLen, const uint8_t *wrData, uint16_t wrDataLen);
@@ -2180,14 +2180,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerGetSystemInformation(uint8_t flags, const uint8_t *uid, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2207,14 +2207,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerExtendedGetSystemInformation(uint8_t flags, const uint8_t *uid, uint8_t requestField, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2239,14 +2239,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalNfcvPollerTransceiveReq(uint8_t cmd, uint8_t flags, uint8_t param, const uint8_t *uid, const uint8_t *data, uint16_t dataLen, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2266,8 +2266,8 @@ class RfalNfcClass {
      * This methods configures RFAL RF layer to perform as a
      * ST25TB Poller/RW including all default timings
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerInitialize(void);
@@ -2282,13 +2282,13 @@ class RfalNfcClass {
      *
      * \param[out] chipId : if successfully retrieved, the device's chip ID
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_RF_COLLISION : Collision detected one or more device in the field
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_RF_COLLISION : Collision detected one or more device in the field
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerCheckPresence(uint8_t *chipId);
@@ -2307,13 +2307,13 @@ class RfalNfcClass {
      * \param[out] st25tbDevList : ST35TB listener device info
      * \param[out] devCnt        : Devices found counter
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_RF_COLLISION : Collision detected one or more device in the field
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_RF_COLLISION : Collision detected one or more device in the field
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerCollisionResolution(uint8_t devLimit, rfalSt25tbListenDevice *st25tbDevList, uint8_t *devCnt);
@@ -2328,12 +2328,12 @@ class RfalNfcClass {
      *
      * \param[out]  chipId      : chip ID of the device
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerInitiate(uint8_t *chipId);
@@ -2348,12 +2348,12 @@ class RfalNfcClass {
      *
      * \param[out]  chipId      : Chip ID of the device
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerPcall(uint8_t *chipId);
@@ -2370,12 +2370,12 @@ class RfalNfcClass {
      * \param[in]  slotNum      : Slot Number
      * \param[out]  chipIdRes   : Chip ID of the device
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerSlotMarker(uint8_t slotNum, uint8_t *chipIdRes);
@@ -2392,12 +2392,12 @@ class RfalNfcClass {
      *
      * \param[in]  chipId       : chip ID of the device to be selected
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerSelect(uint8_t chipId);
@@ -2413,12 +2413,12 @@ class RfalNfcClass {
      *
      * \param[out]  UID      : UID of the found device
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerGetUID(rfalSt25tbUID *UID);
@@ -2433,12 +2433,12 @@ class RfalNfcClass {
      * \param[in]   blockAddress : address of the block to be read
      * \param[out]  blockData    : location to place the data read from block
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerReadBlock(uint8_t blockAddress, rfalSt25tbBlock *blockData);
@@ -2453,12 +2453,12 @@ class RfalNfcClass {
      * \param[in]  blockAddress : address of the block to be written
      * \param[in]  blockData    : data to be written on the block
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerWriteBlock(uint8_t blockAddress, const rfalSt25tbBlock *blockData);
@@ -2471,12 +2471,12 @@ class RfalNfcClass {
      * This method sends a completion command to the ST25TB. After the
      * completion the card no longer will reply to any command.
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerCompletion(void);
@@ -2488,12 +2488,12 @@ class RfalNfcClass {
      *
      * This method sends a Reset to Inventory command to the ST25TB.
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_TIMEOUT      : Timeout error, no listener device detected
-     * \return ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_TIMEOUT      : Timeout error, no listener device detected
+     * \return ST_ERR_PROTO        : Protocol error detected, invalid SENSB_RES received
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalSt25tbPollerResetToInventory(void);
@@ -2522,14 +2522,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerM24LRReadSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2550,14 +2550,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerM24LRFastReadSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2577,14 +2577,14 @@ class RfalNfcClass {
      * \param[in]  wrData       : data to be written on the given block
      * \param[in]  blockLen     : number of bytes of a block
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerM24LRWriteSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, const uint8_t *wrData, uint8_t blockLen);
@@ -2606,14 +2606,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerM24LRReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint16_t firstBlockNum, uint8_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2636,14 +2636,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerM24LRFastReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint16_t firstBlockNum, uint8_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2663,14 +2663,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastReadSingleBlock(uint8_t flags, const uint8_t *uid, uint8_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2691,14 +2691,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint8_t firstBlockNum, uint8_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2718,14 +2718,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen     : length of rxBuf
      * \param[out] rcvLen       : number of bytes received
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM        : Invalid parameters
-     * \return ERR_IO           : Generic internal error
-     * \return ERR_CRC          : CRC error detected
-     * \return ERR_FRAMING      : Framing error detected
-     * \return ERR_PROTO        : Protocol error detected
-     * \return ERR_TIMEOUT      : Timeout error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM        : Invalid parameters
+     * \return ST_ERR_IO           : Generic internal error
+     * \return ST_ERR_CRC          : CRC error detected
+     * \return ST_ERR_FRAMING      : Framing error detected
+     * \return ST_ERR_PROTO        : Protocol error detected
+     * \return ST_ERR_TIMEOUT      : Timeout error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastExtendedReadSingleBlock(uint8_t flags, const uint8_t *uid, uint16_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2746,14 +2746,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastExtReadMultipleBlocks(uint8_t flags, const uint8_t *uid, uint16_t firstBlockNum, uint16_t numOfBlocks, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2771,14 +2771,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[out] regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerReadConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t *regValue);
@@ -2796,14 +2796,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[in]  regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerWriteConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t regValue);
@@ -2822,14 +2822,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[out] regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerReadDynamicConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t *regValue);
@@ -2847,14 +2847,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[in]  regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerWriteDynamicConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t regValue);
@@ -2872,14 +2872,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[out] regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastReadDynamicConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t *regValue);
@@ -2897,14 +2897,14 @@ class RfalNfcClass {
      * \param[in]  pointer        : Pointer address
      * \param[in]  regValue       : Register value
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastWriteDynamicConfiguration(uint8_t flags, const uint8_t *uid, uint8_t pointer, uint8_t regValue);
@@ -2923,14 +2923,14 @@ class RfalNfcClass {
      * \param[in]  pwd            : Password
      * \param[in]  pwdLen         : Password length
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerPresentPassword(uint8_t flags, const uint8_t *uid, uint8_t pwdNum, const uint8_t *pwd, uint8_t pwdLen);
@@ -2949,14 +2949,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerGetRandomNumber(uint8_t flags, const uint8_t *uid, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -2973,14 +2973,14 @@ class RfalNfcClass {
      *                               if not provided Select mode will be used
      * \param[out] msgLen         : Message Length
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerReadMessageLength(uint8_t flags, const uint8_t *uid, uint8_t *msgLen);
@@ -2997,14 +2997,14 @@ class RfalNfcClass {
      *                               if not provided Select mode will be used
      * \param[out] msgLen         : Message Length
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastReadMsgLength(uint8_t flags, const uint8_t *uid, uint8_t *msgLen);
@@ -3033,14 +3033,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerReadMessage(uint8_t flags, const uint8_t *uid, uint8_t mbPointer, uint8_t numBytes, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -3069,14 +3069,14 @@ class RfalNfcClass {
      * \param[in]  rxBufLen       : length of rxBuf
      * \param[out] rcvLen         : number of bytes received
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastReadMessage(uint8_t flags, const uint8_t *uid, uint8_t mbPointer, uint8_t numBytes, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -3104,14 +3104,14 @@ class RfalNfcClass {
      * \param[out] txBuf          : buffer to used to build the Write Message command
      * \param[in]  txBufLen       : length of txBuf
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerWriteMessage(uint8_t flags, const uint8_t *uid, uint8_t msgLen, const uint8_t *msgData, uint8_t *txBuf, uint16_t txBufLen);
@@ -3139,14 +3139,14 @@ class RfalNfcClass {
      * \param[out] txBuf          : buffer to used to build the Write Message command
      * \param[in]  txBufLen       : length of txBuf
      *
-     * \return ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
-     * \return ERR_PARAM          : Invalid parameters
-     * \return ERR_IO             : Generic internal error
-     * \return ERR_CRC            : CRC error detected
-     * \return ERR_FRAMING        : Framing error detected
-     * \return ERR_PROTO          : Protocol error detected
-     * \return ERR_TIMEOUT        : Timeout error
-     * \return ERR_NONE           : No error
+     * \return ST_ERR_WRONG_STATE    : RFAL not initialized or incorrect mode
+     * \return ST_ERR_PARAM          : Invalid parameters
+     * \return ST_ERR_IO             : Generic internal error
+     * \return ST_ERR_CRC            : CRC error detected
+     * \return ST_ERR_FRAMING        : Framing error detected
+     * \return ST_ERR_PROTO          : Protocol error detected
+     * \return ST_ERR_TIMEOUT        : Timeout error
+     * \return ST_ERR_NONE           : No error
      *****************************************************************************
      */
     ReturnCode rfalST25xVPollerFastWriteMessage(uint8_t flags, const uint8_t *uid, uint8_t msgLen, const uint8_t *msgData, uint8_t *txBuf, uint16_t txBufLen);
@@ -3166,8 +3166,8 @@ class RfalNfcClass {
      * This methods configures RFAL RF layer to perform as a
      * NFC-A T1T Poller/RW (Topaz) including all default timings
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT1TPollerInitialize(void);
@@ -3182,9 +3182,9 @@ class RfalNfcClass {
      *
      * \param[out]  ridRes : pointer to place the RID_RES
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT1TPollerRid(rfalT1TRidRes *ridRes);
@@ -3202,9 +3202,9 @@ class RfalNfcClass {
      * \param[in]   rxBufLen  : size of rxBuf
      * \param[out]  rxRcvdLen : actual received data
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT1TPollerRall(const uint8_t *uid, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rxRcvdLen);
@@ -3221,9 +3221,9 @@ class RfalNfcClass {
      * \param[in]   address   : address to write the data
      * \param[in]   data      : the data to be written
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT1TPollerWrite(const uint8_t *uid, uint8_t address, uint8_t data);
@@ -3248,10 +3248,10 @@ class RfalNfcClass {
      * \param[in]   rxBufLen    : size of rxBuf (RFAL_T2T_READ_DATA_LEN)
      * \param[out]  rcvLen   : actual received data
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT2TPollerRead(uint8_t blockNum, uint8_t *rxBuf, uint16_t rxBufLen, uint16_t *rcvLen);
@@ -3268,10 +3268,10 @@ class RfalNfcClass {
      * \param[in]  wrData       : data to be written on the given block
      *                            size must be of RFAL_T2T_WRITE_DATA_LEN
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT2TPollerWrite(uint8_t blockNum, const uint8_t *wrData);
@@ -3285,10 +3285,10 @@ class RfalNfcClass {
      *
      * \param[in]  sectorNum    : Sector Number
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT2TPollerSectorSelect(uint8_t sectorNum);
@@ -3323,9 +3323,9 @@ class RfalNfcClass {
      * \param[in,out] apduParam : APDU parameters
      *                            apduParam.cApduLen will contain the APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam);
@@ -3342,10 +3342,10 @@ class RfalNfcClass {
      *                            apduParam.rApduBodyLen will contain the data length
      *                            apduParam.statusWord will contain the SW1 and SW2
      *
-     * \return ERR_REQUEST      : Status word (SW1 SW2) different from 9000
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_REQUEST      : Status word (SW1 SW2) different from 9000
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerParseRAPDU(rfalT4tRApduParam *apduParam);
@@ -3366,9 +3366,9 @@ class RfalNfcClass {
      * \param[in]      aidLen   : Application ID length
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeSelectAppl(rfalIsoDepApduBufFormat *cApduBuf, const uint8_t *aid, uint8_t aidLen, uint16_t *cApduLen);
@@ -3389,9 +3389,9 @@ class RfalNfcClass {
      * \param[in]      fidLen   : File ID length
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeSelectFile(rfalIsoDepApduBufFormat *cApduBuf, const uint8_t *fid, uint8_t fidLen, uint16_t *cApduLen);
@@ -3412,9 +3412,9 @@ class RfalNfcClass {
      * \param[in]      fidLen   : File ID length
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeSelectFileV1Mapping(rfalIsoDepApduBufFormat *cApduBuf, const uint8_t *fid, uint8_t fidLen, uint16_t *cApduLen);
@@ -3435,9 +3435,9 @@ class RfalNfcClass {
      * \param[in]      expLen   : Expected length (Le)
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeReadData(rfalIsoDepApduBufFormat *cApduBuf, uint16_t offset, uint8_t expLen, uint16_t *cApduLen);
@@ -3458,9 +3458,9 @@ class RfalNfcClass {
      * \param[in]      expLen   : Expected length (Le)
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeReadDataODO(rfalIsoDepApduBufFormat *cApduBuf, uint32_t offset, uint8_t expLen, uint16_t *cApduLen);
@@ -3482,9 +3482,9 @@ class RfalNfcClass {
      * \param[in]      dataLen  : Data length to be written (Lc)
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeWriteData(rfalIsoDepApduBufFormat *cApduBuf, uint16_t offset, const uint8_t *data, uint8_t dataLen, uint16_t *cApduLen);
@@ -3506,9 +3506,9 @@ class RfalNfcClass {
      * \param[in]      dataLen  : Data length to be written (Lc)
      * \param[out]     cApduLen : Composed C-APDU length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalT4TPollerComposeWriteDataODO(rfalIsoDepApduBufFormat *cApduBuf, uint32_t offset, const uint8_t *data, uint8_t dataLen, uint16_t *cApduLen);

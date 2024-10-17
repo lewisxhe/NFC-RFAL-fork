@@ -119,20 +119,20 @@ ReturnCode NdefClass::ndefT5TPollerReadBytes(uint32_t offset, uint32_t len, uint
   uint16_t        blockLen;
   uint16_t        startBlock;
   uint16_t        startAddr;
-  ReturnCode      result     = ERR_PARAM;
+  ReturnCode      result     = ST_ERR_PARAM;
   uint32_t        currentLen = len;
   uint32_t        lvRcvLen   = 0U;
 
   if ((subCtx.t5t.blockLen > 0U) && (buf != NULL) && (len > 0U)) {
     blockLen   = (uint16_t)subCtx.t5t.blockLen;
     if (blockLen == 0U) {
-      return ERR_SYSTEM;
+      return ST_ERR_SYSTEM;
     }
     startBlock = (uint16_t)(offset / blockLen);
     startAddr  = (uint16_t)(startBlock * blockLen);
 
     res = ndefT5TPollerReadSingleBlock(startBlock, subCtx.t5t.txrxBuf, blockLen + 3U, &nbRead);
-    if ((res == ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
+    if ((res == ST_ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
       nbRead = (uint16_t)(nbRead  + startAddr - (uint16_t)offset - 1U);
       if ((uint32_t) nbRead > currentLen) {
         nbRead = (uint16_t) currentLen;
@@ -148,7 +148,7 @@ ReturnCode NdefClass::ndefT5TPollerReadBytes(uint32_t offset, uint32_t len, uint
         res = ndefT5TPollerReadSingleBlock(startBlock, &buf[lvRcvLen - 1U], blockLen + 3U, &nbRead);
         status  = buf[lvRcvLen - 1U]; /* Keep status */
         buf[lvRcvLen - 1U] = lastVal; /* Restore previous value */
-        if ((res == ERR_NONE) && (nbRead > 0U) && (status == 0U)) {
+        if ((res == ST_ERR_NONE) && (nbRead > 0U) && (status == 0U)) {
           lvRcvLen   += blockLen;
           currentLen -= blockLen;
         } else {
@@ -158,7 +158,7 @@ ReturnCode NdefClass::ndefT5TPollerReadBytes(uint32_t offset, uint32_t len, uint
       while (currentLen > 0U) {
         startBlock++;
         res = ndefT5TPollerReadSingleBlock(startBlock, subCtx.t5t.txrxBuf, blockLen + 3U, &nbRead);
-        if ((res == ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
+        if ((res == ST_ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
           -- nbRead; /* remove status char */
           if (nbRead > currentLen) {
             nbRead = (uint16_t)currentLen;
@@ -175,7 +175,7 @@ ReturnCode NdefClass::ndefT5TPollerReadBytes(uint32_t offset, uint32_t len, uint
     }
   }
   if (currentLen == 0U) {
-    result = ERR_NONE;
+    result = ST_ERR_NONE;
   }
   if (rcvdLen != NULL) {
     * rcvdLen = lvRcvLen;
@@ -190,7 +190,7 @@ ReturnCode NdefClass::ndefT5TPollerContextInitialization(rfalNfcDevice *dev)
   uint16_t      rcvLen;
 
   if ((dev == NULL) || !ndefT5TisT5TDevice(dev)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ST_MEMCPY(&device, dev, sizeof(device));
@@ -205,11 +205,11 @@ ReturnCode NdefClass::ndefT5TPollerContextInitialization(rfalNfcDevice *dev)
 
   subCtx.t5t.legacySTHighDensity = false;
   result = ndefT5TPollerReadSingleBlock(0U, subCtx.t5t.txrxBuf, (uint16_t)sizeof(subCtx.t5t.txrxBuf), &rcvLen);
-  if ((result != ERR_NONE) && (device.dev.nfcv.InvRes.UID[NDEF_T5T_UID_MANUFACTURER_ID_POS] == NDEF_T5T_MANUFACTURER_ID_ST)) {
+  if ((result != ST_ERR_NONE) && (device.dev.nfcv.InvRes.UID[NDEF_T5T_UID_MANUFACTURER_ID_POS] == NDEF_T5T_MANUFACTURER_ID_ST)) {
     /* Try High Density Legacy mode */
     subCtx.t5t.legacySTHighDensity = true;
     result = ndefT5TPollerReadSingleBlock(0U, subCtx.t5t.txrxBuf, (uint16_t)sizeof(subCtx.t5t.txrxBuf), &rcvLen);
-    if (result != ERR_NONE) {
+    if (result != ST_ERR_NONE) {
       return result;
     }
   }
@@ -217,10 +217,10 @@ ReturnCode NdefClass::ndefT5TPollerContextInitialization(rfalNfcDevice *dev)
   if ((rcvLen > 1U) && (subCtx.t5t.txrxBuf[0U] == (uint8_t) 0U)) {
     subCtx.t5t.blockLen = (uint8_t)(rcvLen - 1U);
   } else {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
-  if (rfal_nfc->rfalNfcvPollerSelect((uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT, device.dev.nfcv.InvRes.UID)  == ERR_NONE) {
+  if (rfal_nfc->rfalNfcvPollerSelect((uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT, device.dev.nfcv.InvRes.UID)  == ST_ERR_NONE) {
     subCtx.t5t.pAddressedUid = NULL; /* Switch to selected mode */
   }
 
@@ -228,13 +228,13 @@ ReturnCode NdefClass::ndefT5TPollerContextInitialization(rfalNfcDevice *dev)
 
   if (!subCtx.t5t.legacySTHighDensity) {
     /* Extended Get System Info */
-    if (ndefT5TGetSystemInformation(true) == ERR_NONE) {
+    if (ndefT5TGetSystemInformation(true) == ST_ERR_NONE) {
       subCtx.t5t.sysInfoSupported = true;
     }
   }
   if (!subCtx.t5t.sysInfoSupported) {
     /* Get System Info */
-    if (ndefT5TGetSystemInformation(false) == ERR_NONE) {
+    if (ndefT5TGetSystemInformation(false) == ST_ERR_NONE) {
       subCtx.t5t.sysInfoSupported = true;
     }
   }
@@ -246,7 +246,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
 {
   ReturnCode result;
   uint8_t    tmpBuf[NDEF_T5T_TL_MAX_SIZE];
-  ReturnCode returnCode = ERR_REQUEST; /* Default return code */
+  ReturnCode returnCode = ST_ERR_REQUEST; /* Default return code */
   uint16_t   offset;
   uint16_t   length;
   uint32_t   TlvOffset;
@@ -254,7 +254,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
   uint32_t   rcvLen;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   state                           = NDEF_STATE_INVALID;
@@ -273,7 +273,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
   }
 
   result = ndefT5TPollerReadBytes(0U, 8U, ccBuf, &rcvLen);
-  if ((result == ERR_NONE) && (rcvLen == 8U) && ((ccBuf[0] == (uint8_t)0xE1U) || (ccBuf[0] == (uint8_t)0xE2U))) {
+  if ((result == ST_ERR_NONE) && (rcvLen == 8U) && ((ccBuf[0] == (uint8_t)0xE1U) || (ccBuf[0] == (uint8_t)0xE2U))) {
     cc.t5t.magicNumber           =  ccBuf[0U];
     cc.t5t.majorVersion          = (ccBuf[1U] >> 6U) & 0x03U;
     cc.t5t.minorVersion          = (ccBuf[1U] >> 4U) & 0x03U;
@@ -309,7 +309,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
     bExit     = false;
     do {
       result = ndefT5TPollerReadBytes(TlvOffset, NDEF_T5T_TL_MAX_SIZE, tmpBuf, &rcvLen);
-      if ((result != ERR_NONE) || (rcvLen != NDEF_T5T_TL_MAX_SIZE)) {
+      if ((result != ST_ERR_NONE) || (rcvLen != NDEF_T5T_TL_MAX_SIZE)) {
         break;
       }
       offset = 2U;
@@ -321,7 +321,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
       }
       if (tmpBuf[0U] == (uint8_t)NDEF_T5T_TLV_NDEF) {
         /* NDEF record return it */
-        returnCode                    = ERR_NONE;  /* Default */
+        returnCode                    = ST_ERR_NONE;  /* Default */
         subCtx.t5t.TlvNDEFOffset = TlvOffset; /* Offset for TLV */
         messageOffset            = TlvOffset + offset;
         messageLen               = length;
@@ -332,7 +332,7 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
             state = NDEF_STATE_INITIALIZED;
           } else {
             state = NDEF_STATE_INVALID;
-            returnCode = ERR_REQUEST; /* Default */
+            returnCode = ST_ERR_REQUEST; /* Default */
           }
           bExit = true;
         } else {
@@ -360,8 +360,8 @@ ReturnCode NdefClass::ndefT5TPollerNdefDetect(ndefInfo *info)
     } while ((TlvOffset > 0U) && (bExit == false));
   } else {
     /* No CCFile */
-    returnCode = ERR_REQUEST;
-    if (result != ERR_NONE) {
+    returnCode = ST_ERR_REQUEST;
+    if (result != ST_ERR_NONE) {
       returnCode = result;
     }
   }
@@ -385,11 +385,11 @@ ReturnCode NdefClass::ndefT5TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
   ReturnCode result;
 
   if (!ndefT5TisT5TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (messageLen > bufLen) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   result = ndefT5TPollerReadBytes(messageOffset, messageLen, buf, rcvdLen);
@@ -399,7 +399,7 @@ ReturnCode NdefClass::ndefT5TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
 /*******************************************************************************/
 ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len)
 {
-  ReturnCode      result = ERR_REQUEST;
+  ReturnCode      result = ST_ERR_REQUEST;
   ReturnCode      res;
   uint16_t        nbRead;
   uint16_t        blockLen16;
@@ -409,11 +409,11 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   uint32_t        currentLen = len;
 
   if (!ndefT5TisT5TDevice(&device) || (len == 0U) || (subCtx.t5t.blockLen == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
   blockLen16 = (uint16_t)subCtx.t5t.blockLen;
   if (blockLen16 == 0U) {
-    return ERR_SYSTEM;
+    return ST_ERR_SYSTEM;
   }
   startBlock = (uint16_t)(offset     / blockLen16);
   startAddr  = (uint16_t)(startBlock * blockLen16);
@@ -421,7 +421,7 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   if (startAddr != offset) {
     /* Unaligned start offset must read the first block before */
     res = ndefT5TPollerReadSingleBlock(startBlock, subCtx.t5t.txrxBuf, blockLen16 + 3U, &nbRead);
-    if ((res == ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
+    if ((res == ST_ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
       nbRead = (uint16_t)((uint32_t)nbRead - 1U  + startAddr - offset);
       if (nbRead > (uint32_t) currentLen) {
         nbRead = (uint16_t) currentLen;
@@ -430,14 +430,14 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
         (void)ST_MEMCPY(&subCtx.t5t.txrxBuf[1U - startAddr + (uint16_t)offset], wrbuf, nbRead);
       }
       res = ndefT5TPollerWriteSingleBlock(startBlock, &subCtx.t5t.txrxBuf[1U]);
-      if (res != ERR_NONE) {
+      if (res != ST_ERR_NONE) {
         return res;
       }
     } else {
-      if (res != ERR_NONE) {
+      if (res != ST_ERR_NONE) {
         result = res;
       } else {
-        result = ERR_PARAM;
+        result = ST_ERR_PARAM;
       }
       return result;
     }
@@ -447,7 +447,7 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   }
   while (currentLen >= blockLen16) {
     res = ndefT5TPollerWriteSingleBlock(startBlock, wrbuf);
-    if (res == ERR_NONE) {
+    if (res == ST_ERR_NONE) {
       currentLen -= blockLen16;
       wrbuf       = &wrbuf[blockLen16];
       startBlock++;
@@ -459,27 +459,27 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   if ((currentLen != 0U) && (currentLen < blockLen16)) {
     /* Unaligned end, must read the first block before */
     res = ndefT5TPollerReadSingleBlock(startBlock, subCtx.t5t.txrxBuf, blockLen16 + 3U, &nbRead);
-    if ((res == ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
+    if ((res == ST_ERR_NONE) && (subCtx.t5t.txrxBuf[0U] == 0U) && (nbRead > 0U)) {
       if (currentLen > 0U) {
         (void)ST_MEMCPY(&subCtx.t5t.txrxBuf[1U], wrbuf, currentLen);
       }
       res = ndefT5TPollerWriteSingleBlock(startBlock, &subCtx.t5t.txrxBuf[1U]);
-      if (res != ERR_NONE) {
+      if (res != ST_ERR_NONE) {
         result = res;
       } else {
         currentLen = 0U;
       }
     } else {
-      if (res != ERR_NONE) {
+      if (res != ST_ERR_NONE) {
         result = res;
       } else {
-        result = ERR_PARAM;
+        result = ST_ERR_PARAM;
       }
       return result;
     }
   }
   if (currentLen == 0U) {
-    result = ERR_NONE;
+    result = ST_ERR_NONE;
   }
   return result;
 }
@@ -488,12 +488,12 @@ ReturnCode NdefClass::ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *bu
 ReturnCode NdefClass::ndefT5TPollerWriteRawMessageLen(uint32_t rawMessageLen)
 {
   uint8_t    TLV[8U];
-  ReturnCode result = ERR_PARAM;
+  ReturnCode result = ST_ERR_PARAM;
   uint8_t     len    = 0U;
 
   if (ndefT5TisT5TDevice(&device)) {
     if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-      result = ERR_WRONG_STATE;
+      result = ST_ERR_WRONG_STATE;
     } else {
       TLV[len] = NDEF_T5T_TLV_NDEF;
       len++;
@@ -512,7 +512,7 @@ ReturnCode NdefClass::ndefT5TPollerWriteRawMessageLen(uint32_t rawMessageLen)
       }
 
       result = ndefT5TPollerWriteBytes(subCtx.t5t.TlvNDEFOffset, TLV, len);
-      if ((result == ERR_NONE) && (rawMessageLen != 0U)) {
+      if ((result == ST_ERR_NONE) && (rawMessageLen != 0U)) {
         /* T5T need specific terminator */
         len = 0U;
         TLV[len] = NDEF_TERMINATOR_TLV_T; /* TLV terminator */
@@ -531,7 +531,7 @@ ReturnCode NdefClass::ndefT5TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   ReturnCode result;
 
   if (!ndefT5TisT5TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T5T v1.0 7.5.3.1/2: T5T NDEF Detect should have been called before NDEF write procedure */
@@ -540,19 +540,19 @@ ReturnCode NdefClass::ndefT5TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   /* TS T5T v1.0 7.5.3.3: check write access condition */
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
     /* Conclude procedure */
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T5T v1.0 7.5.3.3: verify available space */
   result = ndefT5TPollerCheckAvailableSpace(bufLen);
-  if (result != ERR_NONE) {
+  if (result != ST_ERR_NONE) {
     /* Conclude procedures */
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
   /* TS T5T v1.0 7.5.3.4: reset L-Field to 0 */
   /* and update messageOffset according to L-field len */
   result = ndefT5TPollerBeginWriteMessage(bufLen);
-  if (result != ERR_NONE) {
+  if (result != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
     /* Conclude procedure */
     return result;
@@ -560,14 +560,14 @@ ReturnCode NdefClass::ndefT5TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   if (bufLen != 0U) {
     /* TS T5T v1.0 7.5.3.5: write new NDEF message */
     result = ndefT5TPollerWriteBytes(messageOffset, buf, len);
-    if (result != ERR_NONE) {
+    if (result != ST_ERR_NONE) {
       /* Conclude procedure */
       state = NDEF_STATE_INVALID;
       return result;
     }
     /* TS T5T v1.0 7.5.3.6 & 7.5.3.7: update L-Field and write Terminator TLV */
     result = ndefT5TPollerEndWriteMessage(len);
-    if (result != ERR_NONE) {
+    if (result != ST_ERR_NONE) {
       /* Conclude procedure */
       state = NDEF_STATE_INVALID;
       return result;
@@ -584,7 +584,7 @@ ReturnCode NdefClass::ndefT5TWriteCC()
   uint8_t     dataIt;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   buf    = ccBuf;
@@ -636,7 +636,7 @@ ReturnCode NdefClass::ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc_p
   static const uint8_t     emptyNDEF[] = { 0x03U, 0x00U, 0xFEU, 0x00U};
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Reset previous potential info about NDEF messages */
@@ -646,7 +646,7 @@ ReturnCode NdefClass::ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc_p
 
   if (cc_p != NULL) {
     if ((cc_p->t5t.ccLen != NDEF_T5T_CC_LEN_8_BYTES) && (cc_p->t5t.ccLen != NDEF_T5T_CC_LEN_4_BYTES)) {
-      return ERR_PARAM;
+      return ST_ERR_PARAM;
     }
     (void)ST_MEMCPY(&cc, cc_p, sizeof(ndefCapabilityContainer));
   } else {
@@ -662,7 +662,7 @@ ReturnCode NdefClass::ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc_p
     cc.t5t.mlenOverflow = false;
 
     result = ndefT5TPollerReadMultipleBlocks(0U, 0U, subCtx.t5t.txrxBuf, (uint16_t)sizeof(subCtx.t5t.txrxBuf), &rcvdLen);
-    cc.t5t.multipleBlockRead = (result ==  ERR_NONE) ? true : false;
+    cc.t5t.multipleBlockRead = (result ==  ST_ERR_NONE) ? true : false;
 
     /* Try to retrieve the tag's size using getSystemInfo and GetExtSystemInfo */
 
@@ -688,18 +688,18 @@ ReturnCode NdefClass::ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc_p
         cc.t5t.magicNumber = NDEF_T5T_CC_MAGIC_2_BYTE_ADDR_MODE; /* E2 */
       }
     } else {
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
   }
 
   result = ndefT5TWriteCC();
-  if (result != ERR_NONE) {
+  if (result != ST_ERR_NONE) {
     /* If write fails, try to use special frame if not yet used */
     if (!cc.t5t.specialFrame) {
       delay(20U); /* Wait to be sure that previous command has ended */
       cc.t5t.specialFrame = true; /* Add option flag */
       result = ndefT5TWriteCC();
-      if (result != ERR_NONE) {
+      if (result != ST_ERR_NONE) {
         cc.t5t.specialFrame = false; /* Add option flag */
         return result;
       }
@@ -712,7 +712,7 @@ ReturnCode NdefClass::ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc_p
   subCtx.t5t.TlvNDEFOffset = cc.t5t.ccLen;
 
   result = ndefT5TPollerWriteBytes(subCtx.t5t.TlvNDEFOffset, emptyNDEF, sizeof(emptyNDEF));
-  if (result == ERR_NONE) {
+  if (result == ST_ERR_NONE) {
     /* Update info about current NDEF */
     messageOffset = (uint32_t)cc.t5t.ccLen + 0x02U;
     state         = NDEF_STATE_INITIALIZED;
@@ -728,7 +728,7 @@ ReturnCode NdefClass::ndefT5TPollerCheckPresence()
   uint16_t            rcvLen;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   blockAddr = 0U;
@@ -744,19 +744,19 @@ ReturnCode NdefClass::ndefT5TPollerCheckAvailableSpace(uint32_t messageLen)
   uint32_t            lLen;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state == NDEF_STATE_INVALID) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   lLen = (messageLen > NDEF_SHORT_VFIELD_MAX_LEN) ? NDEF_T5T_TLV_L_3_BYTES_LEN : NDEF_T5T_TLV_L_1_BYTES_LEN;
 
   if ((messageLen + subCtx.t5t.TlvNDEFOffset + NDEF_T5T_TLV_T_LEN + lLen) > (areaLen + cc.t5t.ccLen)) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -766,16 +766,16 @@ ReturnCode NdefClass::ndefT5TPollerBeginWriteMessage(uint32_t messageLen)
   uint32_t             lLen;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T5T v1.0 7.5.3.4: reset L-Field to 0 */
   ret = ndefT5TPollerWriteRawMessageLen(0U);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
@@ -787,7 +787,7 @@ ReturnCode NdefClass::ndefT5TPollerBeginWriteMessage(uint32_t messageLen)
   messageOffset += lLen;               /* L Len */
   state          = NDEF_STATE_INITIALIZED;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -796,23 +796,23 @@ ReturnCode NdefClass::ndefT5TPollerEndWriteMessage(uint32_t messageLen)
   ReturnCode           ret;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state != NDEF_STATE_INITIALIZED) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T5T v1.0 7.5.3.6 & 7.5.3.7: update L-Field and write Terminator TLV */
   ret = ndefT5TPollerWriteRawMessageLen(messageLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
   }
   messageLen = messageLen;
   state      = (messageLen == 0U) ? NDEF_STATE_INITIALIZED : NDEF_STATE_READWRITE;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -822,7 +822,7 @@ ReturnCode NdefClass::ndefT5TPollerWriteSingleBlock(uint16_t blockNum, const uin
   uint8_t                   flags;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   flags = cc.t5t.specialFrame ? ((uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT | (uint8_t)RFAL_NFCV_REQ_FLAG_OPTION) : (uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT;
@@ -846,7 +846,7 @@ ReturnCode NdefClass::ndefT5TPollerReadMultipleBlocks(uint16_t firstBlockNum, ui
   ReturnCode                ret;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (subCtx.t5t.legacySTHighDensity) {
@@ -869,7 +869,7 @@ ReturnCode NdefClass::ndefT5TPollerReadSingleBlock(uint16_t blockNum, uint8_t *r
   ReturnCode                ret;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (subCtx.t5t.legacySTHighDensity) {
@@ -895,7 +895,7 @@ ReturnCode NdefClass::ndefT5TGetSystemInformation(bool extended)
   uint8_t                  *resp;
 
   if (!ndefT5TisT5TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (extended) {
@@ -904,7 +904,7 @@ ReturnCode NdefClass::ndefT5TGetSystemInformation(bool extended)
     ret = rfal_nfc->rfalNfcvPollerGetSystemInformation(subCtx.t5t.legacySTHighDensity ? ((uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT | (uint8_t)RFAL_NFCV_REQ_FLAG_PROTOCOL_EXT) : ((uint8_t)RFAL_NFCV_REQ_FLAG_DEFAULT), subCtx.t5t.pAddressedUid, rxBuf, (uint16_t)sizeof(rxBuf), &rcvLen);
   }
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
@@ -916,7 +916,7 @@ ReturnCode NdefClass::ndefT5TGetSystemInformation(bool extended)
   subCtx.t5t.sysInfo.infoFlags = *resp;
   resp++;
   if (extended && (ndefT5TSysInfoLenValue(subCtx.t5t.sysInfo.infoFlags) != 0U)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
   /* get UID */
   (void)ST_MEMCPY(subCtx.t5t.sysInfo.UID, resp, RFAL_NFCV_UID_LEN);
@@ -960,5 +960,5 @@ ReturnCode NdefClass::ndefT5TGetSystemInformation(bool extended)
     subCtx.t5t.sysInfo.supportedCmd[3U] = *resp;
     resp++;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

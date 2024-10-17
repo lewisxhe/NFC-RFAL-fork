@@ -129,7 +129,7 @@ ReturnCode NdefClass::ndefT2TPollerReadBlock(uint16_t blockAddr, uint8_t *buf)
   uint16_t             rcvdLen;
 
   if (!ndefT2TisT2TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   secNo = (uint8_t)(blockAddr >> 8U);
@@ -137,7 +137,7 @@ ReturnCode NdefClass::ndefT2TPollerReadBlock(uint16_t blockAddr, uint8_t *buf)
 
   if (secNo != subCtx.t2t.currentSecNo) {
     ret = rfal_nfc->rfalT2TPollerSectorSelect(secNo);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
     subCtx.t2t.currentSecNo = secNo;
@@ -145,8 +145,8 @@ ReturnCode NdefClass::ndefT2TPollerReadBlock(uint16_t blockAddr, uint8_t *buf)
 
   ret = rfal_nfc->rfalT2TPollerRead(blNo, buf, NDEF_T2T_READ_RESP_SIZE, &rcvdLen);
 
-  if ((ret == ERR_NONE) && (rcvdLen != NDEF_T2T_READ_RESP_SIZE)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rcvdLen != NDEF_T2T_READ_RESP_SIZE)) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -164,7 +164,7 @@ ReturnCode NdefClass::ndefT2TPollerReadBytes(uint32_t offset, uint32_t len, uint
   uint8_t              byteNo;
 
   if (!ndefT2TisT2TDevice(&device) || (lvLen == 0U) || (offset > NDEF_T2T_MAX_OFFSET)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((offset >= subCtx.t2t.cacheAddr) && (offset < (subCtx.t2t.cacheAddr + NDEF_T2T_READ_RESP_SIZE)) && ((offset + len) < (subCtx.t2t.cacheAddr + NDEF_T2T_READ_RESP_SIZE))) {
@@ -178,7 +178,7 @@ ReturnCode NdefClass::ndefT2TPollerReadBytes(uint32_t offset, uint32_t len, uint
 
       if ((byteNo != 0U) || (lvLen < NDEF_T2T_READ_RESP_SIZE)) {
         ret = ndefT2TPollerReadBlock(blockAddr, subCtx.t2t.cacheBuf);
-        if (ret != ERR_NONE) {
+        if (ret != ST_ERR_NONE) {
           ndefT2TInvalidateCache();
           return ret;
         }
@@ -191,7 +191,7 @@ ReturnCode NdefClass::ndefT2TPollerReadBytes(uint32_t offset, uint32_t len, uint
         }
       } else {
         ret = ndefT2TPollerReadBlock(blockAddr, lvBuf);
-        if (ret != ERR_NONE) {
+        if (ret != ST_ERR_NONE) {
           return ret;
         }
         if (lvLen == le) {
@@ -210,14 +210,14 @@ ReturnCode NdefClass::ndefT2TPollerReadBytes(uint32_t offset, uint32_t len, uint
   if (rcvdLen != NULL) {
     *rcvdLen = len;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
 ReturnCode NdefClass::ndefT2TPollerContextInitialization(rfalNfcDevice *dev)
 {
   if ((dev == NULL) || !ndefT2TisT2TDevice(dev)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ST_MEMCPY(&device, dev, sizeof(device));
@@ -226,7 +226,7 @@ ReturnCode NdefClass::ndefT2TPollerContextInitialization(rfalNfcDevice *dev)
   subCtx.t2t.currentSecNo = 0U;
   ndefT2TInvalidateCache();
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -248,14 +248,14 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
   }
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   state = NDEF_STATE_INVALID;
 
   /* Read CC TS T2T v1.0 7.5.1.1 */
   ret = ndefT2TPollerReadBytes(NDEF_T2T_CC_OFFSET, NDEF_T2T_CC_LEN, ccBuf, NULL);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     return ret;
   }
@@ -269,13 +269,13 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
   /* Check version number TS T2T v1.0 7.5.1.2 */
   if ((cc.t2t.magicNumber != NDEF_T2T_MAGIC) || (cc.t2t.majorVersion > ndefMajorVersion(NDEF_T2T_VERSION_1_0))) {
     /* Conclude procedure TS T2T v1.0 7.5.1.2 */
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
   /* Search for NDEF message TLV TS T2T v1.0 7.5.1.3 */
   offset = NDEF_T2T_AREA_OFFSET;
   while ((offset < (NDEF_T2T_AREA_OFFSET + areaLen))) {
     ret = ndefT2TPollerReadBytes(offset, 1, data, NULL);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure */
       return ret;
     }
@@ -292,7 +292,7 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
     }
     /* read TLV Len */
     ret = ndefT2TPollerReadBytes(offset, 1, data, NULL);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure */
       return ret;
     }
@@ -300,7 +300,7 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
     lenTLV = data[0];
     if (lenTLV == NDEF_T2T_3_BYTES_TLV_LEN) {
       ret = ndefT2TPollerReadBytes(offset, 2, data, NULL);
-      if (ret != ERR_NONE) {
+      if (ret != ST_ERR_NONE) {
         /* Conclude procedure */
         return ret;
       }
@@ -310,7 +310,7 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
 
     if ((typeTLV == NDEF_T2T_TLV_LOCK_CTRL) || (typeTLV == NDEF_T2T_TLV_MEMORY_CTRL)) {
       /* No support of Lock control or Memory control in this version */
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     /* NDEF message present TLV TS T2T v1.0 7.5.1.4 */
     if (typeTLV == NDEF_T2T_TLV_NDEF_MESSAGE) {
@@ -320,7 +320,7 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
       if (messageLen == 0U) {
         if (!(ndefT2TIsReadWriteAccessGranted())) {
           /* Conclude procedure  */
-          return ERR_REQUEST;
+          return ST_ERR_REQUEST;
         }
         /* Empty message found TS T2T v1.0 7.5.1.6 & TS T2T v1.0 7.4.2.1 */
         state = NDEF_STATE_INITIALIZED;
@@ -331,7 +331,7 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
         } else {
           if (!(ndefT2TIsReadOnlyAccessGranted())) {
             /* Conclude procedure  */
-            return ERR_REQUEST;
+            return ST_ERR_REQUEST;
           }
           /* Empty message found TS T2T v1.0 7.5.1.7 & TS T2T v1.0 7.4.4.1 */
           state = NDEF_STATE_READONLY;
@@ -345,11 +345,11 @@ ReturnCode NdefClass::ndefT2TPollerNdefDetect(ndefInfo *info)
         info->areaAvalableSpaceLen = areaLen - messageOffset;
         info->messageLen           = messageLen;
       }
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
     offset += lenTLV;
   }
-  return ERR_REQUEST;
+  return ST_ERR_REQUEST;
 }
 
 /*******************************************************************************/
@@ -358,7 +358,7 @@ ReturnCode NdefClass::ndefT2TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
   ReturnCode           ret;
 
   if (!ndefT2TisT2TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T2T v1.0 7.5.2.1: T2T NDEF Detect should have been called before NDEF read procedure */
@@ -367,16 +367,16 @@ ReturnCode NdefClass::ndefT2TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
   /* TS T2T v1.0 7.5.2.3: check presence of NDEF message */
   if (state <= NDEF_STATE_INITIALIZED) {
     /* Conclude procedure TS T4T v1.0 7.2.2.2 */
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   if (messageLen > bufLen) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Current implementation does not support Rsvd_area */
   ret = ndefT2TPollerReadBytes(messageOffset, messageLen, buf, rcvdLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
   }
   return ret;
@@ -390,7 +390,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteBlock(uint16_t blockAddr, const uint8_t 
   uint8_t              blNo;
 
   if (!ndefT2TisT2TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   secNo = (uint8_t)(blockAddr >> 8U);
@@ -398,7 +398,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteBlock(uint16_t blockAddr, const uint8_t 
 
   if (secNo != subCtx.t2t.currentSecNo) {
     ret = rfal_nfc->rfalT2TPollerSectorSelect(secNo);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
     subCtx.t2t.currentSecNo = secNo;
@@ -422,7 +422,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   uint8_t              tempBuf[NDEF_T2T_READ_RESP_SIZE];
 
   if (!ndefT2TisT2TDevice(&device) || (lvLen == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT2TInvalidateCache();
@@ -433,7 +433,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteBytes(uint32_t offset, const uint8_t *bu
     le = (lvLen < NDEF_T2T_BLOCK_SIZE) ? (uint8_t)lvLen : (uint8_t)NDEF_T2T_BLOCK_SIZE;
     if ((byteNo != 0U) || (lvLen < NDEF_T2T_BLOCK_SIZE)) {
       ret = ndefT2TPollerReadBlock(blockAddr, tempBuf);
-      if (ret != ERR_NONE) {
+      if (ret != ST_ERR_NONE) {
         return ret;
       }
       if ((NDEF_T2T_BLOCK_SIZE - byteNo) < le) {
@@ -443,12 +443,12 @@ ReturnCode NdefClass::ndefT2TPollerWriteBytes(uint32_t offset, const uint8_t *bu
         (void)ST_MEMCPY(&tempBuf[byteNo], lvBuf, le);
       }
       ret = ndefT2TPollerWriteBlock(blockAddr, tempBuf);
-      if (ret != ERR_NONE) {
+      if (ret != ST_ERR_NONE) {
         return ret;
       }
     } else {
       ret = ndefT2TPollerWriteBlock(blockAddr, lvBuf);
-      if (ret != ERR_NONE) {
+      if (ret != ST_ERR_NONE) {
         return ret;
       }
     }
@@ -458,7 +458,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteBytes(uint32_t offset, const uint8_t *bu
 
   } while (lvLen != 0U);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -469,11 +469,11 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessageLen(uint32_t rawMessageLen)
   uint8_t              dataIt;
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
   dataIt = 0U;
   buf[dataIt] = NDEF_T2T_TLV_NDEF_MESSAGE;
@@ -493,7 +493,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessageLen(uint32_t rawMessageLen)
   }
 
   ret = ndefT2TPollerWriteBytes(subCtx.t2t.offsetNdefTLV, buf, dataIt);
-  if ((ret != ERR_NONE) && (rawMessageLen != 0U) && ((messageOffset + rawMessageLen) < areaLen)) {
+  if ((ret != ST_ERR_NONE) && (rawMessageLen != 0U) && ((messageOffset + rawMessageLen) < areaLen)) {
     /* Write Terminator TLV */
     dataIt = 0U;
     buf[dataIt] = NDEF_T2T_TLV_TERMINATOR;
@@ -510,7 +510,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   ReturnCode ret;
 
   if (!ndefT2TisT2TDevice(&device) || ((buf == NULL) && (bufLen != 0U))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T2T v1.0 7.5.3.1/2: T4T NDEF Detect should have been called before NDEF write procedure */
@@ -519,20 +519,20 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   /* TS T2T v1.0 7.5.3.3: check write access condition */
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
     /* Conclude procedure */
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T2T v1.0 7.5.3.3: verify available space */
   ret = ndefT2TPollerCheckAvailableSpace(bufLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedures */
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T2T v1.0 7.5.3.4: reset L_Field to 0                */
   /* and update messageOffset according to L-field len */
   ret = ndefT2TPollerBeginWriteMessage(bufLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
     /* Conclude procedure */
     return ret;
@@ -541,7 +541,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   if (bufLen != 0U) {
     /* TS T2T v1.0 7.5.3.5: write new NDEF message */
     ret = ndefT2TPollerWriteBytes(messageOffset, buf, bufLen);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure */
       state = NDEF_STATE_INVALID;
       return ret;
@@ -549,7 +549,7 @@ ReturnCode NdefClass::ndefT2TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
 
     /* TS T2T v1.0 7.5.3.6 & 7.5.3.7: update L_Field and write Terminator TLV */
     ret = ndefT2TPollerEndWriteMessage(bufLen);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure */
       state = NDEF_STATE_INVALID;
       return ret;
@@ -569,14 +569,14 @@ ReturnCode NdefClass::ndefT2TPollerTagFormat(const ndefCapabilityContainer *cc_p
   NO_WARNING(options);
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*
    * Read CC area
    */
   ret = ndefT2TPollerReadBytes(NDEF_T2T_CC_OFFSET, NDEF_T2T_CC_LEN, ccBuf, NULL);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
@@ -608,7 +608,7 @@ ReturnCode NdefClass::ndefT2TPollerTagFormat(const ndefCapabilityContainer *cc_p
       dataIt++;
     }
     ret = ndefT2TPollerWriteBlock(NDEF_T2T_CC_OFFSET / NDEF_T2T_BLOCK_SIZE, ccBuf);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
   }
@@ -628,17 +628,17 @@ ReturnCode NdefClass::ndefT2TPollerCheckPresence()
   uint16_t             blockAddr;
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   blockAddr = 0U;
   ret = ndefT2TPollerReadBlock(blockAddr, subCtx.t2t.cacheBuf);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     ndefT2TInvalidateCache();
     return ret;
   }
   subCtx.t2t.cacheAddr = (uint32_t)blockAddr * NDEF_T2T_BLOCK_SIZE;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -647,19 +647,19 @@ ReturnCode NdefClass::ndefT2TPollerCheckAvailableSpace(uint32_t messageLen)
   uint32_t             lLen;
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state == NDEF_STATE_INVALID) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   lLen = (messageLen > NDEF_SHORT_VFIELD_MAX_LEN) ? NDEF_T2T_TLV_L_3_BYTES_LEN : NDEF_T2T_TLV_L_1_BYTES_LEN;
 
   if ((messageLen + subCtx.t2t.offsetNdefTLV + NDEF_T2T_TLV_T_LEN + lLen) > (areaLen + NDEF_T2T_AREA_OFFSET)) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -669,16 +669,16 @@ ReturnCode NdefClass::ndefT2TPollerBeginWriteMessage(uint32_t messageLen)
   uint32_t             lLen;
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T2T v1.0 7.5.3.4: reset L_Field to 0 */
   ret = ndefT2TPollerWriteRawMessageLen(0U);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
@@ -691,7 +691,7 @@ ReturnCode NdefClass::ndefT2TPollerBeginWriteMessage(uint32_t messageLen)
 
   state = NDEF_STATE_INITIALIZED;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -700,21 +700,21 @@ ReturnCode NdefClass::ndefT2TPollerEndWriteMessage(uint32_t messageLen)
   ReturnCode           ret;
 
   if (!ndefT2TisT2TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state != NDEF_STATE_INITIALIZED) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T2T v1.0 7.5.3.6 & 7.5.3.7: update L_Field and write Terminator TLV */
   ret = ndefT2TPollerWriteRawMessageLen(messageLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
   }
   messageLen = messageLen;
   state = (messageLen == 0U) ? NDEF_STATE_INITIALIZED : NDEF_STATE_READWRITE;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

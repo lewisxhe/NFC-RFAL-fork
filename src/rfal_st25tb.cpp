@@ -163,7 +163,7 @@ bool RfalNfcClass::rfalSt25tbPollerDoCollisionResolution(uint8_t devLimit, rfalS
       ret = rfalSt25tbPollerSlotMarker(i, &chipId);
     }
 
-    if (ret == ERR_NONE) {
+    if (ret == ST_ERR_NONE) {
       /* Found another device */
       st25tbDevList[*devCnt].chipID       = chipId;
       st25tbDevList[*devCnt].isDeselected = false;
@@ -176,14 +176,14 @@ bool RfalNfcClass::rfalSt25tbPollerDoCollisionResolution(uint8_t devLimit, rfalS
         st25tbDevList[(*devCnt) - 1U].isDeselected = true;
       }
 
-      if (ERR_NONE == ret) {
+      if (ST_ERR_NONE == ret) {
         rfalSt25tbPollerGetUID(&st25tbDevList[*devCnt].UID);
       }
 
-      if (ERR_NONE == ret) {
+      if (ST_ERR_NONE == ret) {
         (*devCnt)++;
       }
-    } else if ((ret == ERR_CRC) || (ret == ERR_FRAMING)) {
+    } else if ((ret == ST_ERR_CRC) || (ret == ST_ERR_FRAMING)) {
       col = true;
     } else {
       /* MISRA 15.7 - Empty else */
@@ -228,8 +228,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerCheckPresence(uint8_t *chipId)
   ret = rfalSt25tbPollerInitiate(&chipIdRes);
 
   /*  Check if a transmission error was detected */
-  if ((ret == ERR_CRC) || (ret == ERR_FRAMING)) {
-    return ERR_NONE;
+  if ((ret == ST_ERR_CRC) || (ret == ST_ERR_FRAMING)) {
+    return ST_ERR_NONE;
   }
 
   /* Copy chip ID if requested */
@@ -257,8 +257,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerInitiate(uint8_t *chipId)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&initiateReq, sizeof(rfalSt25tbInitiateReq), (uint8_t *)rxBuf, sizeof(rxBuf), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid Select Response   */
-  if ((ret == ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
+    return ST_ERR_PROTO;
   }
 
   /* Copy chip ID if requested */
@@ -285,8 +285,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerPcall(uint8_t *chipId)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&pcallReq, sizeof(rfalSt25tbPcallReq), (uint8_t *)chipId, RFAL_ST25TB_CHIP_ID_LEN, &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid Select Response   */
-  if ((ret == ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -301,7 +301,7 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerSlotMarker(uint8_t slotNum, uint8_t *ch
   uint8_t    slotMarker;
 
   if ((slotNum == 0U) || (slotNum > 15U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Compute SlotMarker */
@@ -312,8 +312,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerSlotMarker(uint8_t slotNum, uint8_t *ch
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&slotMarker, RFAL_ST25TB_CMD_LEN, (uint8_t *)chipIdRes, RFAL_ST25TB_CHIP_ID_LEN, &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid ChipID Response   */
-  if ((ret == ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rxLen != RFAL_ST25TB_CHIP_ID_LEN)) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -336,8 +336,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerSelect(uint8_t chipId)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&selectReq, sizeof(rfalSt25tbSelectReq), (uint8_t *)&chipIdRes, RFAL_ST25TB_CHIP_ID_LEN, &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid Select Response   */
-  if ((ret == ERR_NONE) && ((rxLen != RFAL_ST25TB_CHIP_ID_LEN) || (chipIdRes != chipId))) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && ((rxLen != RFAL_ST25TB_CHIP_ID_LEN) || (chipIdRes != chipId))) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -359,8 +359,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerGetUID(rfalSt25tbUID *UID)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&getUidReq, RFAL_ST25TB_CMD_LEN, (uint8_t *)UID, sizeof(rfalSt25tbUID), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid UID Response */
-  if ((ret == ERR_NONE) && (rxLen != RFAL_ST25TB_UID_LEN)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rxLen != RFAL_ST25TB_UID_LEN)) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -376,14 +376,14 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerCollisionResolution(uint8_t devLimit, r
   bool       detected;  /* collision or device was detected */
 
   if ((st25tbDevList == NULL) || (devCnt == NULL) || (devLimit == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *devCnt = 0;
 
   /* Step 1: Send Initiate */
   ret = rfalSt25tbPollerInitiate(&chipId);
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* If only 1 answer is detected */
     st25tbDevList[*devCnt].chipID       = chipId;
     st25tbDevList[*devCnt].isDeselected = false;
@@ -391,11 +391,11 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerCollisionResolution(uint8_t devLimit, r
     /* Retrieve its UID and keep it Selected*/
     ret = rfalSt25tbPollerSelect(chipId);
 
-    if (ERR_NONE == ret) {
+    if (ST_ERR_NONE == ret) {
       ret = rfalSt25tbPollerGetUID(&st25tbDevList[*devCnt].UID);
     }
 
-    if (ERR_NONE == ret) {
+    if (ST_ERR_NONE == ret) {
       (*devCnt)++;
     }
   }
@@ -407,7 +407,7 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerCollisionResolution(uint8_t devLimit, r
     } while ((detected == true) && (*devCnt < devLimit));
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -427,8 +427,8 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerReadBlock(uint8_t blockAddress, rfalSt2
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&readBlockReq, sizeof(rfalSt25tbReadBlockReq), (uint8_t *)blockData, sizeof(rfalSt25tbBlock), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ST25TB_FWT);
 
   /* Check for valid UID Response */
-  if ((ret == ERR_NONE) && (rxLen != RFAL_ST25TB_BLOCK_LEN)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) && (rxLen != RFAL_ST25TB_BLOCK_LEN)) {
+    return ST_ERR_PROTO;
   }
 
   return ret;
@@ -453,20 +453,20 @@ ReturnCode RfalNfcClass::rfalSt25tbPollerWriteBlock(uint8_t blockAddress, const 
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&writeBlockReq, sizeof(rfalSt25tbWriteBlockReq), tmpBlockData, RFAL_ST25TB_BLOCK_LEN, &rxLen, RFAL_TXRX_FLAGS_DEFAULT, (RFAL_ST25TB_FWT + RFAL_ST25TB_TW));
 
   /* Check if an unexpected answer was received */
-  if (ret == ERR_NONE) {
-    return ERR_PROTO;
+  if (ret == ST_ERR_NONE) {
+    return ST_ERR_PROTO;
   }
   /* Check there was any error besides Timeout*/
-  if (ret != ERR_TIMEOUT) {
+  if (ret != ST_ERR_TIMEOUT) {
     return ret;
   }
 
   ret = rfalSt25tbPollerReadBlock(blockAddress, &tmpBlockData);
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     if (ST_BYTECMP(&tmpBlockData, blockData, RFAL_ST25TB_BLOCK_LEN) == 0) {
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
   return ret;
 }

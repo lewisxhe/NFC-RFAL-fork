@@ -109,14 +109,14 @@ ReturnCode RfalNfcClass::rfalNfcbCheckSensbRes(const rfalNfcbSensbRes *sensbRes,
 {
   /* Check response length */
   if (((sensbResLen != RFAL_NFCB_SENSB_RES_LEN) && (sensbResLen != RFAL_NFCB_SENSB_RES_EXT_LEN))) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Check SENSB_RES and Protocol Type   Digital 1.1 7.6.2.19 */
   if (((sensbRes->protInfo.FsciProType & RFAL_NFCB_SENSB_RES_PROT_TYPE_RFU) != 0U) || (sensbRes->cmd != (uint8_t)RFAL_NFCB_CMD_SENSB_RES)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*
@@ -140,7 +140,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerInitialize(void)
   gRfalNfcb.AFI    = RFAL_NFCB_AFI;
   gRfalNfcb.PARAM  = RFAL_NFCB_PARAM;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -153,7 +153,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerInitializeWithParams(uint8_t AFI, uint8_t
   gRfalNfcb.AFI   = AFI;
   gRfalNfcb.PARAM = (PARAM & RFAL_NFCB_SENSB_REQ_PARAM);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -168,7 +168,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerCheckPresence(rfalNfcbSensCmd cmd, rfalNf
   /* Check if the command requested and given the slot number are valid */
   if (((RFAL_NFCB_SENS_CMD_SENSB_REQ != cmd) && (RFAL_NFCB_SENS_CMD_ALLB_REQ != cmd)) ||
       (slots > RFAL_NFCB_SLOT_NUM_16) || (sensbRes == NULL) || (sensbResLen == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *sensbResLen = 0;
@@ -185,13 +185,13 @@ ReturnCode RfalNfcClass::rfalNfcbPollerCheckPresence(rfalNfcbSensCmd cmd, rfalNf
   *sensbResLen = (uint8_t)rxLen;
 
   /*  Check if a transmission error was detected */
-  if ((ret == ERR_CRC) || (ret == ERR_FRAMING)) {
+  if ((ret == ST_ERR_CRC) || (ret == ST_ERR_FRAMING)) {
     /* Invalidate received frame as an error was detected (CollisionResolution checks if valid) */
     *sensbResLen = 0;
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     return rfalNfcbCheckSensbRes(sensbRes, *sensbResLen);
   }
 
@@ -208,7 +208,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSleep(const uint8_t *nfcid0)
   rfalNfcbSlpbRes slpbRes;
 
   if (nfcid0 == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Compute SLPB_REQ */
@@ -219,9 +219,9 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSleep(const uint8_t *nfcid0)
 
   /* Check SLPB_RES */
   if ((rxLen != sizeof(rfalNfcbSlpbRes)) || (slpbRes.cmd != (uint8_t)RFAL_NFCB_CMD_SLPB_RES)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -236,7 +236,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlotMarker(uint8_t slotCode, rfalNfcbSens
   if ((sensbRes == NULL) || (sensbResLen == NULL)    ||
       (slotCode < RFAL_NFCB_SLOTMARKER_SLOTCODE_MIN) ||
       (slotCode > RFAL_NFCB_SLOTMARKER_SLOTCODE_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
   /* Compose and send SLOT_MARKER with disabled AGC to detect collisions  */
   slotMarker.APn = ((slotCode << RFAL_NFCB_SLOT_MARKER_SC_SHIFT) | (uint8_t)RFAL_NFCB_CMD_SENSB_REQ);
@@ -246,11 +246,11 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlotMarker(uint8_t slotCode, rfalNfcbSens
   *sensbResLen = (uint8_t)rxLen;
 
   /* Check if a transmission error was detected */
-  if ((ret == ERR_CRC) || (ret == ERR_FRAMING)) {
-    return ERR_RF_COLLISION;
+  if ((ret == ST_ERR_CRC) || (ret == ST_ERR_FRAMING)) {
+    return ST_ERR_RF_COLLISION;
   }
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     return rfalNfcbCheckSensbRes(sensbRes, *sensbResLen);
   }
 
@@ -286,11 +286,11 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
   /* Check parameters. In ISO | Activity 1.0 mode the initial slots must be 1 as continuation of Technology Detection */
   if ((nfcbDevList == NULL) || (devCnt == NULL)  || (colPending == NULL) || (initSlots > RFAL_NFCB_SLOT_NUM_16) ||
       (endSlots > RFAL_NFCB_SLOT_NUM_16) || ((compMode == RFAL_COMPLIANCE_MODE_ISO) && (initSlots != RFAL_NFCB_SLOT_NUM_1))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Initialise as no error in case Activity 1.0 where the previous SENSB_RES from technology detection should be used */
-  ret         = ERR_NONE;
+  ret         = ST_ERR_NONE;
   *devCnt     = 0;
   curDevCnt   = 0;
   *colPending = false;
@@ -299,7 +299,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
   /* Send ALLB_REQ   Activity 1.1   9.3.5.2 and 9.3.5.3  (Symbol 1 and 2) */
   if (compMode != RFAL_COMPLIANCE_MODE_ISO) {
     ret =  rfalNfcbPollerCheckPresence(RFAL_NFCB_SENS_CMD_ALLB_REQ, initSlots, &nfcbDevList->sensbRes, &nfcbDevList->sensbResLen);
-    if ((ret != ERR_NONE) && (initSlots == RFAL_NFCB_SLOT_NUM_1)) {
+    if ((ret != ST_ERR_NONE) && (initSlots == RFAL_NFCB_SLOT_NUM_1)) {
       return ret;
     }
   }
@@ -307,7 +307,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
 
   /* Check if there was a transmission error on WUPB  EMVCo 2.6  9.3.3.1 */
   if ((compMode == RFAL_COMPLIANCE_MODE_EMV) && (nfcbDevList->sensbResLen == 0U)) {
-    return ERR_FRAMING;
+    return ST_ERR_FRAMING;
   }
 
   for (slotsNum = (uint8_t)initSlots; slotsNum <= (uint8_t)endSlots; slotsNum++) {
@@ -336,9 +336,9 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
         }
 
         /* Activity 1.1  9.3.5.7 and 9.3.5.8  -  Symbol 6 */
-        if (ret != ERR_TIMEOUT) {
+        if (ret != ST_ERR_TIMEOUT) {
           /* Activity 1.1  9.3.5.8  -  Symbol 7 */
-          if ((rfalNfcbCheckSensbRes(&nfcbDevList[*devCnt].sensbRes, nfcbDevList[*devCnt].sensbResLen) == ERR_NONE) && (ret == ERR_NONE)) {
+          if ((rfalNfcbCheckSensbRes(&nfcbDevList[*devCnt].sensbRes, nfcbDevList[*devCnt].sensbResLen) == ST_ERR_NONE) && (ret == ST_ERR_NONE)) {
             nfcbDevList[*devCnt].isSleep = false;
 
             if (compMode == RFAL_COMPLIANCE_MODE_EMV) {
@@ -378,7 +378,7 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
           } else {
             /* If deviceLimit is set to 0 the NFC Forum Device is configured to perform collision detection only  Activity 1.0 and 1.1  9.3.5.5  - Symbol 4 */
             if ((devLimit == 0U) && (slotsNum == (uint8_t)RFAL_NFCB_SLOT_NUM_1)) {
-              return ERR_RF_COLLISION;
+              return ST_ERR_RF_COLLISION;
             }
 
             /* Activity 1.1  9.3.5.9  -  Symbol 8 */
@@ -392,14 +392,14 @@ ReturnCode RfalNfcClass::rfalNfcbPollerSlottedCollisionResolution(rfalCompliance
 
       /* Activity 1.1  9.3.5.17  -  Symbol 16 */
       if (!(*colPending)) {
-        return ERR_NONE;
+        return ST_ERR_NONE;
       }
 
       /* Activity 1.1  9.3.5.18  -  Symbol 17 */
     } while (curDevCnt != 0U);     /* If a collision is detected and card(s) were found on this loop keep the same number of available slots */
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 

@@ -120,7 +120,7 @@ ReturnCode RfalNfcClass::rfalT1TPollerInitialize(void)
   rfalRfDev->rfalSetFDTListen(RFAL_FDT_LISTEN_NFCA_POLLER);      /* T1T uses NFC-A FDT Listen with n=9   Digital 1.1  10.7.2                             */
   rfalRfDev->rfalSetFDTPoll(RFAL_FDT_POLL_NFCA_T1T_POLLER);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -132,7 +132,7 @@ ReturnCode RfalNfcClass::rfalT1TPollerRid(rfalT1TRidRes *ridRes)
   uint16_t       rcvdLen;
 
   if (ridRes == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Compute RID command and set Undefined Values to 0x00    Digital 1.1 10.6.1 */
@@ -143,10 +143,10 @@ ReturnCode RfalNfcClass::rfalT1TPollerRid(rfalT1TRidRes *ridRes)
 
   /* Check expected RID response length and the HR0   Digital 2.0 (Candidate) 11.6.2.1 */
   if ((rcvdLen != sizeof(rfalT1TRidRes)) || ((ridRes->hr0 & RFAL_T1T_RID_RES_HR0_MASK) != RFAL_T1T_RID_RES_HR0_VAL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -156,7 +156,7 @@ ReturnCode RfalNfcClass::rfalT1TPollerRall(const uint8_t *uid, uint8_t *rxBuf, u
   rfalT1TRallReq rallReq;
 
   if ((rxBuf == NULL) || (uid == NULL) || (rxRcvdLen == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Compute RALL command and set Add to 0x00 */
@@ -177,7 +177,7 @@ ReturnCode RfalNfcClass::rfalT1TPollerWrite(const uint8_t *uid, uint8_t address,
   ReturnCode      err;
 
   if (uid == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   writeReq.cmd  = (uint8_t)RFAL_T1T_CMD_WRITE_E;
@@ -187,9 +187,9 @@ ReturnCode RfalNfcClass::rfalT1TPollerWrite(const uint8_t *uid, uint8_t address,
 
   err = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&writeReq, sizeof(rfalT1TWriteReq), (uint8_t *)&writeRes, sizeof(rfalT1TWriteRes), &rxRcvdLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_T1T_DRD_WRITE_E);
 
-  if (err == ERR_NONE) {
+  if (err == ST_ERR_NONE) {
     if ((writeReq.add != writeRes.add) || (writeReq.data != writeRes.data) || (rxRcvdLen != sizeof(rfalT1TWriteRes))) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
   }
   return err;

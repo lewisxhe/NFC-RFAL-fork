@@ -152,15 +152,15 @@ ReturnCode NdefClass::ndefT4TTransceiveTxRx(rfalIsoDepApduTxRxParam *isoDepAPDU)
   isoDepAPDU->rxLen                 = &subCtx.t4t.respAPDU.rcvdLen;
 
   ret = rfal_nfc->rfalIsoDepStartApduTransceive(*isoDepAPDU);
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     do {
       /* Blocking implementation, T4T may define rather long timeouts */
       (rfal_nfc->getRfalRf())->rfalWorker();
       ret = rfal_nfc->rfalIsoDepGetApduTransceiveStatus();
-    } while (ret == ERR_BUSY);
+    } while (ret == ST_ERR_BUSY);
   }
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
@@ -180,7 +180,7 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
 
   /* Select CCFILE TS T4T v1.0 7.2.1.3 */
   ret =  ndefT4TPollerSelectFile(RFAL_T4T_FID_CC);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.1.4 */
     return ret;
   }
@@ -188,7 +188,7 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
   /* Read CCFILE TS T4T v1.0 7.2.1.5 */
   /* read CCFILE assuming at least 15 bytes are available. If V3 found will read the extra bytes in a second step */
   ret = ndefT4TPollerReadBinary(0U, NDEF_T4T_CCFILEV2_LEN);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.1.6 */
     return ret;
   }
@@ -206,7 +206,7 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
   /* TS T4T v1.0 7.2.1.7 verify MLe and MLc are within the valid range */
   if ((cc.t4t.mLe < NDEF_T4T_MIN_VALID_MLE) || (cc.t4t.mLc < NDEF_T4T_MIN_VALID_MLC)) {
     /* Conclude procedure TS T4T v1.0 7.2.1.8 */
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
 
   subCtx.t4t.curMLe   = (uint8_t)MIN(cc.t4t.mLe, NDEF_T4T_MAX_MLE); /* Only short field codind supported */
@@ -215,12 +215,12 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
   /* TS T4T v1.0 7.2.1.7 and 4.3.2.4 verify support of mapping version */
   if (ndefMajorVersion(cc.t4t.vNo) > ndefMajorVersion(NDEF_T4T_MAPPING_VERSION_3_0)) {
     /* Conclude procedure TS T4T v1.0 7.2.1.8 */
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
   if (ndefMajorVersion(cc.t4t.vNo) == ndefMajorVersion(NDEF_T4T_MAPPING_VERSION_3_0)) {
     /* V3 found: read remainng bytes */
     ret = ndefT4TPollerReadBinary(NDEF_T4T_CCFILEV2_LEN, NDEF_T4T_CCFILEV3_LEN - NDEF_T4T_CCFILEV2_LEN);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure TS T4T v1.0 7.2.1.6 */
       return ret;
     }
@@ -229,12 +229,12 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
     /* TS T4T v1.0 7.2.1.7 verify coding as in table 5 */
     if (ccBuf[dataIt] != NDEF_T4T_ENDEF_CTLV_T) {
       /* Conclude procedure TS T4T v1.0 7.2.1.8 */
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     dataIt++;
     if (ccBuf[dataIt] < NDEF_T4T_ENDEF_CTLV_L) {
       /* Conclude procedure TS T4T v1.0 7.2.1.8 */
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     dataIt++;
     cc.t4t.fileId[0U]   = ccBuf[dataIt];
@@ -249,11 +249,11 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
     dataIt++;
   } else {
     if (ccBuf[dataIt] != NDEF_T4T_NDEF_CTLV_T) {
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     dataIt++;
     if (ccBuf[dataIt] < NDEF_T4T_NDEF_CTLV_L) {
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     dataIt++;
     cc.t4t.fileId[0U]   = ccBuf[dataIt];
@@ -267,7 +267,7 @@ ReturnCode NdefClass::ndefT4TReadAndParseCCFile()
     cc.t4t.writeAccess = ccBuf[dataIt];
     dataIt++;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -279,20 +279,20 @@ ReturnCode NdefClass::ndefT4TPollerSelectNdefTagApplication()
   static const uint8_t NDEF_T4T_AID_NDEF_V1[] = {0xD2, 0x76, 0x00, 0x00, 0x85, 0x01, 0x00};  /*!< AID_NDEF v1.0             T4T 1.0  4.3.3 */
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
   (void)rfal_nfc->rfalT4TPollerComposeSelectAppl(isoDepAPDU.txBuf, NDEF_T4T_AID_NDEF, (uint8_t)sizeof(NDEF_T4T_AID_NDEF), &isoDepAPDU.txBufLen);
   ret = ndefT4TTransceiveTxRx(&isoDepAPDU);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* application v2 or higher found */
     subCtx.t4t.mv1Flag = false;
     return ret;
   }
 
-  if (ret != ERR_REQUEST) {
+  if (ret != ST_ERR_REQUEST) {
     return ret;
   }
 
@@ -300,7 +300,7 @@ ReturnCode NdefClass::ndefT4TPollerSelectNdefTagApplication()
   (void)rfal_nfc->rfalT4TPollerComposeSelectAppl(isoDepAPDU.txBuf, NDEF_T4T_AID_NDEF_V1, (uint8_t)sizeof(NDEF_T4T_AID_NDEF_V1), &isoDepAPDU.txBufLen);
   ret = ndefT4TTransceiveTxRx(&isoDepAPDU);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* application v1 found */
     subCtx.t4t.mv1Flag = true;
   }
@@ -314,7 +314,7 @@ ReturnCode NdefClass::ndefT4TPollerSelectFile(const uint8_t *fileId)
   rfalIsoDepApduTxRxParam  isoDepAPDU;
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -338,7 +338,7 @@ ReturnCode NdefClass::ndefT4TPollerReadBinary(uint16_t offset, uint8_t len)
   rfalIsoDepApduTxRxParam  isoDepAPDU;
 
   if (!ndefT4TisT4TDevice(&device) || (len >  subCtx.t4t.curMLe) || (offset > NDEF_T4T_OFFSET_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -355,7 +355,7 @@ ReturnCode NdefClass::ndefT4TPollerReadBinaryODO(uint32_t offset, uint8_t len)
   rfalIsoDepApduTxRxParam  isoDepAPDU;
 
   if (!ndefT4TisT4TDevice(&device) || (len >  subCtx.t4t.curMLe)  || (offset > NDEF_T4T_ODO_OFFSET_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -375,7 +375,7 @@ ReturnCode NdefClass::ndefT4TPollerReadBytes(uint32_t offset, uint32_t len, uint
   uint8_t             *lvBuf    = buf;
 
   if (!ndefT4TisT4TDevice(&device) || (lvLen == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
   if (rcvdLen != NULL) {
     *rcvdLen = 0U;
@@ -388,14 +388,14 @@ ReturnCode NdefClass::ndefT4TPollerReadBytes(uint32_t offset, uint32_t len, uint
     } else {
       ret = ndefT4TPollerReadBinary((uint16_t)lvOffset, le);
     }
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
     if (subCtx.t4t.rApduBodyLen == 0U) {
       break; /* no more to read */
     }
     if (subCtx.t4t.rApduBodyLen >  lvLen) {
-      return ERR_SYSTEM;
+      return ST_ERR_SYSTEM;
     }
     (void)ST_MEMCPY(lvBuf, subCtx.t4t.rApduBuf.apdu, subCtx.t4t.rApduBodyLen);
     lvBuf     = &lvBuf[subCtx.t4t.rApduBodyLen];
@@ -406,14 +406,14 @@ ReturnCode NdefClass::ndefT4TPollerReadBytes(uint32_t offset, uint32_t len, uint
     }
   } while (lvLen != 0U);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
 ReturnCode NdefClass::ndefT4TPollerContextInitialization(rfalNfcDevice *dev)
 {
   if ((dev == NULL) || !ndefT4TisT4TDevice(dev)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ST_MEMCPY(&device, dev, sizeof(device));
@@ -422,7 +422,7 @@ ReturnCode NdefClass::ndefT4TPollerContextInitialization(rfalNfcDevice *dev)
   subCtx.t4t.curMLc = NDEF_T4T_DEFAULT_MLC;
   subCtx.t4t.curMLe = NDEF_T4T_DEFAULT_MLE;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -442,21 +442,21 @@ ReturnCode NdefClass::ndefT4TPollerNdefDetect(ndefInfo *info)
   }
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   state = NDEF_STATE_INVALID;
 
   /* Select NDEF Tag application TS T4T v1.0 7.2.1.1 */
   ret =  ndefT4TPollerSelectNdefTagApplication();
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.1.2 */
     return ret;
   }
 
   /* TS T4T v1.0 7.2.1.3 and following */
   ret = ndefT4TReadAndParseCCFile();
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
   nlenLen = (ndefMajorVersion(cc.t4t.vNo) == ndefMajorVersion(NDEF_T4T_MAPPING_VERSION_3_0)) ? NDEF_T4T_ENLEN_LEN : NDEF_T4T_NLEN_LEN;
@@ -464,22 +464,22 @@ ReturnCode NdefClass::ndefT4TPollerNdefDetect(ndefInfo *info)
   /* TS T4T v1.0 7.2.1.7 verify file READ access */
   if (!(ndefT4TIsReadAccessGranted(cc.t4t.readAccess))) {
     /* Conclude procedure TS T4T v1.0 7.2.1.8 */
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
   /* File size need at least be enough to store NLEN or ENLEN */
   if (cc.t4t.fileSize < nlenLen) {
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
 
   /* Select NDEF File TS T4T v1.0 7.2.1.9 */
   ret =  ndefT4TPollerSelectFile(cc.t4t.fileId);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.1.10 */
     return ret;
   }
   /* Read NLEN/ENLEN TS T4T v1.0 7.2.1.11 */
   ret = ndefT4TPollerReadBinary(0U, nlenLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.1.11 */
     return ret;
   }
@@ -490,13 +490,13 @@ ReturnCode NdefClass::ndefT4TPollerNdefDetect(ndefInfo *info)
 
   if ((messageLen > (cc.t4t.fileSize - nlenLen)) || ((messageLen > 0U) && (messageLen < NDEF_T4T_MIN_NLEN))) {
     /* Conclude procedure TS T4T v1.0 7.2.1.11 */
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
 
   if (messageLen == 0U) {
     if (!(ndefT4TIsWriteAccessGranted(cc.t4t.writeAccess))) {
       /* Conclude procedure TS T4T v1.0 7.2.1.11 */
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
     }
     state = NDEF_STATE_INITIALIZED;
   } else {
@@ -511,7 +511,7 @@ ReturnCode NdefClass::ndefT4TPollerNdefDetect(ndefInfo *info)
     info->messageLen           = messageLen;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -520,7 +520,7 @@ ReturnCode NdefClass::ndefT4TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
   ReturnCode           ret;
 
   if (!ndefT4TisT4TDevice(&device) || (buf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
   /* TS T4T v1.0 7.2.2.1: T4T NDEF Detect should have been called before NDEF read procedure */
   /* Warning: current selected file must not be changed between NDEF Detect procedure and NDEF read procedure*/
@@ -528,16 +528,16 @@ ReturnCode NdefClass::ndefT4TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen,
   /* TS T4T v1.0 7.3.3.2: check presence of NDEF message */
   if (state <= NDEF_STATE_INITIALIZED) {
     /* Conclude procedure TS T4T v1.0 7.2.2.2 */
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   if (messageLen > bufLen) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* TS T4T v1.0 7.3.3.3: read the NDEF message */
   ret = ndefT4TPollerReadBytes(messageOffset, messageLen, buf, rcvdLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
   }
 
@@ -551,7 +551,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteBinary(uint16_t offset, const uint8_t *d
   rfalIsoDepApduTxRxParam  isoDepAPDU;
 
   if (!ndefT4TisT4TDevice(&device) || (len >  subCtx.t4t.curMLc) || (offset > NDEF_T4T_OFFSET_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -568,7 +568,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteBinaryODO(uint32_t offset, const uint8_t
   rfalIsoDepApduTxRxParam  isoDepAPDU;
 
   if (!ndefT4TisT4TDevice(&device) || (len >  subCtx.t4t.curMLc) || (offset > NDEF_T4T_ODO_OFFSET_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -588,7 +588,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteBytes(uint32_t offset, const uint8_t *bu
   const uint8_t       *lvBuf    = buf;
 
   if (!ndefT4TisT4TDevice(&device) || (lvLen == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   do {
@@ -600,7 +600,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteBytes(uint32_t offset, const uint8_t *bu
       lc = (lvLen > subCtx.t4t.curMLc) ? subCtx.t4t.curMLc : (uint8_t)lvLen;
       ret = ndefT4TPollerWriteBinary((uint16_t)lvOffset, lvBuf, lc);
     }
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
     lvBuf     = &lvBuf[lc];
@@ -608,7 +608,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteBytes(uint32_t offset, const uint8_t *bu
     lvLen    -= lc;
   } while (lvLen != 0U);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -619,11 +619,11 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessageLen(uint32_t rawMessageLen)
   uint8_t              dataIt;
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   dataIt = 0U;
@@ -653,7 +653,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   ReturnCode           ret;
 
   if (!ndefT4TisT4TDevice(&device) || ((buf == NULL) && (bufLen != 0U))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T4T v1.0 7.2.3.1: T4T NDEF Detect should have been called before NDEF write procedure */
@@ -662,7 +662,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   /* TS T4T v1.0 7.3.3.2: check write access condition */
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
     /* Conclude procedure TS T4T v1.0 7.2.3.2 */
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T4T v1.0 7.2.3.3: check Mapping Version    */
@@ -670,14 +670,14 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
 
   /* TS T4T v1.0 7.2.3.4/8 verify length of the NDEF message */
   ret = ndefT4TPollerCheckAvailableSpace(bufLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure TS T4T v1.0 7.2.3.4/8 */
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* TS T4T v1.0 7.2.3.5/9 Write value 0000h in NLEN field (resp. 00000000h in ENLEN field) */
   ret = ndefT4TPollerBeginWriteMessage(bufLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
     /* Conclude procedure TS T4T v1.0 7.2.3.5/9 */
     return ret;
@@ -686,7 +686,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
   if (bufLen != 0U) {
     /* TS T4T v1.0 7.2.3.6/10 Write NDEF message) */
     ret = ndefT4TPollerWriteBytes(messageOffset, buf, bufLen);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure TS T4T v1.0 7.2.3.6/10 */
       state = NDEF_STATE_INVALID;
       return ret;
@@ -694,7 +694,7 @@ ReturnCode NdefClass::ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t 
 
     /* TS T4T v1.0 7.2.3.7/11 Write value length in NLEN field (resp. in ENLEN field) */
     ret = ndefT4TPollerEndWriteMessage(bufLen);
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       /* Conclude procedure TS T4T v1.0 7.2.3.7/11 */
       state = NDEF_STATE_INVALID;
       return ret;
@@ -715,21 +715,21 @@ ReturnCode NdefClass::ndefT4TPollerTagFormat(const ndefCapabilityContainer *cc_p
   NO_WARNING(options);
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ret =  ndefT4TPollerSelectNdefTagApplication();
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   ret =  ndefT4TReadAndParseCCFile();
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   ret =  ndefT4TPollerSelectFile(cc.t4t.fileId);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
   (void)ST_MEMSET(buf, 0x00, sizeof(buf));
@@ -744,7 +744,7 @@ ReturnCode NdefClass::ndefT4TPollerCheckPresence()
   ReturnCode               ret;
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefT4TInitializeIsoDepTxRxParam(&isoDepAPDU);
@@ -759,7 +759,7 @@ ReturnCode NdefClass::ndefT4TPollerCheckPresence()
     /* Blocking implementation, T4T may define rather long timeouts */
     (rfal_nfc->getRfalRf())->rfalWorker();
     ret = rfal_nfc->rfalIsoDepGetApduTransceiveStatus();
-  } while (ret == ERR_BUSY);
+  } while (ret == ST_ERR_BUSY);
 
   return ret;
 }
@@ -770,18 +770,18 @@ ReturnCode NdefClass::ndefT4TPollerCheckAvailableSpace(const uint32_t messageLen
   uint8_t              nlenLen;
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state == NDEF_STATE_INVALID) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   nlenLen = (ndefMajorVersion(cc.t4t.vNo) == ndefMajorVersion(NDEF_T4T_MAPPING_VERSION_3_0)) ? NDEF_T4T_ENLEN_LEN : NDEF_T4T_NLEN_LEN;
   if ((messageLen + (uint32_t)nlenLen) > cc.t4t.fileSize) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -791,16 +791,16 @@ ReturnCode NdefClass::ndefT4TPollerBeginWriteMessage(uint32_t messageLen)
   NO_WARNING(messageLen);
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T4T v1.0 7.2.3.5/9 Write value 0000h in NLEN field (resp. 00000000h in ENLEN field) */
   ret = ndefT4TPollerWriteRawMessageLen(0U);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
@@ -808,7 +808,7 @@ ReturnCode NdefClass::ndefT4TPollerBeginWriteMessage(uint32_t messageLen)
 
   state = NDEF_STATE_INITIALIZED;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -817,21 +817,21 @@ ReturnCode NdefClass::ndefT4TPollerEndWriteMessage(uint32_t messageLen)
   ReturnCode           ret;
 
   if (!ndefT4TisT4TDevice(&device)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (state != NDEF_STATE_INITIALIZED) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* TS T4T v1.0 7.2.3.7/11 Write value length in NLEN field (resp. in ENLEN field) */
   ret = ndefT4TPollerWriteRawMessageLen(messageLen);
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     /* Conclude procedure */
     state = NDEF_STATE_INVALID;
     return ret;
   }
   messageLen = messageLen;
   state = (messageLen == 0U) ? NDEF_STATE_INITIALIZED : NDEF_STATE_READWRITE;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

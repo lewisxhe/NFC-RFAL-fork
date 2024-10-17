@@ -109,7 +109,7 @@ enum {
           if (((rt)!=0U) && ((dl)!=0U)) {                \
             delay(dl);                         \
           }                                              \
-        } while( ((rts--) != 0U) && ((r)==ERR_TIMEOUT) );  \
+        } while( ((rts--) != 0U) && ((r)==ST_ERR_TIMEOUT) );  \
       }
 
 /*
@@ -169,7 +169,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerInitialize(void)
   rfalRfDev->rfalSetFDTListen(RFAL_FDT_LISTEN_NFCA_POLLER);
   rfalRfDev->rfalSetFDTPoll(RFAL_FDT_POLL_NFCA_POLLER);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -183,8 +183,8 @@ ReturnCode RfalNfcClass::rfalNfcaPollerCheckPresence(rfal14443AShortFrameCmd cmd
    *              MUST treat receipt of a Listen Frame at a time after FDT(Listen, min) as a Timeour Error */
 
   ret = rfalRfDev->rfalISO14443ATransceiveShortFrame(cmd, (uint8_t *)sensRes, (uint8_t)rfalConvBytesToBits(sizeof(rfalNfcaSensRes)), &rcvLen, RFAL_NFCA_FDTMIN);
-  if ((ret == ERR_RF_COLLISION) || (ret == ERR_CRC)  || (ret == ERR_NOMEM) || (ret == ERR_FRAMING) || (ret == ERR_PAR)) {
-    ret = ERR_NONE;
+  if ((ret == ST_ERR_RF_COLLISION) || (ret == ST_ERR_CRC)  || (ret == ST_ERR_NOMEM) || (ret == ST_ERR_FRAMING) || (ret == ST_ERR_PAR)) {
+    ret = ST_ERR_NONE;
   }
 
   return ret;
@@ -202,7 +202,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerTechnologyDetection(rfalComplianceMode co
   if (compMode != RFAL_COMPLIANCE_MODE_ISO) {
     rfalNfcaPollerSleep();
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -219,7 +219,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
 
   /* Check parameters */
   if ((collPending == NULL) || (selRes == NULL) || (nfcId1 == NULL) || (nfcId1Len == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Initialize output parameters */
@@ -249,7 +249,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
 
       bytesRx = rfalConvBitsToBytes(bytesRx);
 
-      if ((ret == ERR_TIMEOUT)
+      if ((ret == ST_ERR_TIMEOUT)
           && (backtrackCnt != 0U) && !doBacktrack
           && !((RFAL_NFCA_SDD_REQ_LEN == bytesTxRx) && (0U == bitsTxRx))) {
         /* In multiple card scenarios it may always happen that some
@@ -258,7 +258,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
          * collision position then no tag will respond. Catch this
          * corner case and then try with the bit being sent as zero. */
         rfalNfcaSensRes sensRes;
-        ret = ERR_RF_COLLISION;
+        ret = ST_ERR_RF_COLLISION;
         rfalNfcaPollerCheckPresence(RFAL_14443A_SHORTFRAME_CMD_REQA, &sensRes);
         /* Algorithm below does a post-increment, decrement to go back to current position */
         if (0U == bitsTxRx) {
@@ -275,10 +275,10 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
         doBacktrack = false;
       }
 
-      if (ret == ERR_RF_COLLISION) {
+      if (ret == ST_ERR_RF_COLLISION) {
         /* Check received length */
         if ((bytesTxRx + ((bitsTxRx != 0U) ? 1U : 0U)) > (RFAL_NFCA_SDD_RES_LEN + RFAL_NFCA_SDD_REQ_LEN)) {
-          return ERR_PROTO;
+          return ST_ERR_PROTO;
         }
 
         if (((bytesTxRx + ((bitsTxRx != 0U) ? 1U : 0U)) > (RFAL_NFCA_CASCADE_1_UID_LEN + RFAL_NFCA_SDD_REQ_LEN)) && (backtrackCnt != 0U)) {
@@ -293,7 +293,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
           /* Activity 1.0 & 1.1  9.3.4.12: If CON_DEVICES_LIMIT has a value of 0, then
            * NFC Forum Device is configured to perform collision detection only       */
           *collPending = true;
-          return ERR_IGNORE;
+          return ST_ERR_IGNORE;
         }
 
         *collPending = true;
@@ -313,24 +313,24 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
           bytesTxRx++;
         }
       }
-    } while (ret == ERR_RF_COLLISION);
+    } while (ret == ST_ERR_RF_COLLISION);
 
 
     /*******************************************************************************/
     /* Check if Collision loop has failed */
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
 
 
     /* If collisions are to be reported check whether the response is complete */
     if ((devLimit == 0U) && (bytesRx != sizeof(rfalNfcaSddRes))) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
 
     /* Check if the received BCC match */
     if (selReq.bcc != rfalNfcaCalculateBcc(selReq.nfcid1, RFAL_NFCA_CASCADE_1_UID_LEN)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
 
     /*******************************************************************************/
@@ -340,19 +340,19 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
     /* Send SEL_REQ (Select command) - Retry upon timeout  EMVCo 2.6  9.6.1.3 */
     rfalNfcaTxRetry(ret, rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&selReq, sizeof(rfalNfcaSelReq), (uint8_t *)selRes, sizeof(rfalNfcaSelRes), &bytesRx, RFAL_TXRX_FLAGS_DEFAULT, RFAL_NFCA_FDTMIN), ((devLimit == 0U) ? RFAL_NFCA_N_RETRANS : 0U), RFAL_NFCA_T_RETRANS);
 
-    if (ret != ERR_NONE) {
+    if (ret != ST_ERR_NONE) {
       return ret;
     }
 
 
     /* Ensure proper response length */
     if (bytesRx != sizeof(rfalNfcaSelRes)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
 
     /*******************************************************************************/
     /* Check cascade byte, if cascade tag then go next cascade level */
-    if ((ret == ERR_NONE) && (*selReq.nfcid1 == RFAL_NFCA_SDD_CT)) {
+    if ((ret == ST_ERR_NONE) && (*selReq.nfcid1 == RFAL_NFCA_SDD_CT)) {
       /* Cascade Tag present, store nfcid1 bytes (excluding cascade tag) and continue for next CL */
       ST_MEMCPY(&nfcId1[*nfcId1Len], &((uint8_t *)&selReq.nfcid1)[RFAL_NFCA_SDD_CT_LEN], (RFAL_NFCA_CASCADE_1_UID_LEN - RFAL_NFCA_SDD_CT_LEN));
       *nfcId1Len += (RFAL_NFCA_CASCADE_1_UID_LEN - RFAL_NFCA_SDD_CT_LEN);
@@ -360,10 +360,10 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSingleCollisionResolution(uint8_t devLimi
       /* UID Selection complete, Stop Cascade Level loop */
       ST_MEMCPY(&nfcId1[*nfcId1Len], (uint8_t *)&selReq.nfcid1, RFAL_NFCA_CASCADE_1_UID_LEN);
       *nfcId1Len += RFAL_NFCA_CASCADE_1_UID_LEN;
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
   }
-  return ERR_INTERNAL;
+  return ST_ERR_INTERNAL;
 }
 
 
@@ -376,25 +376,25 @@ ReturnCode RfalNfcClass::rfalNfcaPollerFullCollisionResolution(rfalComplianceMod
   uint16_t        rcvLen;
 
   if ((nfcaDevList == NULL) || (devCnt == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *devCnt = 0;
-  ret     = ERR_NONE;
+  ret     = ST_ERR_NONE;
 
   /*******************************************************************************/
   /* Send ALL_REQ before Anticollision if a Sleep was sent before  Activity 1.1  9.3.4.1 and EMVco 2.6  9.3.2.1 */
   if (compMode != RFAL_COMPLIANCE_MODE_ISO) {
     ret = rfalRfDev->rfalISO14443ATransceiveShortFrame(RFAL_14443A_SHORTFRAME_CMD_WUPA, (uint8_t *)&nfcaDevList->sensRes, (uint8_t)rfalConvBytesToBits(sizeof(rfalNfcaSensRes)), &rcvLen, RFAL_NFCA_FDTMIN);
-    if (ret != ERR_NONE) {
-      if ((compMode == RFAL_COMPLIANCE_MODE_EMV) || ((ret != ERR_RF_COLLISION) && (ret != ERR_CRC) && (ret != ERR_FRAMING) && (ret != ERR_PAR))) {
+    if (ret != ST_ERR_NONE) {
+      if ((compMode == RFAL_COMPLIANCE_MODE_EMV) || ((ret != ST_ERR_RF_COLLISION) && (ret != ST_ERR_CRC) && (ret != ST_ERR_FRAMING) && (ret != ST_ERR_PAR))) {
         return ret;
       }
     }
 
     /* Check proper SENS_RES/ATQA size */
-    if ((ret == ERR_NONE) && (rfalConvBytesToBits(sizeof(rfalNfcaSensRes)) != rcvLen)) {
-      return ERR_PROTO;
+    if ((ret == ST_ERR_NONE) && (rfalConvBytesToBits(sizeof(rfalNfcaSensRes)) != rcvLen)) {
+      return ST_ERR_PROTO;
     }
   }
 
@@ -402,7 +402,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerFullCollisionResolution(rfalComplianceMod
   /* Only check for T1T if previous SENS_RES was received without a transmission  *
    * error. When collisions occur bits in the SENS_RES may look like a T1T        */
   /* If T1T Anticollision is not supported  Activity 1.1  9.3.4.3 */
-  if (rfalNfcaIsSensResT1T(&nfcaDevList->sensRes) && (devLimit != 0U) && (ret == ERR_NONE) && (compMode != RFAL_COMPLIANCE_MODE_EMV)) {
+  if (rfalNfcaIsSensResT1T(&nfcaDevList->sensRes) && (devLimit != 0U) && (ret == ST_ERR_NONE) && (compMode != RFAL_COMPLIANCE_MODE_EMV)) {
     /* RID_REQ shall be performed with rfalT1TPollerRid()    Activity 1.1  9.3.4.24 */
     rfalT1TPollerInitialize();
     EXIT_ON_ERR(ret, rfalT1TPollerRid(&nfcaDevList->ridRes));
@@ -414,7 +414,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerFullCollisionResolution(rfalComplianceMod
     nfcaDevList->nfcId1Len = RFAL_NFCA_CASCADE_1_UID_LEN;
     ST_MEMCPY(&nfcaDevList->nfcId1, &nfcaDevList->ridRes.uid, RFAL_NFCA_CASCADE_1_UID_LEN);
 
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /*******************************************************************************/
@@ -453,7 +453,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerFullCollisionResolution(rfalComplianceMod
 
       /* Send a new SENS_REQ to check for other cards  Activity 1.1  9.3.4.23 */
       ret = rfalNfcaPollerCheckPresence(RFAL_14443A_SHORTFRAME_CMD_REQA, &nfcaDevList[*devCnt].sensRes);
-      if (ret == ERR_TIMEOUT) {
+      if (ret == ST_ERR_TIMEOUT) {
         /* No more devices found, exit */
         collPending = false;
       } else {
@@ -466,7 +466,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerFullCollisionResolution(rfalComplianceMod
     }
   } while ((*devCnt < devLimit) && (collPending));
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -481,7 +481,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSelect(const uint8_t *nfcid1, uint8_t nfc
   rfalNfcaSelReq selReq;
 
   if ((nfcid1 == NULL) || (nfcidLen > RFAL_NFCA_CASCADE_3_UID_LEN) || (selRes == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
 
@@ -514,13 +514,13 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSelect(const uint8_t *nfcid1, uint8_t nfc
 
     /* Ensure proper response length */
     if (rxLen != sizeof(rfalNfcaSelRes)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
   }
 
   /* REMARK: Could check if NFCID1 is complete */
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -540,7 +540,7 @@ ReturnCode RfalNfcClass::rfalNfcaPollerSleep(void)
      No check to be compliant with NFC and EMVCo, and to improve interoperability (Kovio RFID Tag)
   */
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 

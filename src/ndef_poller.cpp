@@ -89,7 +89,7 @@
 ReturnCode NdefClass::ndefPollerContextInitialization(rfalNfcDevice *dev)
 {
   if ((dev == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Save NDEF Device type */
@@ -99,7 +99,7 @@ ReturnCode NdefClass::ndefPollerContextInitialization(rfalNfcDevice *dev)
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerContextInitialization(dev);
     case NDEF_DEV_T3T:
@@ -115,14 +115,14 @@ ReturnCode NdefClass::ndefPollerContextInitialization(rfalNfcDevice *dev)
 ReturnCode NdefClass::ndefPollerNdefDetect(ndefInfo *info)
 {
   if (info == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type) {
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerNdefDetect(info);
     case NDEF_DEV_T3T:
@@ -138,14 +138,14 @@ ReturnCode NdefClass::ndefPollerNdefDetect(ndefInfo *info)
 ReturnCode NdefClass::ndefPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen)
 {
   if (buf == NULL || rcvdLen == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type) {
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerReadRawMessage(buf, bufLen, rcvdLen);
     case NDEF_DEV_T3T:
@@ -161,14 +161,14 @@ ReturnCode NdefClass::ndefPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, ui
 ReturnCode NdefClass::ndefPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen)
 {
   if (buf == NULL || rcvdLen == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type) {
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerReadBytes(offset, len, buf, rcvdLen);
     case NDEF_DEV_T3T:
@@ -184,14 +184,14 @@ ReturnCode NdefClass::ndefPollerReadBytes(uint32_t offset, uint32_t len, uint8_t
 ReturnCode NdefClass::ndefPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen)
 {
   if (buf == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type) {
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerWriteRawMessage(buf, bufLen);
     case NDEF_DEV_T3T:
@@ -210,7 +210,7 @@ ReturnCode NdefClass::ndefPollerTagFormat(const ndefCapabilityContainer *cc_p, u
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerTagFormat(cc_p, options);
     case NDEF_DEV_T3T:
@@ -229,7 +229,7 @@ ReturnCode NdefClass::ndefPollerWriteRawMessageLen(uint32_t rawMessageLen)
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerWriteRawMessageLen(rawMessageLen);
     case NDEF_DEV_T3T:
@@ -245,14 +245,14 @@ ReturnCode NdefClass::ndefPollerWriteRawMessageLen(uint32_t rawMessageLen)
 ReturnCode NdefClass::ndefPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len)
 {
   if (buf == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type) {
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerWriteBytes(offset, buf, len);
     case NDEF_DEV_T3T:
@@ -271,7 +271,7 @@ ReturnCode NdefClass::ndefPollerCheckPresence()
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerCheckPresence();
     case NDEF_DEV_T3T:
@@ -290,7 +290,7 @@ ReturnCode NdefClass::ndefPollerCheckAvailableSpace(uint32_t messageLen)
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerCheckAvailableSpace(messageLen);
     case NDEF_DEV_T3T:
@@ -309,7 +309,7 @@ ReturnCode NdefClass::ndefPollerBeginWriteMessage(uint32_t messageLen)
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerBeginWriteMessage(messageLen);
     case NDEF_DEV_T3T:
@@ -328,7 +328,7 @@ ReturnCode NdefClass::ndefPollerEndWriteMessage(uint32_t messageLen)
     case NDEF_DEV_NONE:
     case NDEF_DEV_T1T:
     default:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
     case NDEF_DEV_T2T:
       return ndefT2TPollerEndWriteMessage(messageLen);
     case NDEF_DEV_T3T:
@@ -353,25 +353,25 @@ ReturnCode NdefClass::ndefPollerWriteMessage(const ndefMessage *message)
   bool            firstPayloadItem;
 
   if ((message == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((state != NDEF_STATE_INITIALIZED) && (state != NDEF_STATE_READWRITE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   (void)ndefMessageGetInfo(message, &info);
 
   /* Verify length of the NDEF message */
   err = ndefPollerCheckAvailableSpace(info.length);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     /* Conclude procedure */
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Reset L-Field/NLEN field */
   err = ndefPollerBeginWriteMessage(info.length);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     state = NDEF_STATE_INVALID;
     /* Conclude procedure */
     return err;
@@ -386,14 +386,14 @@ ReturnCode NdefClass::ndefPollerWriteMessage(const ndefMessage *message)
       bufHeader.length = sizeof(recordHeaderBuf);
       (void)ndefRecordEncodeHeader(record, &bufHeader);
       err = ndefPollerWriteBytes(offset, bufHeader.buffer, bufHeader.length);
-      if (err != ERR_NONE) {
+      if (err != ST_ERR_NONE) {
         return err;
       }
       offset += bufHeader.length;
       // TODO Use API to access record internal
       if (record->typeLength != 0U) {
         err = ndefPollerWriteBytes(offset, record->type, record->typeLength);
-        if (err != ERR_NONE) {
+        if (err != ST_ERR_NONE) {
           /* Conclude procedure */
           state = NDEF_STATE_INVALID;
           return err;
@@ -402,7 +402,7 @@ ReturnCode NdefClass::ndefPollerWriteMessage(const ndefMessage *message)
       }
       if (record->idLength != 0U) {
         err = ndefPollerWriteBytes(offset, record->id, record->idLength);
-        if (err != ERR_NONE) {
+        if (err != ST_ERR_NONE) {
           /* Conclude procedure */
           state = NDEF_STATE_INVALID;
           return err;
@@ -414,7 +414,7 @@ ReturnCode NdefClass::ndefPollerWriteMessage(const ndefMessage *message)
         while (ndefRecordGetPayloadItem(record, &bufPayloadItem, firstPayloadItem) != NULL) {
           firstPayloadItem = false;
           err = ndefPollerWriteBytes(offset, bufPayloadItem.buffer, bufPayloadItem.length);
-          if (err != ERR_NONE) {
+          if (err != ST_ERR_NONE) {
             /* Conclude procedure */
             state = NDEF_STATE_INVALID;
             return err;
@@ -426,14 +426,14 @@ ReturnCode NdefClass::ndefPollerWriteMessage(const ndefMessage *message)
     }
 
     err = ndefPollerEndWriteMessage(info.length);
-    if (err != ERR_NONE) {
+    if (err != ST_ERR_NONE) {
       /* Conclude procedure */
       state = NDEF_STATE_INVALID;
       return err;
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/

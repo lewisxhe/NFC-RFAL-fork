@@ -46,14 +46,14 @@
  * this macro evaluates an error variable \a ERR against an error code \a EC.
  * in case it is not equal it jumps to the given label \a LABEL.
  */
-#define EVAL_ERR_NE_GOTO(EC, ERR, LABEL)                                   \
+#define EVAL_ST_ERR_NE_GOTO(EC, ERR, LABEL)                                   \
     if ((EC) != (ERR)) goto LABEL;
 
 /*!
  * this macro evaluates an error variable \a ERR against an error code \a EC.
  * in case it is equal it jumps to the given label \a LABEL.
  */
-#define EVAL_ERR_EQ_GOTO(EC, ERR, LABEL)                                   \
+#define EVAL_ST_ERR_EQ_GOTO(EC, ERR, LABEL)                                   \
     if ((EC) == (ERR)) goto LABEL;
 
 #define SIZEOF_ARRAY(a)     (sizeof(a) / sizeof((a)[0]))  /*!< Compute the size of an array           */

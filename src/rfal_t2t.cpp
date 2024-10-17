@@ -119,7 +119,7 @@ ReturnCode RfalNfcClass::rfalT2TPollerRead(uint8_t blockNum, uint8_t *rxBuf, uin
   rfalT2TReadReq  req;
 
   if ((rxBuf == NULL) || (rcvLen == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   req.code = (uint8_t)RFAL_T2T_CMD_READ;
@@ -129,8 +129,8 @@ ReturnCode RfalNfcClass::rfalT2TPollerRead(uint8_t blockNum, uint8_t *rxBuf, uin
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&req, sizeof(rfalT2TReadReq), rxBuf, rxBufLen, rcvLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_READ_MAX);
 
   /* T2T 1.0 5.2.1.7 The Reader/Writer SHALL treat a NACK in response to a READ Command as a Protocol Error */
-  if ((ret == ERR_INCOMPLETE_BYTE) && (*rcvLen == RFAL_T2T_ACK_NACK_LEN) && ((*rxBuf & RFAL_T2T_ACK_MASK) != RFAL_T2T_ACK)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_INCOMPLETE_BYTE) && (*rcvLen == RFAL_T2T_ACK_NACK_LEN) && ((*rxBuf & RFAL_T2T_ACK_MASK) != RFAL_T2T_ACK)) {
+    return ST_ERR_PROTO;
   }
   return ret;
 }
@@ -153,11 +153,11 @@ ReturnCode RfalNfcClass::rfalT2TPollerWrite(uint8_t blockNum, const uint8_t *wrD
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&req, sizeof(rfalT2TWriteReq), &res, sizeof(uint8_t), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_READ_MAX);
 
   /* Check for a valid ACK */
-  if ((ret == ERR_INCOMPLETE_BYTE) || (ret == ERR_NONE)) {
-    ret = ERR_PROTO;
+  if ((ret == ST_ERR_INCOMPLETE_BYTE) || (ret == ST_ERR_NONE)) {
+    ret = ST_ERR_PROTO;
 
     if ((rxLen == RFAL_T2T_ACK_NACK_LEN) && ((res & RFAL_T2T_ACK_MASK) == RFAL_T2T_ACK)) {
-      ret = ERR_NONE;
+      ret = ST_ERR_NONE;
     }
   }
 
@@ -183,13 +183,13 @@ ReturnCode RfalNfcClass::rfalT2TPollerSectorSelect(uint8_t sectorNum)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&p1Req, sizeof(rfalT2TSectorSelectP1Req), &res, sizeof(uint8_t), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_SL_MAX);
 
   /* Check and report any transmission error */
-  if ((ret != ERR_INCOMPLETE_BYTE) && (ret != ERR_NONE)) {
+  if ((ret != ST_ERR_INCOMPLETE_BYTE) && (ret != ST_ERR_NONE)) {
     return ret;
   }
 
   /* Ensure that an ACK was received */
-  if ((ret != ERR_INCOMPLETE_BYTE) || (rxLen != RFAL_T2T_ACK_NACK_LEN) || ((res & RFAL_T2T_ACK_MASK) != RFAL_T2T_ACK)) {
-    return ERR_PROTO;
+  if ((ret != ST_ERR_INCOMPLETE_BYTE) || (rxLen != RFAL_T2T_ACK_NACK_LEN) || ((res & RFAL_T2T_ACK_MASK) != RFAL_T2T_ACK)) {
+    return ST_ERR_PROTO;
   }
 
 
@@ -202,13 +202,13 @@ ReturnCode RfalNfcClass::rfalT2TPollerSectorSelect(uint8_t sectorNum)
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&p2Req, sizeof(rfalT2TSectorSelectP2Req), &res, sizeof(uint8_t), &rxLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_SL_MAX);
 
   /* T2T 1.0 5.4.1.14 The Reader/Writer SHALL treat any response received before the end of PATT2T,SL,MAX as a Protocol Error */
-  if ((ret == ERR_NONE) || (ret == ERR_INCOMPLETE_BYTE)) {
-    return ERR_PROTO;
+  if ((ret == ST_ERR_NONE) || (ret == ST_ERR_INCOMPLETE_BYTE)) {
+    return ST_ERR_PROTO;
   }
 
   /* T2T 1.0 5.4.1.13 The Reader/Writer SHALL treat the transmission of the SECTOR SELECT Command Packet 2 as being successful when it receives no response until PATT2T,SL,MAX. */
-  if (ret == ERR_TIMEOUT) {
-    return ERR_NONE;
+  if (ret == ST_ERR_TIMEOUT) {
+    return ST_ERR_NONE;
   }
 
   return ret;

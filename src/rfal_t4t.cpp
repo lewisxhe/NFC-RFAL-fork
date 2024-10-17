@@ -93,7 +93,7 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam)
   uint16_t                 msgIt;
 
   if ((apduParam == NULL) || (apduParam->cApduBuf == NULL) || (apduParam->cApduLen == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt                  = 0;
@@ -106,12 +106,12 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam)
   if (apduParam->LcFlag) {
     if (apduParam->Lc == 0U) {
       /* Extended field coding not supported */
-      return ERR_PARAM;
+      return ST_ERR_PARAM;
     }
 
     /* Check whether requested Lc fits */
     if ((uint16_t)apduParam->Lc > (uint16_t)(RFAL_FEATURE_ISO_DEP_APDU_MAX_LEN - RFAL_T4T_LE_LEN)) {
-      return ERR_PARAM; /*  PRQA S  2880 # MISRA 2.1 - Unreachable code due to configuration option being set/unset  */
+      return ST_ERR_PARAM; /*  PRQA S  2880 # MISRA 2.1 - Unreachable code due to configuration option being set/unset  */
     }
 
     /* Calculate the header length a place the data/body where it should be */
@@ -119,7 +119,7 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam)
 
     /* make sure not to exceed buffer size */
     if (((uint16_t)hdrLen + (uint16_t)apduParam->Lc + (apduParam->LeFlag ? RFAL_T4T_LC_LEN : 0U)) > RFAL_FEATURE_ISO_DEP_APDU_MAX_LEN) {
-      return ERR_NOMEM; /*  PRQA S  2880 # MISRA 2.1 - Unreachable code due to configuration option being set/unset */
+      return ST_ERR_NOMEM; /*  PRQA S  2880 # MISRA 2.1 - Unreachable code due to configuration option being set/unset */
     }
     ST_MEMMOVE(&apduParam->cApduBuf->apdu[hdrLen], apduParam->cApduBuf->apdu, apduParam->Lc);
   }
@@ -144,7 +144,7 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam)
 
   *(apduParam->cApduLen) = msgIt;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -152,11 +152,11 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeCAPDU(rfalT4tCApduParam *apduParam)
 ReturnCode RfalNfcClass::rfalT4TPollerParseRAPDU(rfalT4tRApduParam *apduParam)
 {
   if ((apduParam == NULL) || (apduParam->rApduBuf == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (apduParam->rcvdLen < RFAL_T4T_MAX_RAPDU_SW1SW2_LEN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   apduParam->rApduBodyLen = (apduParam->rcvdLen - (uint16_t)RFAL_T4T_MAX_RAPDU_SW1SW2_LEN);
@@ -164,10 +164,10 @@ ReturnCode RfalNfcClass::rfalT4TPollerParseRAPDU(rfalT4tRApduParam *apduParam)
 
   /* Check SW1 SW2    T4T 1.0 5.1.3 NOTE */
   if (apduParam->statusWord == RFAL_T4T_ISO7816_STATUS_COMPLETE) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
-  return ERR_REQUEST;
+  return ST_ERR_REQUEST;
 }
 
 
@@ -354,7 +354,7 @@ ReturnCode RfalNfcClass::rfalT4TPollerComposeWriteDataODO(rfalIsoDepApduBufForma
   cApduBuf->apdu[dataIt++] = dataLen;
 
   if ((((uint32_t)dataLen + (uint32_t)dataIt) >= RFAL_T4T_MAX_LC) || (((uint32_t)dataLen + (uint32_t)dataIt) >= RFAL_FEATURE_ISO_DEP_APDU_MAX_LEN)) {
-    return (ERR_NOMEM);
+    return (ST_ERR_NOMEM);
   }
 
   if (dataLen > 0U) {

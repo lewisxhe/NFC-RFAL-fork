@@ -70,7 +70,7 @@ ReturnCode NdefClass::ndefRecordReset(ndefRecord *record)
   ndefConstBuffer  bufEmptyPayload = { NULL, 0 };
 
   if (record == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   record->header = ndefHeader(0U, 0U, 0U, 0U, 0U, NDEF_TNF_EMPTY);
@@ -86,7 +86,7 @@ ReturnCode NdefClass::ndefRecordReset(ndefRecord *record)
 
   record->next = NULL;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -94,7 +94,7 @@ ReturnCode NdefClass::ndefRecordReset(ndefRecord *record)
 ReturnCode NdefClass::ndefRecordInit(ndefRecord *record, uint8_t tnf, const ndefConstBuffer8 *bufType, const ndefConstBuffer8 *bufId, const ndefConstBuffer *bufPayload)
 {
   if ((record == NULL) || (bufType == NULL) || (bufPayload == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -105,7 +105,7 @@ ReturnCode NdefClass::ndefRecordInit(ndefRecord *record, uint8_t tnf, const ndef
 
   (void)ndefRecordSetPayload(record, bufPayload);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -157,7 +157,7 @@ ReturnCode NdefClass::ndefRecordSetType(ndefRecord *record, uint8_t tnf, const n
   if ((record  == NULL) ||
       (bufType == NULL) ||
       ((bufType->buffer == NULL) && (bufType->length != 0U))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefHeaderSetTNF(record, tnf);
@@ -165,7 +165,7 @@ ReturnCode NdefClass::ndefRecordSetType(ndefRecord *record, uint8_t tnf, const n
   record->typeLength = bufType->length;
   record->type       = bufType->buffer;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -173,14 +173,14 @@ ReturnCode NdefClass::ndefRecordSetType(ndefRecord *record, uint8_t tnf, const n
 ReturnCode NdefClass::ndefRecordGetType(const ndefRecord *record, uint8_t *tnf, ndefConstBuffer8 *bufType)
 {
   if ((record == NULL) || (tnf == NULL) || (bufType == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *tnf            = ndefHeaderTNF(record);
   bufType->buffer = record->type;
   bufType->length = record->typeLength;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -207,7 +207,7 @@ ReturnCode NdefClass::ndefRecordSetId(ndefRecord *record, const ndefConstBuffer8
   if ((record == NULL) ||
       (bufId  == NULL) ||
       ((bufId->buffer == NULL) && (bufId->length != 0U))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (bufId->buffer != NULL) {
@@ -219,7 +219,7 @@ ReturnCode NdefClass::ndefRecordSetId(ndefRecord *record, const ndefConstBuffer8
   record->id       = bufId->buffer;
   record->idLength = bufId->length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -227,13 +227,13 @@ ReturnCode NdefClass::ndefRecordSetId(ndefRecord *record, const ndefConstBuffer8
 ReturnCode NdefClass::ndefRecordGetId(const ndefRecord *record, ndefConstBuffer8 *bufId)
 {
   if ((record == NULL) || (bufId == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   bufId->buffer = record->id;
   bufId->length = record->idLength;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -243,7 +243,7 @@ ReturnCode NdefClass::ndefRecordSetPayload(ndefRecord *record, const ndefConstBu
   if ((record     == NULL) ||
       (bufPayload == NULL) ||
       ((bufPayload->buffer == NULL) && (bufPayload->length != 0U))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   ndefHeaderSetValueSR(record, (bufPayload->length <= NDEF_SHORT_RECORD_LENGTH_MAX) ? 1 : 0);
@@ -251,7 +251,7 @@ ReturnCode NdefClass::ndefRecordSetPayload(ndefRecord *record, const ndefConstBu
   record->bufPayload.buffer = bufPayload->buffer;
   record->bufPayload.length = bufPayload->length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -259,13 +259,13 @@ ReturnCode NdefClass::ndefRecordSetPayload(ndefRecord *record, const ndefConstBu
 ReturnCode NdefClass::ndefRecordGetPayload(const ndefRecord *record, ndefConstBuffer *bufPayload)
 {
   if ((record == NULL) || (bufPayload == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   bufPayload->buffer = record->bufPayload.buffer;
   bufPayload->length = ndefRecordGetPayloadLength(record);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -275,24 +275,24 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   uint32_t offset;
 
   if ((bufPayload == NULL) || (bufPayload->buffer == NULL) || (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
-  if (ndefRecordReset(record) != ERR_NONE) {
-    return ERR_INTERNAL;
+  if (ndefRecordReset(record) != ST_ERR_NONE) {
+    return ST_ERR_INTERNAL;
   }
 
   /* Get "header" byte */
   offset = 0;
   if ((offset + sizeof(uint8_t)) > bufPayload->length) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
   record->header = bufPayload->buffer[offset];
   offset++;
 
   /* Get Type length */
   if ((offset + sizeof(uint8_t)) > bufPayload->length) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
   record->typeLength = bufPayload->buffer[offset];
   offset++;
@@ -301,14 +301,14 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   if (ndefHeaderIsSetSR(record)) {
     /* Short record */
     if ((offset + sizeof(uint8_t)) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->bufPayload.length = bufPayload->buffer[offset]; /* length stored on a single byte for Short Record */
     offset++;
   } else {
     /* Standard record */
     if ((offset + sizeof(uint32_t)) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->bufPayload.length = GETU32(&bufPayload->buffer[offset]);
     offset += sizeof(uint32_t);
@@ -317,7 +317,7 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   /* Get Id length */
   if (ndefHeaderIsSetIL(record)) {
     if ((offset + sizeof(uint8_t)) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->idLength = bufPayload->buffer[offset];
     offset++;
@@ -328,7 +328,7 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   /* Get Type */
   if (record->typeLength > 0U) {
     if ((offset + record->typeLength) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->type = &bufPayload->buffer[offset];
     offset += record->typeLength;
@@ -339,7 +339,7 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   /* Get Id */
   if (record->idLength > 0U) {
     if ((offset + record->idLength) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->id = &bufPayload->buffer[offset];
     offset += record->idLength;
@@ -350,7 +350,7 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
   /* Get Payload */
   if (record->bufPayload.length > 0U) {
     if ((offset + record->bufPayload.length) > bufPayload->length) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     record->bufPayload.buffer = &bufPayload->buffer[offset];
   } else {
@@ -361,7 +361,7 @@ ReturnCode NdefClass::ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRe
 
   record->next = NULL;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -372,12 +372,12 @@ ReturnCode NdefClass::ndefRecordEncodeHeader(const ndefRecord *record, ndefBuffe
   uint32_t payloadLength;
 
   if ((record == NULL) || (bufHeader == NULL) || (bufHeader->buffer == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (bufHeader->length < NDEF_RECORD_HEADER_LEN) {
     bufHeader->length = NDEF_RECORD_HEADER_LEN;
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Start encoding the record */
@@ -416,7 +416,7 @@ ReturnCode NdefClass::ndefRecordEncodeHeader(const ndefRecord *record, ndefBuffe
 
   bufHeader->length = offset;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -429,12 +429,12 @@ ReturnCode NdefClass::ndefRecordPayloadEncode(const ndefRecord *record, ndefBuff
   ndefConstBuffer bufPayloadItem;
 
   if ((record == NULL) || (bufPayload == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   payloadLength = ndefRecordGetPayloadLength(record);
   if (payloadLength > bufPayload->length) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   begin  = true;
@@ -449,7 +449,7 @@ ReturnCode NdefClass::ndefRecordPayloadEncode(const ndefRecord *record, ndefBuff
 
   bufPayload->length = offset;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -462,19 +462,19 @@ ReturnCode NdefClass::ndefRecordEncode(const ndefRecord *record, ndefBuffer *buf
   uint32_t   offset;
 
   if ((record == NULL) || (bufRecord == NULL) || (bufRecord->buffer == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (bufRecord->length < ndefRecordGetLength(record)) {
     bufRecord->length = ndefRecordGetLength(record);
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Encode header at the beginning of buffer provided */
   bufHeader.buffer = bufRecord->buffer;
   bufHeader.length = bufRecord->length;
   err = ndefRecordEncodeHeader(record, &bufHeader);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
 
@@ -496,13 +496,13 @@ ReturnCode NdefClass::ndefRecordEncode(const ndefRecord *record, ndefBuffer *buf
   bufPayload.buffer = &bufRecord->buffer[offset];
   bufPayload.length =  bufRecord->length - offset;
   err = ndefRecordPayloadEncode(record, &bufPayload);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
 
   bufRecord->length = offset + bufPayload.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 

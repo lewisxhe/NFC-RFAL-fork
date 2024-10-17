@@ -155,16 +155,16 @@ ReturnCode RfalNfcClass::rfalNfcvParseError(uint8_t err)
   switch (err) {
     case RFAL_NFCV_ERROR_CMD_NOT_SUPPORTED:
     case RFAL_NFCV_ERROR_OPTION_NOT_SUPPORTED:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
 
     case RFAL_NFCV_ERROR_CMD_NOT_RECOGNIZED:
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
 
     case RFAL_NFCV_ERROR_WRITE_FAILED:
-      return ERR_WRITE;
+      return ST_ERR_WRITE;
 
     default:
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
   }
 }
 
@@ -186,7 +186,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerInitialize(void)
   rfalRfDev->rfalSetFDTListen(RFAL_FDT_LISTEN_NFCV_POLLER);
   rfalRfDev->rfalSetFDTPoll(RFAL_FDT_POLL_NFCV_POLLER);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -197,9 +197,9 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCheckPresence(rfalNfcvInventoryRes *invRe
   /* INVENTORY_REQ with 1 slot and no Mask   Activity 2.0 (Candidate) 9.2.3.32 */
   ret = rfalNfcvPollerInventory(RFAL_NFCV_NUM_SLOTS_1, 0, NULL, invRes, NULL);
 
-  if ((ret == ERR_RF_COLLISION) || (ret == ERR_CRC)  ||
-      (ret == ERR_FRAMING)      || (ret == ERR_PROTO)) {
-    ret = ERR_NONE;
+  if ((ret == ST_ERR_RF_COLLISION) || (ret == ST_ERR_CRC)  ||
+      (ret == ST_ERR_FRAMING)      || (ret == ST_ERR_PROTO)) {
+    ret = ST_ERR_NONE;
   }
 
   return ret;
@@ -213,7 +213,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerInventory(rfalNfcvNumSlots nSlots, uint8_
   uint16_t             rxLen;
 
   if (((maskVal == NULL) && (maskLen != 0U)) || (invRes == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   invReq.INV_FLAG = (RFAL_NFCV_INV_REQ_FLAG | (uint8_t)nSlots);
@@ -231,9 +231,9 @@ ReturnCode RfalNfcClass::rfalNfcvPollerInventory(rfalNfcvNumSlots nSlots, uint8_
     *rcvdLen = rxLen;
   }
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     if (rxLen != rfalConvBytesToBits(RFAL_NFCV_INV_RES_LEN + RFAL_NFCV_CRC_LEN)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
   }
 
@@ -254,7 +254,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCollisionResolution(rfalComplianceMode co
 
 
   if ((nfcvDevList == NULL) || (devCnt == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Initialize parameters */
@@ -274,12 +274,12 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCollisionResolution(rfalComplianceMode co
     /* Send INVENTORY_REQ with one slot   Activity 2.0  9.3.7.1  (Symbol 0)  */
     ret = rfalNfcvPollerInventory(RFAL_NFCV_NUM_SLOTS_1, 0, NULL, &nfcvDevList->InvRes, NULL);
 
-    if (ret == ERR_TIMEOUT) { /* Exit if no device found     Activity 2.0  9.3.7.2 (Symbol 1)  */
-      return ERR_NONE;
+    if (ret == ST_ERR_TIMEOUT) { /* Exit if no device found     Activity 2.0  9.3.7.2 (Symbol 1)  */
+      return ST_ERR_NONE;
     }
-    if (ret == ERR_NONE) {    /* Device found without transmission error/collision    Activity 2.0  9.3.7.3 (Symbol 2)  */
+    if (ret == ST_ERR_NONE) {    /* Device found without transmission error/collision    Activity 2.0  9.3.7.3 (Symbol 2)  */
       (*devCnt)++;
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
 
     /* A Collision has been identified  Activity 2.0  9.3.7.2  (Symbol 3) */
@@ -288,7 +288,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCollisionResolution(rfalComplianceMode co
 
     /* Check if the Collision Resolution is set to perform only Collision detection   Activity 2.0  9.3.7.5 (Symbol 4)*/
     if (devLimit == 0U) {
-      return ERR_RF_COLLISION;
+      return ST_ERR_RF_COLLISION;
     }
 
     delay(RFAL_NFCV_FDT_V_INVENT_NORES);
@@ -319,13 +319,13 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCollisionResolution(rfalComplianceMode co
       slotNum++;
 
       /*******************************************************************************/
-      if (ret != ERR_TIMEOUT) {
+      if (ret != ST_ERR_TIMEOUT) {
         if (rcvdLen < rfalConvBytesToBits(RFAL_NFCV_INV_RES_LEN + RFAL_NFCV_CRC_LEN)) {
           /* If only a partial frame was received make sure the FDT_V_INVENT_NORES is fulfilled */
           delay(RFAL_NFCV_FDT_V_INVENT_NORES);
         }
 
-        if (ret == ERR_NONE) {
+        if (ret == ST_ERR_NONE) {
           /* Check if the device found is already on the list and its response is a valid INVENTORY_RES */
           if (rcvdLen == rfalConvBytesToBits(RFAL_NFCV_INV_RES_LEN + RFAL_NFCV_CRC_LEN)) {
             /* Activity 2.0  9.3.7.15  (Symbol 11) */
@@ -360,13 +360,13 @@ ReturnCode RfalNfcClass::rfalNfcvPollerCollisionResolution(rfalComplianceMode co
 
       /* Check if devices found have reached device limit   Activity 2.0  9.3.7.15  (Symbol 16) */
       if (*devCnt >= devLimit) {
-        return ERR_NONE;
+        return ST_ERR_NONE;
       }
     } while (slotNum < RFAL_NFCV_MAX_SLOTS);   /* Slot loop             */
     colIt++;
   } while (colIt < colCnt);                      /* Collisions found loop */
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -377,7 +377,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerSleepCollisionResolution(uint8_t devLimit
   uint8_t    i;
 
   if ((nfcvDevList == NULL) || (devCnt == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *devCnt = 0;
@@ -404,7 +404,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerSleep(uint8_t flags, const uint8_t *uid)
   uint8_t         rxBuf;    /* dummy buffer, just to perform Rx */
 
   if (uid == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Compute SLPV_REQ */
@@ -414,11 +414,11 @@ ReturnCode RfalNfcClass::rfalNfcvPollerSleep(uint8_t flags, const uint8_t *uid)
 
   /* NFC Forum device SHALL wait at least FDTVpp to consider the SLPV acknowledged (FDTVpp = FDTVpoll)  Digital 2.0 (Candidate)  9.7  9.8.2  */
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&slpReq, sizeof(rfalNfcvSlpvReq), &rxBuf, sizeof(rxBuf), NULL, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_NFCV_POLLER);
-  if (ret != ERR_TIMEOUT) {
+  if (ret != ST_ERR_TIMEOUT) {
     return ret;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -428,7 +428,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerSelect(uint8_t flags, const uint8_t *uid)
   rfalNfcvGenericRes res;
 
   if (uid == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return rfalNfcvPollerTransceiveReq(RFAL_NFCV_CMD_SELECT, flags, RFAL_NFCV_PARAM_SKIP, uid, NULL, 0U, (uint8_t *)&res, sizeof(rfalNfcvGenericRes), &rcvLen);
@@ -454,7 +454,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerWriteSingleBlock(uint8_t flags, const uin
 
   /* Check for valid parameters */
   if ((blockLen == 0U) || (blockLen > (uint8_t)RFAL_NFCV_MAX_BLOCK_LEN) || (wrData == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   dataLen = 0U;
@@ -507,7 +507,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerWriteMultipleBlocks(uint8_t flags, const 
   reqLen = (uint16_t)((uid != NULL) ? (RFAL_NFCV_WR_MUL_REQ_HEADER_LEN + RFAL_NFCV_UID_LEN + wrDataLen) : (RFAL_NFCV_WR_MUL_REQ_HEADER_LEN + wrDataLen));
 
   if ((reqLen > txBufLen) || (blockLen > (uint8_t)RFAL_NFCV_MAX_BLOCK_LEN) || ((((uint16_t)numOfBlocks) * (uint16_t)blockLen) != wrDataLen) || (numOfBlocks == 0U) || (wrData == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt = 0;
@@ -536,13 +536,13 @@ ReturnCode RfalNfcClass::rfalNfcvPollerWriteMultipleBlocks(uint8_t flags, const 
   /* Transceive Command */
   ret = rfalRfDev->rfalTransceiveBlockingTxRx(txBuf, msgIt, (uint8_t *)&res, sizeof(rfalNfcvGenericRes), &rcvLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_MAX);
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   /* Check if the response minimum length has been received */
   if (rcvLen < (uint8_t)RFAL_NFCV_FLAG_LEN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Check if an error has been signalled */
@@ -550,7 +550,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerWriteMultipleBlocks(uint8_t flags, const 
     return rfalNfcvParseError(*res.data);
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -579,7 +579,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerExtendedWriteSingleBlock(uint8_t flags, c
 
   /* Check for valid parameters */
   if ((blockLen == 0U) || (blockLen > (uint8_t)RFAL_NFCV_MAX_BLOCK_LEN)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   dataLen = 0U;
@@ -641,7 +641,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerExtendedWriteMultipleBlocks(uint8_t flags
   reqLen = ((uid != NULL) ? (RFAL_NFCV_WR_MUL_REQ_HEADER_LEN + RFAL_NFCV_UID_LEN + wrDataLen) : (RFAL_NFCV_WR_MUL_REQ_HEADER_LEN + wrDataLen));
 
   if ((reqLen > txBufLen) || (blockLen > (uint8_t)RFAL_NFCV_MAX_BLOCK_LEN) || (((uint16_t)numOfBlocks * (uint16_t)blockLen) != wrDataLen) || (numOfBlocks == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt   = 0;
@@ -673,13 +673,13 @@ ReturnCode RfalNfcClass::rfalNfcvPollerExtendedWriteMultipleBlocks(uint8_t flags
   /* Transceive Command */
   ret = rfalRfDev->rfalTransceiveBlockingTxRx(txBuf, msgIt, (uint8_t *)&res, sizeof(rfalNfcvGenericRes), &rcvLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_FDT_POLL_MAX);
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   /* Check if the response minimum length has been received */
   if (rcvLen < (uint8_t)RFAL_NFCV_FLAG_LEN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Check if an error has been signalled */
@@ -687,7 +687,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerExtendedWriteMultipleBlocks(uint8_t flags
     return rfalNfcvParseError(*res.data);
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -717,7 +717,7 @@ ReturnCode RfalNfcClass::rfalNfcvPollerTransceiveReq(uint8_t cmd, uint8_t flags,
   /* Check for valid parameters */
   if ((rxBuf == NULL) || (rcvLen == NULL) || ((dataLen > 0U) && (data == NULL))                                  ||
       (dataLen > ((uid != NULL) ? RFAL_NFCV_MAX_GEN_DATA_LEN : (RFAL_NFCV_MAX_GEN_DATA_LEN - RFAL_NFCV_UID_LEN)))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
 
@@ -773,13 +773,13 @@ ReturnCode RfalNfcClass::rfalNfcvPollerTransceiveReq(uint8_t cmd, uint8_t flags,
     rfalRfDev->rfalSetBitRate(RFAL_BR_KEEP, rxBR);
   }
 
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     return ret;
   }
 
   /* Check if the response minimum length has been received */
   if ((*rcvLen) < (uint8_t)RFAL_NFCV_FLAG_LEN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Check if an error has been signalled */
@@ -787,5 +787,5 @@ ReturnCode RfalNfcClass::rfalNfcvPollerTransceiveReq(uint8_t cmd, uint8_t flags,
     return rfalNfcvParseError(rxBuf[RFAL_NFCV_DATASTART_POS]);
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

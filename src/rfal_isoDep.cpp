@@ -325,7 +325,7 @@ ReturnCode RfalNfcClass::isoDepTx(uint8_t pcb, const uint8_t *txBuf, uint8_t *in
 
   if (infLen > 0U) {
     if (((uint32_t)infBuf - (uint32_t)txBuf) < gIsoDep.hdrLen) { /* Check that we can fit the header in the given space */
-      return ERR_NOMEM;
+      return ST_ERR_NOMEM;
     }
   }
 
@@ -360,7 +360,7 @@ ReturnCode RfalNfcClass::isoDepTx(uint8_t pcb, const uint8_t *txBuf, uint8_t *in
   txBufLen = (infLen + (uint16_t)((uint32_t)infBuf - (uint32_t)txBlock)); /* Calculate overall buffer size */
 
   if (txBufLen > (gIsoDep.fsx - ISODEP_CRC_LEN)) {                        /* Check if msg length violates the maximum frame size FSC */
-    return ERR_NOTSUPP;
+    return ST_ERR_NOTSUPP;
   }
 
   return rfalRfDev->rfalTransceiveBlockingTx(txBlock, txBufLen, gIsoDep.rxBuf, gIsoDep.rxBufLen, gIsoDep.rxLen, RFAL_TXRX_FLAGS_DEFAULT, ((gIsoDep.role == ISODEP_ROLE_PICC) ? RFAL_FWT_NONE : fwt));
@@ -383,7 +383,7 @@ ReturnCode RfalNfcClass::isoDepHandleControlMsg(rfalIsoDepControlMsg controlMsg,
     case ISODEP_R_ACK:
 
       if (gIsoDep.cntRRetrys++ > gIsoDep.maxRetriesR) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       pcb = isoDep_PCBRACK(gIsoDep.blockNumber);
@@ -392,7 +392,7 @@ ReturnCode RfalNfcClass::isoDepHandleControlMsg(rfalIsoDepControlMsg controlMsg,
     /*******************************************************************************/
     case ISODEP_R_NAK:
       if (gIsoDep.cntRRetrys++ > gIsoDep.maxRetriesR) {
-        return ERR_TIMEOUT;
+        return ST_ERR_TIMEOUT;
       }
 
       pcb = isoDep_PCBRNAK(gIsoDep.blockNumber);
@@ -401,12 +401,12 @@ ReturnCode RfalNfcClass::isoDepHandleControlMsg(rfalIsoDepControlMsg controlMsg,
     /*******************************************************************************/
     case ISODEP_S_WTX:
       if (gIsoDep.cntSRetrys++ > gIsoDep.maxRetriesS) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       /* Check if WTXM is valid */
       if (! isoDep_isWTXMValid(param)) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       if (gIsoDep.role == ISODEP_ROLE_PCD) {
@@ -423,7 +423,7 @@ ReturnCode RfalNfcClass::isoDepHandleControlMsg(rfalIsoDepControlMsg controlMsg,
     /*******************************************************************************/
     case ISODEP_S_DSL:
       if (gIsoDep.cntSRetrys++ > gIsoDep.maxRetriesS) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       if (gIsoDep.role == ISODEP_ROLE_PCD) {
@@ -436,7 +436,7 @@ ReturnCode RfalNfcClass::isoDepHandleControlMsg(rfalIsoDepControlMsg controlMsg,
 
     /*******************************************************************************/
     default:
-      return ERR_INTERNAL;
+      return ST_ERR_INTERNAL;
   }
 
   return isoDepTx(pcb, ctrlMsgBuf, &ctrlMsgBuf[RFAL_ISODEP_PCB_LEN + RFAL_ISODEP_DID_LEN], infLen, fwtTemp);
@@ -502,7 +502,7 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
   /* Check out parameters */
   if ((outActRxLen == NULL) || (outIsChaining == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *outIsChaining = false;
@@ -518,14 +518,14 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
   /* check if there is enough space before the infPos to append ISO-DEP headers on rx and tx */
   if ((gIsoDep.rxBufInfPos < gIsoDep.hdrLen) || (gIsoDep.txBufInfPos < gIsoDep.hdrLen)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*******************************************************************************/
   /* Wait until SFGT has been fulfilled (as a PCD) */
   if (gIsoDep.SFGTTimer != 0U) {
     if (!isoDepTimerisExpired(gIsoDep.SFGTTimer)) {
-      return ERR_BUSY;
+      return ST_ERR_BUSY;
     }
   }
   /* Once done, clear SFGT timer */
@@ -536,13 +536,13 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
   switch (gIsoDep.state) {
     /*******************************************************************************/
     case ISODEP_ST_IDLE:
-      return ERR_NONE;
+      return ST_ERR_NONE;
 
     /*******************************************************************************/
     case ISODEP_ST_PCD_TX:
       ret = isoDepTx(isoDep_PCBIBlock(gIsoDep.blockNumber), gIsoDep.txBuf, &gIsoDep.txBuf[gIsoDep.txBufInfPos], gIsoDep.txBufLen, (gIsoDep.fwt + gIsoDep.dFwt));
       switch (ret) {
-        case ERR_NONE:
+        case ST_ERR_NONE:
           gIsoDep.state = ISODEP_ST_PCD_RX;
           break;
 
@@ -558,11 +558,11 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
       ret = rfalRfDev->rfalGetTransceiveStatus();
       switch (ret) {
         /* Data rcvd with error or timeout -> Send R-NAK */
-        case ERR_TIMEOUT:
-        case ERR_CRC:
-        case ERR_PAR:
-        case ERR_FRAMING:          /* added to handle test cases scenario TC_POL_NFCB_T4AT_BI_82_x_y & TC_POL_NFCB_T4BT_BI_82_x_y */
-        case ERR_INCOMPLETE_BYTE:  /* added to handle test cases scenario TC_POL_NFCB_T4AT_BI_82_x_y & TC_POL_NFCB_T4BT_BI_82_x_y  */
+        case ST_ERR_TIMEOUT:
+        case ST_ERR_CRC:
+        case ST_ERR_PAR:
+        case ST_ERR_FRAMING:          /* added to handle test cases scenario TC_POL_NFCB_T4AT_BI_82_x_y & TC_POL_NFCB_T4BT_BI_82_x_y */
+        case ST_ERR_INCOMPLETE_BYTE:  /* added to handle test cases scenario TC_POL_NFCB_T4AT_BI_82_x_y & TC_POL_NFCB_T4BT_BI_82_x_y  */
 
           if (gIsoDep.isRxChaining) {
             /* Rule 5 - In PICC chaining when a invalid/timeout occurs -> R-ACK */
@@ -574,13 +574,13 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
             /* Rule 4 - When a invalid block or timeout occurs -> R-NACK */
             EXIT_ON_ERR(ret, isoDepHandleControlMsg(ISODEP_R_NAK, RFAL_ISODEP_NO_PARAM));
           }
-          return ERR_BUSY;
+          return ST_ERR_BUSY;
 
-        case ERR_NONE:
+        case ST_ERR_NONE:
           break;
 
-        case ERR_BUSY:
-          return ERR_BUSY;  /* Debug purposes */
+        case ST_ERR_BUSY:
+          return ST_ERR_BUSY;  /* Debug purposes */
 
         default:
           return ret;
@@ -595,7 +595,7 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
       /* Check rcvd msg length, cannot be less then the expected header */
       if (((*outActRxLen) < gIsoDep.hdrLen) || ((*outActRxLen) >= gIsoDep.ourFsx)) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       /* Grab rcvd PCB */
@@ -604,12 +604,12 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
       /* EMVCo doesn't allow usage of for CID or NAD   EMVCo 2.6 TAble 10.2 */
       if ((gIsoDep.compMode == RFAL_COMPLIANCE_MODE_EMV) && (isoDep_PCBhasDID(rxPCB) || isoDep_PCBhasNAD(rxPCB))) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       /* If we are expecting DID, check if PCB signals its presence and if device ID match*/
       if ((gIsoDep.did != RFAL_ISODEP_NO_DID) && (!isoDep_PCBhasDID(rxPCB) || (gIsoDep.did != gIsoDep.rxBuf[ ISODEP_DID_POS ]))) {
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
 
@@ -621,21 +621,21 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
         if (isoDep_PCBisSWTX(rxPCB)) {
           /* Rule 3 - respond to S-block: get 1st INF byte S(STW): Power + WTXM */
           EXIT_ON_ERR(ret, isoDepHandleControlMsg(ISODEP_S_WTX, isoDep_GetWTXM(gIsoDep.rxBuf[gIsoDep.hdrLen])));
-          return ERR_BUSY;
+          return ST_ERR_BUSY;
         }
 
         /* Check if is a deselect response */
         if (isoDep_PCBisSDeselect(rxPCB)) {
           if (gIsoDep.state == ISODEP_ST_PCD_WAIT_DSL) {
             rfalIsoDepInitialize();         /* Session finished reInit vars */
-            return ERR_NONE;
+            return ST_ERR_NONE;
           }
 
           /* Deselect response not expected  */
           /* fall through to PROTO error */
         }
         /* Unexpected S-Block */
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
 
       /*******************************************************************************/
@@ -649,23 +649,23 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
             /* R-ACK only allowed when PCD chaining */
             if (!gIsoDep.isTxChaining) {
-              return ERR_PROTO;
+              return ST_ERR_PROTO;
             }
 
             /* Rule 7 - Chaining transaction done, continue chaining */
             isoDepClearCounters();
-            return ERR_NONE;  /* This block has been transmitted */
+            return ST_ERR_NONE;  /* This block has been transmitted */
           } else {
             /* Rule 6 - R-ACK with wrong block number retransmit */
             if (gIsoDep.cntIRetrys++ < gIsoDep.maxRetriesI) {
               gIsoDep.cntRRetrys = 0;            /* Clear R counter only */
               gIsoDep.state = ISODEP_ST_PCD_TX;
-              return ERR_BUSY;
+              return ST_ERR_BUSY;
             }
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
         } else { /* Unexpected R-Block */
-          return ERR_PROTO;
+          return ST_ERR_PROTO;
         }
       }
 
@@ -697,12 +697,12 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
             }
 
             isoDepClearCounters();
-            return ERR_AGAIN;       /* Send Again signalling to run again, but some chaining data has arrived */
+            return ST_ERR_AGAIN;       /* Send Again signalling to run again, but some chaining data has arrived */
           } else {
             /* Rule 5 - PICC chaining invalid I-Block -> R-ACK */
             EXIT_ON_ERR(ret, isoDepHandleControlMsg(ISODEP_R_ACK, RFAL_ISODEP_NO_PARAM));
           }
-          return ERR_BUSY;
+          return ST_ERR_BUSY;
         }
 
         gIsoDep.isRxChaining = false; /* clear PICC chaining flag */
@@ -721,19 +721,19 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
 
           gIsoDep.state = ISODEP_ST_IDLE;
           isoDepClearCounters();
-          return ERR_NONE;
+          return ST_ERR_NONE;
         } else {
           if ((gIsoDep.compMode != RFAL_COMPLIANCE_MODE_ISO)) {
             /* Invalid Block (not chaining) -> Raise error   Digital 1.1  15.2.6.4   EMVCo 2.6  10.3.5.4 */
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
 
           /* Rule 4 - Invalid Block -> R-NAK */
           EXIT_ON_ERR(ret, isoDepHandleControlMsg(ISODEP_R_NAK, RFAL_ISODEP_NO_PARAM));
-          return ERR_BUSY;
+          return ST_ERR_BUSY;
         }
       } else { /* not S/R/I - Block */
-        return ERR_PROTO;
+        return ST_ERR_PROTO;
       }
     /* fall through */
 
@@ -743,7 +743,7 @@ ReturnCode RfalNfcClass::isoDepDataExchangePCD(uint16_t *outActRxLen, bool *outI
       break;
   }
 
-  return ERR_INTERNAL;
+  return ST_ERR_INTERNAL;
 }
 
 /*******************************************************************************/
@@ -779,10 +779,10 @@ ReturnCode RfalNfcClass::rfalIsoDepDeselect(void)
   do {
     ret = isoDepDataExchangePCD(gIsoDep.rxLen, &dummyB);
     rfalRfDev->rfalWorker();
-  } while (((cntRerun--) != 0U) && (ret == ERR_BUSY));
+  } while (((cntRerun--) != 0U) && (ret == ST_ERR_BUSY));
 
   rfalIsoDepInitialize();
-  return ((cntRerun == 0U) ? ERR_TIMEOUT : ret);
+  return ((cntRerun == 0U) ? ST_ERR_TIMEOUT : ret);
 }
 
 
@@ -886,7 +886,7 @@ ReturnCode RfalNfcClass::rfalIsoDepStartTransceive(rfalIsoDepTxRxParam param)
       /* Ensure that an RTOX Ack is not being expected at moment */
       if (!gIsoDep.isWait4WTX) {
         gIsoDep.state = ISODEP_ST_PICC_TX;
-        return ERR_NONE;
+        return ST_ERR_NONE;
       } else {
         /* If RTOX Ack is expected, signal a pending Tx to be transmitted right after */
         gIsoDep.isTxPending = true;
@@ -895,11 +895,11 @@ ReturnCode RfalNfcClass::rfalIsoDepStartTransceive(rfalIsoDepTxRxParam param)
 
     /* Digital 1.1  15.2.5.1 The first block SHALL be sent by the Reader/Writer */
     gIsoDep.state = ISODEP_ST_PICC_RX;
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   gIsoDep.state = ISODEP_ST_PCD_TX;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -907,7 +907,7 @@ ReturnCode RfalNfcClass::rfalIsoDepStartTransceive(rfalIsoDepTxRxParam param)
 ReturnCode RfalNfcClass::rfalIsoDepGetTransceiveStatus(void)
 {
   if (gIsoDep.role == ISODEP_ROLE_PICC) {
-    return ERR_NOTSUPP;
+    return ST_ERR_NOTSUPP;
   } else {
     return isoDepDataExchangePCD(gIsoDep.rxLen, gIsoDep.rxChaining);
   }
@@ -922,7 +922,7 @@ ReturnCode RfalNfcClass::rfalIsoDepRATS(rfalIsoDepFSxI FSDI, uint8_t DID, rfalIs
   rfalIsoDepRats ratsReq;
 
   if (ats == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*******************************************************************************/
@@ -932,10 +932,10 @@ ReturnCode RfalNfcClass::rfalIsoDepRATS(rfalIsoDepFSxI FSDI, uint8_t DID, rfalIs
 
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&ratsReq, sizeof(rfalIsoDepRats), (uint8_t *)ats, sizeof(rfalIsoDepAts), &rcvLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ISODEP_T4T_FWT_ACTIVATION);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Check for valid ATS length  Digital 1.1  13.6.2.1 & 13.6.2.3 */
     if ((rcvLen < RFAL_ISODEP_ATS_MIN_LEN) || (rcvLen > RFAL_ISODEP_ATS_MAX_LEN) || (ats->TL != rcvLen)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
 
     /* Assign our FSx, in case the a Deselect is send without Transceive */
@@ -959,7 +959,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPPS(uint8_t DID, rfalBitRate DSI, rfalBitRate
   rfalIsoDepPpsReq ppsReq;
 
   if ((ppsRes == NULL) || (DSI > RFAL_BR_848) || (DRI > RFAL_BR_848) || (DID > RFAL_ISODEP_DID_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*******************************************************************************/
@@ -970,10 +970,10 @@ ReturnCode RfalNfcClass::rfalIsoDepPPS(uint8_t DID, rfalBitRate DSI, rfalBitRate
 
   ret = rfalRfDev->rfalTransceiveBlockingTxRx((uint8_t *)&ppsReq, sizeof(rfalIsoDepPpsReq), (uint8_t *)ppsRes, sizeof(rfalIsoDepPpsRes), &rcvLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_ISODEP_T4T_FWT_ACTIVATION);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Check for valid PPS Response   */
     if ((rcvLen != RFAL_ISODEP_PPS_RES_LEN) || (ppsRes->PPSS != ppsReq.PPSS)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
   }
   return ret;
@@ -989,7 +989,7 @@ ReturnCode RfalNfcClass::rfalIsoDepATTRIB(const uint8_t *nfcid0, uint8_t PARAM1,
 
 
   if ((attribRes == NULL) || (attribResLen == NULL) || (DSI > RFAL_BR_848) || (DRI > RFAL_BR_848) || (DID > RFAL_ISODEP_DID_MAX)) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /*******************************************************************************/
@@ -1010,10 +1010,10 @@ ReturnCode RfalNfcClass::rfalIsoDepATTRIB(const uint8_t *nfcid0, uint8_t PARAM1,
 
   *attribResLen = (uint8_t)rcvLen;
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Check a for valid ATTRIB Response   Digital 1.1  15.6.2.1 */
     if ((rcvLen < RFAL_ISODEP_ATTRIB_RES_HDR_LEN) || ((attribRes->mbliDid & RFAL_ISODEP_ATTRIB_RES_DID_MASK) != DID)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
   }
 
@@ -1030,7 +1030,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollAHandleActivation(rfalIsoDepFSxI FSDI, ui
   rfalIsoDepPpsRes ppsRes;
 
   if (isoDepDev == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Enable EMD handling according   Digital 1.1  4.1.1.1 ; EMVCo 2.6  4.9.2 */
@@ -1045,19 +1045,19 @@ ReturnCode RfalNfcClass::rfalIsoDepPollAHandleActivation(rfalIsoDepFSxI FSDI, ui
     ret = rfalIsoDepRATS(FSDI, DID, &isoDepDev->activation.A.Listener.ATS, &isoDepDev->activation.A.Listener.ATSLen);
 
     /* EMVCo 2.6  9.6.1.1 & 9.6.1.2  If a timeout error is detected retransmit, on transmission error abort */
-    if ((gIsoDep.compMode == RFAL_COMPLIANCE_MODE_EMV) && (ret != ERR_NONE) && (ret != ERR_TIMEOUT)) {
+    if ((gIsoDep.compMode == RFAL_COMPLIANCE_MODE_EMV) && (ret != ST_ERR_NONE) && (ret != ST_ERR_TIMEOUT)) {
       break;
     }
 
     delay(1);
-  } while (((RATSretries--) != 0U) && (ret != ERR_NONE));
+  } while (((RATSretries--) != 0U) && (ret != ST_ERR_NONE));
 
 
 
   /* Switch between NFC Forum and ISO14443-4 behaviour #595
    *   ISO14443-4  5.6.1  If RATS fails, a Deactivation sequence should be performed as defined on clause 8
    *   Activity 1.1  9.6  Device Deactivation Activity is to be only performed when there's an active device */
-  if (ret != ERR_NONE) {
+  if (ret != ST_ERR_NONE) {
     if (gIsoDep.compMode == RFAL_COMPLIANCE_MODE_ISO) {
       rfalIsoDepDeselect();
     }
@@ -1127,7 +1127,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollAHandleActivation(rfalIsoDepFSxI FSDI, ui
 
     ret = rfalIsoDepPPS(isoDepDev->info.DID, isoDepDev->info.DSI, isoDepDev->info.DRI, &ppsRes);
 
-    if (ret == ERR_NONE) {
+    if (ret == ST_ERR_NONE) {
       /* DSI code the divisor from PICC to PCD */
       /* DRI code the divisor from PCD to PICC */
       rfalRfDev->rfalSetBitRate(isoDepDev->info.DRI, isoDepDev->info.DSI);
@@ -1142,7 +1142,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollAHandleActivation(rfalIsoDepFSxI FSDI, ui
   gIsoDep.fsx    = isoDepDev->info.FSx;
   gIsoDep.ourFsx = rfalIsoDepFSxI2FSx((uint8_t)FSDI);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1168,7 +1168,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollBHandleActivation(rfalIsoDepFSxI FSDI, ui
 
   /* Check if DID requested is supported by PICC */
   if ((DID != RFAL_ISODEP_NO_DID) && (!isoDepDev->info.supDID)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Enable EMD handling according   Digital 2.1  4.1.1.1 ; EMVCo 3.0  4.9.2 */
@@ -1206,10 +1206,10 @@ ReturnCode RfalNfcClass::rfalIsoDepPollBHandleActivation(rfalIsoDepFSxI FSDI, ui
 
   /***************************************************************************/
   /* Process ATTRIB Response                                                 */
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Digital 1.1 14.6.2.3 - Check if received DID match */
     if ((isoDepDev->activation.B.Listener.ATTRIB_RES.mbliDid & RFAL_ISODEP_ATTRIB_RES_DID_MASK) != DID) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
 
     /* Retrieve MBLI and calculate new FDS/MBL (Maximum Buffer Length) */
@@ -1260,7 +1260,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDe
 
 
   if ((isoDepDev == NULL) || (maxTxBR > RFAL_BR_13560) || (maxRxBR > RFAL_BR_13560)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   it          = 0;
@@ -1286,7 +1286,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDe
   if ((sParam.pcb != ISODEP_PCB_SPARAMETERS) || (sParam.sParam.tag != RFAL_ISODEP_SPARAM_TAG_BLOCKINFO)  ||
       (sParam.sParam.value[it] != RFAL_ISODEP_SPARAM_TAG_BRIND) || (rcvLen < RFAL_ISODEP_SPARAM_HDR_LEN) ||
       (rcvLen != ((uint16_t)sParam.sParam.length + RFAL_ISODEP_SPARAM_HDR_LEN))) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Retrieve PICC's bit rate PICC capabilities */
@@ -1303,7 +1303,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDe
   /*******************************************************************************/
   /* Check if requested bit rates are supported by PICC */
   if ((supPICC2PCD == 0x00U) || (supPCD2PICC == 0x00U)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   for (it = 0; it <= (uint8_t)maxTxBR; it++) {
@@ -1344,7 +1344,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDe
   /* Check S(PARAMETERS) Acknowledge  */
   if ((sParam.pcb != ISODEP_PCB_SPARAMETERS) || (sParam.sParam.tag != RFAL_ISODEP_SPARAM_TAG_BLOCKINFO)  ||
       (sParam.sParam.value[it] != RFAL_ISODEP_SPARAM_TAG_BRACK) || (rcvLen < RFAL_ISODEP_SPARAM_HDR_LEN)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   EXIT_ON_ERR(ret, rfalRfDev->rfalSetBitRate(txBR, rxBR));
@@ -1352,7 +1352,7 @@ ReturnCode RfalNfcClass::rfalIsoDepPollHandleSParameters(rfalIsoDepDevice *isoDe
   isoDepDev->info.DRI = txBR;
   isoDepDev->info.DSI = rxBR;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1500,7 +1500,7 @@ ReturnCode RfalNfcClass::rfalIsoDepGetApduTransceiveStatus(void)
   ret = rfalIsoDepGetTransceiveStatus();
   switch (ret) {
     /*******************************************************************************/
-    case ERR_NONE:
+    case ST_ERR_NONE:
 
       /* Check if we are still doing chaining on Tx */
       if (gIsoDep.isTxChaining) {
@@ -1516,7 +1516,7 @@ ReturnCode RfalNfcClass::rfalIsoDepGetApduTransceiveStatus(void)
         }
 
         rfalIsoDepStartTransceive(txRxParam);
-        return ERR_BUSY;
+        return ST_ERR_BUSY;
       }
 
       if (*gIsoDep.APDUParam.rxLen > 0U) {   /* MISRA 21.18 */
@@ -1529,7 +1529,7 @@ ReturnCode RfalNfcClass::rfalIsoDepGetApduTransceiveStatus(void)
       break;
 
     /*******************************************************************************/
-    case ERR_AGAIN:
+    case ST_ERR_AGAIN:
 
       if (*gIsoDep.APDUParam.rxLen > 0U) {   /* MISRA 21.18 */
         /* Copy chained packet from tmp buffer to APDU buffer */
@@ -1538,7 +1538,7 @@ ReturnCode RfalNfcClass::rfalIsoDepGetApduTransceiveStatus(void)
       }
 
       /* Wait for next I-Block */
-      return ERR_BUSY;
+      return ST_ERR_BUSY;
 
     /*******************************************************************************/
     default:
@@ -1547,5 +1547,5 @@ ReturnCode RfalNfcClass::rfalIsoDepGetApduTransceiveStatus(void)
 
   *gIsoDep.APDUParam.rxLen = gIsoDep.APDURxPos;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

@@ -182,7 +182,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerInitialize(rfalBitRate bitRate)
   ReturnCode ret;
 
   if ((bitRate != RFAL_BR_212) && (bitRate != RFAL_BR_424)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   EXIT_ON_ERR(ret, rfalRfDev->rfalSetMode(RFAL_MODE_POLL_NFCF, bitRate, bitRate));
@@ -192,7 +192,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerInitialize(rfalBitRate bitRate)
   rfalRfDev->rfalSetFDTListen(RFAL_FDT_LISTEN_NFCF_POLLER);
   rfalRfDev->rfalSetFDTPoll(RFAL_FDT_POLL_NFCF_POLLER);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -223,7 +223,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerCollisionResolution(rfalComplianceMode co
   bool        nfcDepFound;
 
   if ((nfcfDevList == NULL) || (devCnt == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *devCnt      = 0;
@@ -254,7 +254,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerCollisionResolution(rfalComplianceMode co
     *devCnt = 0;
 
     ret = rfalNfcfPollerPoll(RFAL_FELICA_16_SLOTS, RFAL_NFCF_SYSTEMCODE, RFAL_FELICA_POLL_RC_NO_REQUEST, gRfalNfcfGreedyF.POLL_F, &gRfalNfcfGreedyF.pollFound, &gRfalNfcfGreedyF.pollCollision);
-    if (ret == ERR_NONE) {
+    if (ret == ST_ERR_NONE) {
       rfalNfcfComputeValidSENF(nfcfDevList, devCnt, devLimit, false, &nfcDepFound);
     }
 
@@ -263,13 +263,13 @@ ReturnCode RfalNfcClass::rfalNfcfPollerCollisionResolution(rfalComplianceMode co
     /*******************************************************************************/
     if (nfcDepFound && (compMode == RFAL_COMPLIANCE_MODE_NFC)) {
       ret = rfalNfcfPollerPoll(RFAL_FELICA_16_SLOTS, RFAL_NFCF_SYSTEMCODE, RFAL_FELICA_POLL_RC_SYSTEM_CODE, gRfalNfcfGreedyF.POLL_F, &gRfalNfcfGreedyF.pollFound, &gRfalNfcfGreedyF.pollCollision);
-      if (ret == ERR_NONE) {
+      if (ret == ST_ERR_NONE) {
         rfalNfcfComputeValidSENF(nfcfDevList, devCnt, devLimit, true, &nfcDepFound);
       }
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -286,7 +286,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerCheck(const uint8_t *nfcid2, const rfalNf
       (servBlock->numBlock == 0U) || (servBlock->numBlock > RFAL_NFCF_CHECK_REQ_MAX_BLOCK) ||
       (servBlock->numServ == 0U) || (servBlock->numServ > RFAL_NFCF_CHECK_REQ_MAX_SERV)    ||
       (rxBufLen < (RFAL_NFCF_LENGTH_LEN + RFAL_NFCF_CHECK_RES_MIN_LEN))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt = 0;
@@ -320,19 +320,19 @@ ReturnCode RfalNfcClass::rfalNfcfPollerCheck(const uint8_t *nfcid2, const rfalNf
   /* Transceive CHECK command/request                                            */
   ret = rfalRfDev->rfalTransceiveBlockingTxRx(txBuf, msgIt, rxBuf, rxBufLen, rcvdLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_NFCF_MRT_CHECK_UPDATE);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Skip LEN byte */
     checkRes = (rxBuf + RFAL_NFCF_LENGTH_LEN);
 
     /* Check response length */
     if (*rcvdLen < (RFAL_NFCF_LENGTH_LEN + RFAL_NFCF_CHECKUPDATE_RES_ST2_POS)) {
-      ret = ERR_PROTO;
+      ret = ST_ERR_PROTO;
     }
     /* Check for a valid response */
     else if ((checkRes[RFAL_NFCF_CMD_POS] != (uint8_t)RFAL_NFCF_CMD_READ_WITHOUT_ENCRYPTION_RES) ||
              (checkRes[RFAL_NFCF_CHECKUPDATE_RES_ST1_POS] != RFAL_NFCF_STATUS_FLAG_SUCCESS)      ||
              (checkRes[RFAL_NFCF_CHECKUPDATE_RES_ST2_POS] != RFAL_NFCF_STATUS_FLAG_SUCCESS)) {
-      ret = ERR_REQUEST;
+      ret = ST_ERR_REQUEST;
     }
     /* CHECK successful, remove header */
     else {
@@ -363,7 +363,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerUpdate(const uint8_t *nfcid2, const rfalN
       (servBlock->numBlock == 0U) || (servBlock->numBlock > RFAL_NFCF_UPDATE_REQ_MAX_BLOCK) ||
       (servBlock->numServ == 0U)   || (servBlock->numServ > RFAL_NFCF_UPDATE_REQ_MAX_SERV)  ||
       (rxBufLen < (RFAL_NFCF_LENGTH_LEN + RFAL_NFCF_UPDATE_RES_MIN_LEN))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Calculate required txBuffer length */
@@ -372,7 +372,7 @@ ReturnCode RfalNfcClass::rfalNfcfPollerUpdate(const uint8_t *nfcid2, const rfalN
 
   /* Check whether the provided buffer is sufficient for this request */
   if (txBufLen < auxLen) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   msgIt = 0;
@@ -411,19 +411,19 @@ ReturnCode RfalNfcClass::rfalNfcfPollerUpdate(const uint8_t *nfcid2, const rfalN
   /* Transceive UPDATE command/request                                           */
   ret = rfalRfDev->rfalTransceiveBlockingTxRx(txBuf, msgIt, rxBuf, rxBufLen, &rcvdLen, RFAL_TXRX_FLAGS_DEFAULT, RFAL_NFCF_MRT_CHECK_UPDATE);
 
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     /* Skip LEN byte */
     updateRes = (rxBuf + RFAL_NFCF_LENGTH_LEN);
 
     /* Check response length */
     if (rcvdLen < (RFAL_NFCF_LENGTH_LEN + RFAL_NFCF_CHECKUPDATE_RES_ST2_POS)) {
-      ret = ERR_PROTO;
+      ret = ST_ERR_PROTO;
     }
     /* Check for a valid response */
     else if ((updateRes[RFAL_NFCF_CMD_POS] != (uint8_t)RFAL_NFCF_CMD_WRITE_WITHOUT_ENCRYPTION_RES) ||
              (updateRes[RFAL_NFCF_CHECKUPDATE_RES_ST1_POS] != RFAL_NFCF_STATUS_FLAG_SUCCESS)       ||
              (updateRes[RFAL_NFCF_CHECKUPDATE_RES_ST2_POS] != RFAL_NFCF_STATUS_FLAG_SUCCESS)) {
-      ret = ERR_REQUEST;
+      ret = ST_ERR_REQUEST;
     } else {
       /* MISRA 15.7 - Empty else */
     }

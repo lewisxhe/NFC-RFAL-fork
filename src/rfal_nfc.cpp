@@ -85,7 +85,7 @@ ReturnCode RfalNfcClass::rfalNfcInitialize(void)
   EXIT_ON_ERR(err, rfalRfDev->rfalInitialize());        /* Initialize RFAL */
 
   gNfcDev.state = RFAL_NFC_STATE_IDLE;         /* Go to initialized */
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -93,14 +93,14 @@ ReturnCode RfalNfcClass::rfalNfcDiscover(const rfalNfcDiscoverParam *disParams)
 {
   /* Check if initialization has been performed */
   if (gNfcDev.state != RFAL_NFC_STATE_IDLE) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check valid parameters */
   if ((disParams == NULL) || (disParams->devLimit > RFAL_NFC_MAX_DEVICES) || (disParams->devLimit == 0U)                                                ||
       (((disParams->techs2Find & RFAL_NFC_POLL_TECH_F) != 0U)     && (disParams->nfcfBR != RFAL_BR_212) && (disParams->nfcfBR != RFAL_BR_424))        ||
       ((((disParams->techs2Find & RFAL_NFC_POLL_TECH_AP2P) != 0U) && (disParams->ap2pBR > RFAL_BR_424)) || (disParams->GBLen > RFAL_NFCDEP_GB_MAX_LEN))) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Initialize context for discovery */
@@ -120,12 +120,12 @@ ReturnCode RfalNfcClass::rfalNfcDiscover(const rfalNfcDiscoverParam *disParams)
 
   /* Check if Listen Mode is supported/Enabled */
   if (gNfcDev.lmMask != 0U) {
-    return ERR_NOTSUPP;
+    return ST_ERR_NOTSUPP;
   }
 
   gNfcDev.state = RFAL_NFC_STATE_START_DISCOVERY;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -133,7 +133,7 @@ ReturnCode RfalNfcClass::rfalNfcDeactivate(bool discovery)
 {
   /* Check for valid state */
   if (gNfcDev.state <= RFAL_NFC_STATE_IDLE) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check if discovery is to continue afterwards */
@@ -147,7 +147,7 @@ ReturnCode RfalNfcClass::rfalNfcDeactivate(bool discovery)
     gNfcDev.state = RFAL_NFC_STATE_IDLE;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -155,13 +155,13 @@ ReturnCode RfalNfcClass::rfalNfcSelect(uint8_t devIdx)
 {
   /* Check for valid state */
   if (gNfcDev.state != RFAL_NFC_STATE_POLL_SELECT) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   gNfcDev.selDevIdx = devIdx;
   gNfcDev.state     = RFAL_NFC_STATE_POLL_ACTIVATION;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -175,18 +175,18 @@ ReturnCode RfalNfcClass::rfalNfcGetDevicesFound(rfalNfcDevice **devList, uint8_t
 {
   /* Check for valid state */
   if (gNfcDev.state < RFAL_NFC_STATE_POLL_SELECT) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check valid parameters */
   if ((devList == NULL) || (devCnt == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   *devCnt  = gNfcDev.devCnt;
   *devList = gNfcDev.devList;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -194,21 +194,21 @@ ReturnCode RfalNfcClass::rfalNfcGetActiveDevice(rfalNfcDevice **dev)
 {
   /* Check for valid state */
   if (gNfcDev.state < RFAL_NFC_STATE_ACTIVATED) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check valid parameter */
   if (dev == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Check for valid state */
   if ((gNfcDev.devCnt == 0U) || (gNfcDev.activeDev == NULL)) {
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
 
   *dev = gNfcDev.activeDev;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*******************************************************************************/
@@ -238,7 +238,7 @@ void RfalNfcClass::rfalNfcWorker(void)
       if (gNfcDev.disc.wakeupEnabled) {
         /* Initialize Low power Wake-up mode and wait */
         err = rfalRfDev->rfalWakeUpModeStart((gNfcDev.disc.wakeupConfigDefault ? NULL : &gNfcDev.disc.wakeupConfig));
-        if (err == ERR_NONE) {
+        if (err == ST_ERR_NONE) {
           gNfcDev.state = RFAL_NFC_STATE_WAKEUP_MODE;
           rfalNfcNfcNotify(gNfcDev.state);                                  /* Notify caller that WU was started */
         }
@@ -266,8 +266,8 @@ void RfalNfcClass::rfalNfcWorker(void)
       gNfcDev.discTmr = (uint32_t)timerCalculateTimer(gNfcDev.disc.totalDuration);
 
       err = rfalNfcPollTechDetetection();                                       /* Perform Technology Detection                         */
-      if (err != ERR_BUSY) {                                                    /* Wait until all technologies are performed            */
-        if ((err != ERR_NONE) || (gNfcDev.techsFound == RFAL_NFC_TECH_NONE)) { /* Check if any error occurred or no techs were found   */
+      if (err != ST_ERR_BUSY) {                                                    /* Wait until all technologies are performed            */
+        if ((err != ST_ERR_NONE) || (gNfcDev.techsFound == RFAL_NFC_TECH_NONE)) { /* Check if any error occurred or no techs were found   */
           rfalRfDev->rfalFieldOff();
           gNfcDev.state = RFAL_NFC_STATE_LISTEN_TECHDETECT;                 /* Nothing found as poller, go to listener */
           break;
@@ -283,8 +283,8 @@ void RfalNfcClass::rfalNfcWorker(void)
     case RFAL_NFC_STATE_POLL_COLAVOIDANCE:
 
       err = rfalNfcPollCollResolution();                                        /* Resolve any eventual collision                       */
-      if (err != ERR_BUSY) {                                                    /* Wait until all technologies are performed            */
-        if ((err != ERR_NONE) || (gNfcDev.devCnt == 0U)) {                    /* Check if any error occurred or no devices were found */
+      if (err != ST_ERR_BUSY) {                                                    /* Wait until all technologies are performed            */
+        if ((err != ST_ERR_NONE) || (gNfcDev.devCnt == 0U)) {                    /* Check if any error occurred or no devices were found */
           gNfcDev.state = RFAL_NFC_STATE_DEACTIVATION;
           break;                                                            /* Unable to retrieve any device, restart loop          */
         }
@@ -309,7 +309,7 @@ void RfalNfcClass::rfalNfcWorker(void)
     /*******************************************************************************/
     case RFAL_NFC_STATE_POLL_ACTIVATION:
 
-      if (rfalNfcPollActivation(gNfcDev.selDevIdx) != ERR_NONE) {               /* Activate selected device           */
+      if (rfalNfcPollActivation(gNfcDev.selDevIdx) != ST_ERR_NONE) {               /* Activate selected device           */
         gNfcDev.state = RFAL_NFC_STATE_DEACTIVATION;                          /* If Activation failed, restart loop */
         break;
       }
@@ -324,11 +324,11 @@ void RfalNfcClass::rfalNfcWorker(void)
 
       rfalNfcDataExchangeGetStatus();                                           /* Run the internal state machine */
 
-      if (gNfcDev.dataExErr != ERR_BUSY) {                                      /* If Dataexchange has terminated */
+      if (gNfcDev.dataExErr != ST_ERR_BUSY) {                                      /* If Dataexchange has terminated */
         gNfcDev.state = RFAL_NFC_STATE_DATAEXCHANGE_DONE;                     /* Go to done state               */
         rfalNfcNfcNotify(gNfcDev.state);                                      /* And notify caller              */
       }
-      if (gNfcDev.dataExErr == ERR_SLEEP_REQ) {                                 /* Check if Listen mode has to go to Sleep */
+      if (gNfcDev.dataExErr == ST_ERR_SLEEP_REQ) {                                 /* Check if Listen mode has to go to Sleep */
         gNfcDev.state = RFAL_NFC_STATE_LISTEN_SLEEP;                          /* Go to Listen Sleep state       */
         rfalNfcNfcNotify(gNfcDev.state);                                      /* And notify caller              */
       }
@@ -383,13 +383,13 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeStart(uint8_t *txData, uint16_t txDa
     /* incoming data from Poller/Initiator                                         */
     if ((gNfcDev.state == RFAL_NFC_STATE_ACTIVATED) && rfalNfcIsRemDevPoller(gNfcDev.activeDev->type)) {
       if (txDataLen > 0U) {
-        return ERR_WRONG_STATE;
+        return ST_ERR_WRONG_STATE;
       }
 
       *rvdLen = (uint16_t *)&gNfcDev.rxLen;
       *rxData = (uint8_t *)((gNfcDev.activeDev->rfInterface == RFAL_NFC_INTERFACE_ISODEP) ? gNfcDev.rxBuf.isoDepBuf.inf :
                             ((gNfcDev.activeDev->rfInterface == RFAL_NFC_INTERFACE_NFCDEP) ? gNfcDev.rxBuf.nfcDepBuf.inf : gNfcDev.rxBuf.rfBuf));
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
 
 
@@ -461,20 +461,20 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeStart(uint8_t *txData, uint16_t txDa
 
       /*******************************************************************************/
       default:
-        err = ERR_PARAM;
+        err = ST_ERR_PARAM;
         break;
     }
 
     /* If a transceive has successfully started flag Data Exchange as ongoing */
-    if (err == ERR_NONE) {
-      gNfcDev.dataExErr = ERR_BUSY;
+    if (err == ST_ERR_NONE) {
+      gNfcDev.dataExErr = ST_ERR_BUSY;
       gNfcDev.state     = RFAL_NFC_STATE_DATAEXCHANGE;
     }
 
     return err;
   }
 
-  return ERR_WRONG_STATE;
+  return ST_ERR_WRONG_STATE;
 }
 
 
@@ -485,14 +485,14 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeGetStatus(void)
   /* Check if it's the first frame received in Listen mode */
   if (gNfcDev.state == RFAL_NFC_STATE_ACTIVATED) {
     /* Continue data exchange as normal */
-    gNfcDev.dataExErr = ERR_BUSY;
+    gNfcDev.dataExErr = ST_ERR_BUSY;
     gNfcDev.state     = RFAL_NFC_STATE_DATAEXCHANGE;
 
     /* Check if we performing in T3T CE */
     if ((gNfcDev.activeDev->type == RFAL_NFC_POLL_TYPE_NFCF) && (gNfcDev.activeDev->rfInterface == RFAL_NFC_INTERFACE_RF)) {
       /* The first frame has been retrieved by rfalListenMode, flag data immediately                  */
       /* Can only call rfalGetTransceiveStatus() after starting a transceive with rfalStartTransceive */
-      gNfcDev.dataExErr = ERR_NONE;
+      gNfcDev.dataExErr = ST_ERR_NONE;
     }
   }
 
@@ -500,18 +500,18 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeGetStatus(void)
   /*******************************************************************************/
   /* Check if we are in we have been placed to sleep, and return last error     */
   if (gNfcDev.state == RFAL_NFC_STATE_LISTEN_SLEEP) {
-    return gNfcDev.dataExErr;                                /* ERR_SLEEP_REQ */
+    return gNfcDev.dataExErr;                                /* ST_ERR_SLEEP_REQ */
   }
 
 
   /*******************************************************************************/
   /* Check if Data exchange has been started */
   if ((gNfcDev.state != RFAL_NFC_STATE_DATAEXCHANGE) && (gNfcDev.state != RFAL_NFC_STATE_DATAEXCHANGE_DONE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check if Data exchange is still ongoing */
-  if (gNfcDev.dataExErr == ERR_BUSY) {
+  if (gNfcDev.dataExErr == ST_ERR_BUSY) {
     switch (gNfcDev.activeDev->rfInterface) {
       /*******************************************************************************/
       case RFAL_NFC_INTERFACE_RF:
@@ -530,7 +530,7 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeGetStatus(void)
 
       /*******************************************************************************/
       default:
-        gNfcDev.dataExErr = ERR_PARAM;
+        gNfcDev.dataExErr = ST_ERR_PARAM;
         break;
     }
 
@@ -546,9 +546,9 @@ ReturnCode RfalNfcClass::rfalNfcDataExchangeGetStatus(void)
  * This method implements the Technology Detection / Poll for different
  * device technologies.
  *
- * \return  ERR_NONE         : Operation completed with no error
- * \return  ERR_BUSY         : Operation ongoing
- * \return  ERR_XXXX         : Error occurred
+ * \return  ST_ERR_NONE         : Operation completed with no error
+ * \return  ST_ERR_BUSY         : Operation ongoing
+ * \return  ST_ERR_XXXX         : Error occurred
  *
  ******************************************************************************
  */
@@ -556,7 +556,7 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
 {
   ReturnCode           err;
 
-  err = ERR_NONE;
+  err = ST_ERR_NONE;
 
   /* Suppress warning when specific RFAL features have been disabled */
   NO_WARNING(err);
@@ -576,18 +576,18 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                       /* Turns the Field On and starts GT timer */
 
     err = rfalNfcNfcDepActivate(gNfcDev.devList, RFAL_NFCDEP_COMM_ACTIVE, NULL, 0);  /* Poll for NFC-A devices */
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_AP2P;
 
       gNfcDev.devList->type        = RFAL_NFC_LISTEN_TYPE_AP2P;
       gNfcDev.devList->rfInterface = RFAL_NFC_INTERFACE_NFCDEP;
       gNfcDev.devCnt++;
 
-      return ERR_NONE;
+      return ST_ERR_NONE;
     }
 
     rfalRfDev->rfalFieldOff();
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
 
@@ -604,11 +604,11 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
       EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                 /* Turns the Field On and starts GT timer */
 
       err = rfalNfcaPollerTechnologyDetection(gNfcDev.disc.compMode, &sensRes);  /* Poll for NFC-A devices */
-      if (err == ERR_NONE) {
+      if (err == ST_ERR_NONE) {
         gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_A;
       }
 
-      return ERR_BUSY;
+      return ST_ERR_BUSY;
     }
 
   }
@@ -628,11 +628,11 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
       EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                /* As field is already On only starts GT timer */
 
       err = rfalNfcbPollerTechnologyDetection(gNfcDev.disc.compMode, &sensbRes, &sensbResLen);   /* Poll for NFC-B devices */
-      if (err == ERR_NONE) {
+      if (err == ST_ERR_NONE) {
         gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_B;
       }
 
-      return ERR_BUSY;
+      return ST_ERR_BUSY;
     }
   }
 
@@ -646,11 +646,11 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* As field is already On only starts GT timer */
 
     err = rfalNfcfPollerCheckPresence();                                          /* Poll for NFC-F devices */
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_F;
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
 
@@ -667,11 +667,11 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
       EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* As field is already On only starts GT timer */
 
       err = rfalNfcvPollerCheckPresence(&invRes);                                   /* Poll for NFC-V devices */
-      if (err == ERR_NONE) {
+      if (err == ST_ERR_NONE) {
         gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_V;
       }
 
-      return ERR_BUSY;
+      return ST_ERR_BUSY;
     }
   }
 
@@ -686,12 +686,12 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* As field is already On only starts GT timer */
 
     err = rfalSt25tbPollerCheckPresence(NULL);                                    /* Poll for ST25TB devices */
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       gNfcDev.techsFound |= RFAL_NFC_POLL_TECH_ST25TB;
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*!
@@ -701,9 +701,9 @@ ReturnCode RfalNfcClass::rfalNfcPollTechDetetection(void)
  * This method implements the Collision Resolution on all technologies that
  * have been detected before.
  *
- * \return  ERR_NONE         : Operation completed with no error
- * \return  ERR_BUSY         : Operation ongoing
- * \return  ERR_XXXX         : Error occurred
+ * \return  ST_ERR_NONE         : Operation completed with no error
+ * \return  ST_ERR_BUSY         : Operation ongoing
+ * \return  ST_ERR_XXXX         : Error occurred
  *
  ******************************************************************************
  */
@@ -713,7 +713,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
   uint8_t    devCnt;
   ReturnCode err;
 
-  err    = ERR_NONE;
+  err    = ST_ERR_NONE;
   devCnt = 0;
   i      = 0;
 
@@ -724,7 +724,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
 
   /* Check if device limit has been reached */
   if (gNfcDev.devCnt >= gNfcDev.disc.devLimit) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /*******************************************************************************/
@@ -739,7 +739,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* Ensure GT again as other technologies have also been polled */
 
     err = rfalNfcaPollerFullCollisionResolution(gNfcDev.disc.compMode, (gNfcDev.disc.devLimit - gNfcDev.devCnt), nfcaDevList, &devCnt);
-    if ((err == ERR_NONE) && (devCnt != 0U)) {
+    if ((err == ST_ERR_NONE) && (devCnt != 0U)) {
       for (i = 0; i < devCnt; i++) {                                            /* Copy devices found form local Nfca list into global device list */
         gNfcDev.devList[gNfcDev.devCnt].type     = RFAL_NFC_LISTEN_TYPE_NFCA;
         gNfcDev.devList[gNfcDev.devCnt].dev.nfca = nfcaDevList[i];
@@ -747,7 +747,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
       }
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
   /*******************************************************************************/
@@ -762,7 +762,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* Ensure GT again as other technologies have also been polled */
 
     err = rfalNfcbPollerCollisionResolution(gNfcDev.disc.compMode, (gNfcDev.disc.devLimit - gNfcDev.devCnt), nfcbDevList, &devCnt);
-    if ((err == ERR_NONE) && (devCnt != 0U)) {
+    if ((err == ST_ERR_NONE) && (devCnt != 0U)) {
       for (i = 0; i < devCnt; i++) {                                            /* Copy devices found form local Nfcb list into global device list */
         gNfcDev.devList[gNfcDev.devCnt].type     = RFAL_NFC_LISTEN_TYPE_NFCB;
         gNfcDev.devList[gNfcDev.devCnt].dev.nfcb = nfcbDevList[i];
@@ -770,7 +770,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
       }
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
   /*******************************************************************************/
@@ -785,7 +785,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* Ensure GT again as other technologies have also been polled */
 
     err = rfalNfcfPollerCollisionResolution(gNfcDev.disc.compMode, (gNfcDev.disc.devLimit - gNfcDev.devCnt), nfcfDevList, &devCnt);
-    if ((err == ERR_NONE) && (devCnt != 0U)) {
+    if ((err == ST_ERR_NONE) && (devCnt != 0U)) {
       for (i = 0; i < devCnt; i++) {                                            /* Copy devices found form local Nfcf list into global device list */
         gNfcDev.devList[gNfcDev.devCnt].type     = RFAL_NFC_LISTEN_TYPE_NFCF;
         gNfcDev.devList[gNfcDev.devCnt].dev.nfcf = nfcfDevList[i];
@@ -793,7 +793,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
       }
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
   /*******************************************************************************/
@@ -808,7 +808,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* Ensure GT again as other technologies have also been polled */
 
     err = rfalNfcvPollerCollisionResolution(RFAL_COMPLIANCE_MODE_NFC, (gNfcDev.disc.devLimit - gNfcDev.devCnt), nfcvDevList, &devCnt);
-    if ((err == ERR_NONE) && (devCnt != 0U)) {
+    if ((err == ST_ERR_NONE) && (devCnt != 0U)) {
       for (i = 0; i < devCnt; i++) {                                            /* Copy devices found form local Nfcf list into global device list */
         gNfcDev.devList[gNfcDev.devCnt].type     = RFAL_NFC_LISTEN_TYPE_NFCV;
         gNfcDev.devList[gNfcDev.devCnt].dev.nfcv = nfcvDevList[i];
@@ -816,7 +816,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
       }
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
   /*******************************************************************************/
@@ -831,7 +831,7 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
     EXIT_ON_ERR(err, rfalRfDev->rfalFieldOnAndStartGT());                                    /* Ensure GT again as other technologies have also been polled */
 
     err = rfalSt25tbPollerCollisionResolution((gNfcDev.disc.devLimit - gNfcDev.devCnt), st25tbDevList, &devCnt);
-    if ((err == ERR_NONE) && (devCnt != 0U)) {
+    if ((err == ST_ERR_NONE) && (devCnt != 0U)) {
       for (i = 0; i < devCnt; i++) {                                            /* Copy devices found form local Nfcf list into global device list */
         gNfcDev.devList[gNfcDev.devCnt].type       = RFAL_NFC_LISTEN_TYPE_ST25TB;
         gNfcDev.devList[gNfcDev.devCnt].dev.st25tb = st25tbDevList[i];
@@ -839,10 +839,10 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
       }
     }
 
-    return ERR_BUSY;
+    return ST_ERR_BUSY;
   }
 
-  return ERR_NONE;                                                                  /* All technologies have been performed */
+  return ST_ERR_NONE;                                                                  /* All technologies have been performed */
 }
 
 
@@ -855,9 +855,9 @@ ReturnCode RfalNfcClass::rfalNfcPollCollResolution(void)
  *
  * \param[in]  devIt : device's position on the list to be activated
  *
- * \return  ERR_NONE         : Operation completed with no error
- * \return  ERR_BUSY         : Operation ongoing
- * \return  ERR_XXXX         : Error occurred
+ * \return  ST_ERR_NONE         : Operation completed with no error
+ * \return  ST_ERR_BUSY         : Operation ongoing
+ * \return  ST_ERR_XXXX         : Error occurred
  *
  ******************************************************************************
  */
@@ -865,13 +865,13 @@ ReturnCode RfalNfcClass::rfalNfcPollActivation(uint8_t devIt)
 {
   ReturnCode err;
 
-  err = ERR_NONE;
+  err = ST_ERR_NONE;
 
   /* Suppress warning when specific RFAL features have been disabled */
   NO_WARNING(err);
 
   if (devIt > gNfcDev.devCnt) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   switch (gNfcDev.devList[devIt].type) {
@@ -953,7 +953,7 @@ ReturnCode RfalNfcClass::rfalNfcPollActivation(uint8_t devIt)
 
         /*******************************************************************************/
         default:
-          return ERR_WRONG_STATE;
+          return ST_ERR_WRONG_STATE;
       }
       break;
 
@@ -1051,11 +1051,11 @@ ReturnCode RfalNfcClass::rfalNfcPollActivation(uint8_t devIt)
 
     /*******************************************************************************/
     default:
-      return ERR_WRONG_STATE;
+      return ST_ERR_WRONG_STATE;
   }
 
   gNfcDev.activeDev = &gNfcDev.devList[devIt];                                      /* Assign active device to be used further on */
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*!
@@ -1069,9 +1069,9 @@ ReturnCode RfalNfcClass::rfalNfcPollActivation(uint8_t devIt)
  * \param[in]  atrReq    : received ATR_REQ
  * \param[in]  atrReqLen : received ATR_REQ size
  *
- * \return  ERR_NONE     : Operation completed with no error
- * \return  ERR_BUSY     : Operation ongoing
- * \return  ERR_XXXX     : Error occurred
+ * \return  ST_ERR_NONE     : Operation completed with no error
+ * \return  ST_ERR_BUSY     : Operation ongoing
+ * \return  ST_ERR_XXXX     : Error occurred
  *
  ******************************************************************************
  */
@@ -1108,7 +1108,7 @@ ReturnCode RfalNfcClass::rfalNfcNfcDepActivate(rfalNfcDevice *device, rfalNfcDep
     /* Perform NFC-DEP (P2P) activation: ATR and PSL if supported */
     return rfalNfcDepInitiatorHandleActivation(&initParam, RFAL_BR_424, &device->proto.nfcDep);
   } else {
-    return ERR_INTERNAL;
+    return ST_ERR_INTERNAL;
   }
 }
 
@@ -1119,9 +1119,9 @@ ReturnCode RfalNfcClass::rfalNfcNfcDepActivate(rfalNfcDevice *device, rfalNfcDep
  *
  * This method Deactivates the device if a deactivation procedure exists
  *
- * \return  ERR_NONE  : Operation completed with no error
- * \return  ERR_BUSY  : Operation ongoing
- * \return  ERR_XXXX  : Error occurred
+ * \return  ST_ERR_NONE  : Operation completed with no error
+ * \return  ST_ERR_BUSY  : Operation ongoing
+ * \return  ST_ERR_XXXX  : Error occurred
  *
  ******************************************************************************
  */
@@ -1145,7 +1145,7 @@ ReturnCode RfalNfcClass::rfalNfcDeactivation(void)
         break;
 
       default:
-        return ERR_REQUEST;
+        return ST_ERR_REQUEST;
     }
   }
 
@@ -1154,7 +1154,7 @@ ReturnCode RfalNfcClass::rfalNfcDeactivation(void)
   rfalRfDev->rfalFieldOff();
 
   gNfcDev.activeDev = NULL;
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 

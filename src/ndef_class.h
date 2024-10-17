@@ -205,9 +205,9 @@ class NdefClass {
      *
      * \param[in]   dev    : ndef Device
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerContextInitialization(rfalNfcDevice *dev);
@@ -221,11 +221,11 @@ class NdefClass {
      *
      * \param[out]  info   : ndef Information (optional parameter, NULL may be used when no NDEF Information is needed)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Detection failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Detection failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerNdefDetect(ndefInfo *info);
@@ -242,11 +242,11 @@ class NdefClass {
      * \param[out]  buf    : buffer to place the data read from the tag
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen);
@@ -262,11 +262,11 @@ class NdefClass {
      * \param[in]   buf    : data to write
      * \param[in]   len    : buf len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len);
@@ -285,11 +285,11 @@ class NdefClass {
      * \param[in]   bufLen : buffer length
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen);
@@ -306,11 +306,11 @@ class NdefClass {
      * \param[in]   buf    : raw message buffer
      * \param[in]   bufLen : buffer length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen);
@@ -327,11 +327,11 @@ class NdefClass {
      * \param[in]   cc      : Capability Container
      * \param[in]   options : specific flags
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerTagFormat(const ndefCapabilityContainer *cc, uint32_t options);
@@ -345,11 +345,11 @@ class NdefClass {
      *
      * \param[in]   rawMessageLen: len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerWriteRawMessageLen(uint32_t rawMessageLen);
@@ -363,11 +363,11 @@ class NdefClass {
     *
     * \param[in] message: Message to write
     *
-    * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-    * \return ERR_REQUEST      : write failed
-    * \return ERR_PARAM        : Invalid parameter
-    * \return ERR_PROTO        : Protocol error
-    * \return ERR_NONE         : No error
+    * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+    * \return ST_ERR_REQUEST      : write failed
+    * \return ST_ERR_PARAM        : Invalid parameter
+    * \return ST_ERR_PROTO        : Protocol error
+    * \return ST_ERR_NONE         : No error
     *****************************************************************************
     */
     ReturnCode ndefPollerWriteMessage(const ndefMessage *message);
@@ -380,10 +380,10 @@ class NdefClass {
      * This method check whether an NFC tag is still present in the operating field
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefPollerCheckPresence();
@@ -397,9 +397,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefPollerCheckAvailableSpace(uint32_t messageLen);
@@ -413,9 +413,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefPollerBeginWriteMessage(uint32_t messageLen);
@@ -429,9 +429,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefPollerEndWriteMessage(uint32_t messageLen);
@@ -455,9 +455,9 @@ class NdefClass {
      *
      * \param[in]   dev    : ndef Device
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerContextInitialization(rfalNfcDevice *dev);
@@ -471,11 +471,11 @@ class NdefClass {
      *
      * \param[out]  info   : ndef Information (optional parameter, NULL may be used when no NDEF Information is needed)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Detection failed (application or ccfile not found)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Detection failed (application or ccfile not found)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerNdefDetect(ndefInfo *info);
@@ -492,11 +492,11 @@ class NdefClass {
      * \param[out]  buf    : buffer to place the data read from the tag
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen);
@@ -512,11 +512,11 @@ class NdefClass {
      * \param[in]   buf    : data to write
      * \param[in]   len    : buf len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len);
@@ -534,11 +534,11 @@ class NdefClass {
      * \param[in]   bufLen : buffer length
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen);
@@ -560,11 +560,11 @@ class NdefClass {
      * \param[in]   buf    : raw message buffer
      * \param[in]   bufLen : buffer length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen);
@@ -578,11 +578,11 @@ class NdefClass {
      *
      * \param[in]   rawMessageLen: len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerWriteRawMessageLen(uint32_t rawMessageLen);
@@ -603,11 +603,11 @@ class NdefClass {
      * \param[in]   cc     : Capability Container
      * \param[in]   options: specific flags
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerTagFormat(const ndefCapabilityContainer *cc, uint32_t options);
@@ -620,10 +620,10 @@ class NdefClass {
      * This method checks whether a T2T tag is still present in the operating field
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerCheckPresence();
@@ -637,9 +637,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerCheckAvailableSpace(uint32_t messageLen);
@@ -653,9 +653,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerBeginWriteMessage(uint32_t messageLen);
@@ -669,9 +669,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT2TPollerEndWriteMessage(uint32_t messageLen);
@@ -695,9 +695,9 @@ class NdefClass {
      *
      * \param[in]   dev    : ndef Device
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerContextInitialization(rfalNfcDevice *dev);
@@ -711,11 +711,11 @@ class NdefClass {
      *
      * \param[out]  info   : ndef Information (optional parameter, NULL may be used when no NDEF Information is needed)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Detection failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Detection failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerNdefDetect(ndefInfo *info);
@@ -732,11 +732,11 @@ class NdefClass {
      * \param[out]  buf    : buffer to place the data read from the tag
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen);
@@ -752,11 +752,11 @@ class NdefClass {
      * \param[in]   buf    : data to write
      * \param[in]   len    : buf len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len);
@@ -774,11 +774,11 @@ class NdefClass {
      * \param[in]   bufLen : buffer length
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen);
@@ -800,11 +800,11 @@ class NdefClass {
      * \param[in]   buf    : raw message buffer
      * \param[in]   bufLen : buffer length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen);
@@ -818,11 +818,11 @@ class NdefClass {
      *
      * \param[in]   rawMessageLen: len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerWriteRawMessageLen(uint32_t rawMessageLen);
@@ -842,11 +842,11 @@ class NdefClass {
      * \param[in]   cc     : Capability Container
      * \param[in]   options: specific flags
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerTagFormat(const ndefCapabilityContainer *cc, uint32_t options);
@@ -859,10 +859,10 @@ class NdefClass {
      * This method checks whether a T3T tag is still present in the operating field
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerCheckPresence();
@@ -876,9 +876,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerCheckAvailableSpace(uint32_t messageLen);
@@ -892,9 +892,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerBeginWriteMessage(uint32_t messageLen);
@@ -908,9 +908,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT3TPollerEndWriteMessage(uint32_t messageLen);
@@ -934,9 +934,9 @@ class NdefClass {
      *
      * \param[in]   dev    : ndef Device
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerContextInitialization(rfalNfcDevice *dev);
@@ -950,11 +950,11 @@ class NdefClass {
      *
      * \param[out]  info   : ndef Information (optional parameter, NULL may be used when no NDEF Information is needed)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Detection failed (application or ccfile not found)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Detection failed (application or ccfile not found)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerNdefDetect(ndefInfo *info);
@@ -968,11 +968,11 @@ class NdefClass {
      * is not found, a Select NDEF tag V1 application is sent/
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Application not found
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Application not found
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerSelectNdefTagApplication();
@@ -991,11 +991,11 @@ class NdefClass {
      *
      * \param[in]   fileId : file identifier
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : File not found
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : File not found
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerSelectFile(const uint8_t *fileId);
@@ -1011,11 +1011,11 @@ class NdefClass {
      * \param[in]   offset : file offset of where to star reading data; valid range 0000h-7FFFh
      * \param[in]   len    : requested len (short field coding)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerReadBinary(uint16_t offset, uint8_t len);
@@ -1031,11 +1031,11 @@ class NdefClass {
      * \param[in]   offset : file offset of where to star reading data; valid range 0000h-7FFFh
      * \param[in]   len    : requested len (short field coding)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerReadBinaryODO(uint32_t offset, uint8_t len);
@@ -1052,11 +1052,11 @@ class NdefClass {
      * \param[out]  buf    : buffer to place the data read from the tag
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen);
@@ -1072,11 +1072,11 @@ class NdefClass {
      * \param[in]   data   : data to be written
      * \param[in]   len    : data length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerWriteBinary(uint16_t offset, const uint8_t *data, uint8_t len);
@@ -1093,11 +1093,11 @@ class NdefClass {
      * \param[in]   data   : data to be written
      * \param[in]   len    : data length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerWriteBinaryODO(uint32_t offset, const uint8_t *data, uint8_t len);
@@ -1112,11 +1112,11 @@ class NdefClass {
      * \param[in]   buf    : data to write
      * \param[in]   len    : buf len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len);
@@ -1139,11 +1139,11 @@ class NdefClass {
      * \param[in]   bufLen : buffer length
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen);
@@ -1165,11 +1165,11 @@ class NdefClass {
      * \param[in]   buf    : raw message buffer
      * \param[in]   bufLen : buffer length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen);
@@ -1183,11 +1183,11 @@ class NdefClass {
      *
      * \param[in]   rawMessageLen: len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerWriteRawMessageLen(uint32_t rawMessageLen);
@@ -1204,11 +1204,11 @@ class NdefClass {
      * \param[in]   cc     : Capability Container
      * \param[in]   options: specific flags
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed (SW1SW2 <> 9000h)
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerTagFormat(const ndefCapabilityContainer *cc, uint32_t options);
@@ -1221,10 +1221,10 @@ class NdefClass {
      * This method checks whether a T4T tag is still present in the operating field
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerCheckPresence();
@@ -1238,9 +1238,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerCheckAvailableSpace(uint32_t messageLen);
@@ -1254,9 +1254,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerBeginWriteMessage(uint32_t messageLen);
@@ -1270,9 +1270,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT4TPollerEndWriteMessage(uint32_t messageLen);
@@ -1296,9 +1296,9 @@ class NdefClass {
      *
      * \param[in]   dev    : ndef Device
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerContextInitialization(rfalNfcDevice *dev);
@@ -1313,11 +1313,11 @@ class NdefClass {
      *
      * \param[out]  info   : ndef Information (optional parameter, NULL may be used when no NDEF Information is needed)
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : Detection failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : Detection failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerNdefDetect(ndefInfo *info);
@@ -1334,11 +1334,11 @@ class NdefClass {
      * \param[out]  buf    : buffer to place the data read from the tag
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerReadBytes(uint32_t offset, uint32_t len, uint8_t *buf, uint32_t *rcvdLen);
@@ -1354,11 +1354,11 @@ class NdefClass {
      * \param[in]   buf    : data to write
      * \param[in]   len    : buf len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerWriteBytes(uint32_t offset, const uint8_t *buf, uint32_t len);
@@ -1376,11 +1376,11 @@ class NdefClass {
      * \param[in]   bufLen : buffer length
      * \param[out]  rcvdLen: received length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : read failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : read failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerReadRawMessage(uint8_t *buf, uint32_t bufLen, uint32_t *rcvdLen);
@@ -1397,11 +1397,11 @@ class NdefClass {
      * \param[in]   buf    : raw message buffer
      * \param[in]   bufLen : buffer length
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerWriteRawMessage(const uint8_t *buf, uint32_t bufLen);
@@ -1415,11 +1415,11 @@ class NdefClass {
      *
      * \param[in]   rawMessageLen: len
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerWriteRawMessageLen(uint32_t rawMessageLen);
@@ -1434,7 +1434,7 @@ class NdefClass {
      * with the value provided by the user.
      * When the cc parameter is not provided (i.e. NULL), this method
      * retrieves the appropriate CC field from (Extended) Get System Information
-     * or returns ERR_REQUEST if (Extended) Get System Information is not supported.
+     * or returns ST_ERR_REQUEST if (Extended) Get System Information is not supported.
      * The option parameter is used in case of NULL cc parameter to choose
      * between Android CC format (default when option = 0)
      * or NFC Forum Format (option = NDEF_T5T_FORMAT_OPTION_NFC_FORUM)
@@ -1443,11 +1443,11 @@ class NdefClass {
      * \param[in]   cc      : Capability Container
      * \param[in]   options : specific flags
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_REQUEST      : write failed
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_REQUEST      : write failed
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerTagFormat(const ndefCapabilityContainer *cc, uint32_t options);
@@ -1460,10 +1460,10 @@ class NdefClass {
      * This method check whether a T5T tag is still present in the operating field
      *
      *
-     * \return ERR_WRONG_STATE  : RFAL not initialized or mode not set
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_PROTO        : Protocol error
-     * \return ERR_NONE         : No error
+     * \return ST_ERR_WRONG_STATE  : RFAL not initialized or mode not set
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_PROTO        : Protocol error
+     * \return ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerCheckPresence();
@@ -1477,9 +1477,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerCheckAvailableSpace(uint32_t messageLen);
@@ -1493,9 +1493,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerBeginWriteMessage(uint32_t messageLen);
@@ -1509,9 +1509,9 @@ class NdefClass {
      *
      * \param[in]   messageLen: message length
      *
-     * \return ERR_PARAM        : Invalid parameter
-     * \return ERR_NOMEM        : not enough space
-     * \return ERR_NONE         : Enough space for message of messageLen length
+     * \return ST_ERR_PARAM        : Invalid parameter
+     * \return ST_ERR_NOMEM        : not enough space
+     * \return ST_ERR_NONE         : Enough space for message of messageLen length
      *****************************************************************************
      */
     ReturnCode ndefT5TPollerEndWriteMessage(uint32_t messageLen);
@@ -1530,7 +1530,7 @@ class NdefClass {
      *
      * \param[in,out] message to initialize
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMessageInit(ndefMessage *message);
@@ -1545,7 +1545,7 @@ class NdefClass {
      * \param[in]  message
      * \param[out] info: e.g. message length in bytes, number of records
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMessageGetInfo(const ndefMessage *message, ndefMessageInfo *info);
@@ -1572,7 +1572,7 @@ class NdefClass {
      * \param[in]     record:  Record to append
      * \param[in,out] message: Message to be appended with the given record
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMessageAppend(ndefMessage *message, ndefRecord *record);
@@ -1587,7 +1587,7 @@ class NdefClass {
      * \param[in]  bufPayload: Payload buffer to convert into message
      * \param[out] message:    Message created from the raw buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMessageDecode(const ndefConstBuffer *bufPayload, ndefMessage *message);
@@ -1608,7 +1608,7 @@ class NdefClass {
      *                            On success, it is updated with the actual buffer
      *                            length used to contain the converted message.
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMessageEncode(const ndefMessage *message, ndefBuffer *bufPayload);
@@ -1629,7 +1629,7 @@ class NdefClass {
      *
      * \param[in,out] record to reset
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordReset(ndefRecord *record);
@@ -1647,7 +1647,7 @@ class NdefClass {
      * \param[in]     bufId:      Id buffer
      * \param[in]     bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordInit(ndefRecord *record, uint8_t tnf, const ndefConstBuffer8 *bufType, const ndefConstBuffer8 *bufId, const ndefConstBuffer *bufPayload);
@@ -1691,7 +1691,7 @@ class NdefClass {
      * \param[in]     tnf:     TNF type
      * \param[in]     bufType: Type buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordSetType(ndefRecord *record, uint8_t tnf, const ndefConstBuffer8 *bufType);
@@ -1707,7 +1707,7 @@ class NdefClass {
      * \param[out] tnf:     Pointer to the TNF type
      * \param[out] bufType: Type string buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordGetType(const ndefRecord *record, uint8_t *tnf, ndefConstBuffer8 *bufType);
@@ -1735,7 +1735,7 @@ class NdefClass {
      * \param[in]  record: Record to set the Id
      * \param[out] bufId:  Id buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordSetId(ndefRecord *record, const ndefConstBuffer8 *bufId);
@@ -1750,7 +1750,7 @@ class NdefClass {
      * \param[in]  record: Record to get the Id from
      * \param[out] bufId:  Id buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordGetId(const ndefRecord *record, ndefConstBuffer8 *bufId);
@@ -1765,7 +1765,7 @@ class NdefClass {
      * \param[in,out] record:     Record to set the payload
      * \param[in]     bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordSetPayload(ndefRecord *record, const ndefConstBuffer *bufPayload);
@@ -1780,7 +1780,7 @@ class NdefClass {
      * \param[in]  record:     Record to get the payload from
      * \param[out] bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordGetPayload(const ndefRecord *record, ndefConstBuffer *bufPayload);
@@ -1795,7 +1795,7 @@ class NdefClass {
      * \param[in]  bufPayload: Payload buffer to convert into record
      * \param[out] record:     Record created from the raw buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordDecode(const ndefConstBuffer *bufPayload, ndefRecord *record);
@@ -1819,7 +1819,7 @@ class NdefClass {
      *                           On success, it is updated with the actual buffer
      *                           length used to contain the converted record.
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordEncodeHeader(const ndefRecord *record, ndefBuffer *bufHeader);
@@ -1840,7 +1840,7 @@ class NdefClass {
      *                           On success, it is updated with the actual buffer
      *                           length used to contain the converted record.
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordEncode(const ndefRecord *record, ndefBuffer *bufRecord);
@@ -1871,7 +1871,7 @@ class NdefClass {
      * \param[out] bufPayloadItem: The payload item returned
      * \param[in]  begin:          Tell to return the first payload item or the next one
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     const uint8_t *ndefRecordGetPayloadItem(const ndefRecord *record, ndefConstBuffer *bufPayloadItem, bool begin);
@@ -1891,7 +1891,7 @@ class NdefClass {
      * \param[out] wifi:       wifi type to initialize
      * \param[in]  wifiConfig: wifi configuration to use
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefWifi(ndefType *wifi, const ndefTypeWifi *wifiConfig);
@@ -1904,7 +1904,7 @@ class NdefClass {
      * \param[in]  wifi:       wifi type to get information from
      * \param[out] wifiConfig: wifi configuration
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetWifi(const ndefType *wifi, ndefTypeWifi *wifiConfig);
@@ -1917,7 +1917,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] wifi:   The converted wifi type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToWifi(const ndefRecord *record, ndefType *wifi);
@@ -1930,7 +1930,7 @@ class NdefClass {
      * \param[in]  wifi:   wifi type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefWifiToRecord(const ndefType *wifi, ndefRecord *record);
@@ -1956,7 +1956,7 @@ class NdefClass {
      * \param[in]  bufType:    Type buffer
      * \param[in]  bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMedia(ndefType *media, const ndefConstBuffer8 *bufType, const ndefConstBuffer *bufPayload);
@@ -1970,7 +1970,7 @@ class NdefClass {
      * \param[out] bufType:    Type buffer
      * \param[out] bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetMedia(const ndefType *media, ndefConstBuffer8 *bufType, ndefConstBuffer *bufPayload);
@@ -1983,7 +1983,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] media:  The converted Media type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToMedia(const ndefRecord *record, ndefType *media);
@@ -1996,7 +1996,7 @@ class NdefClass {
      * \param[in]  media:  Type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefMediaToRecord(const ndefType *media, ndefRecord *record);
@@ -2015,7 +2015,7 @@ class NdefClass {
      * \param[in]  bufVCardInput:      vCard buffer content
      * \param[in]  bufVCardInputCount: Number of vCard entries
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefVCard(ndefType *vCard, const ndefVCardInput *bufVCardInput, uint32_t bufVCardInputCount);
@@ -2030,7 +2030,7 @@ class NdefClass {
      * \param[out] bufSubType: SubType buffer extracted. Can be NULL is not required
      * \param[out] bufValue:   Value buffer extracted
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetVCard(const ndefType *vCard, const ndefConstBuffer *bufType, ndefConstBuffer *bufSubType, ndefConstBuffer *bufValue);
@@ -2043,7 +2043,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] vCard:  The converted vCard type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToVCard(const ndefRecord *record, ndefType *vCard);
@@ -2056,7 +2056,7 @@ class NdefClass {
      * \param[in]  vCard:  vCard type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefVCardToRecord(const ndefType *vCard, ndefRecord *record);
@@ -2080,7 +2080,7 @@ class NdefClass {
      *
      * \param[out] empty: Type to initialize
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefEmptyType(ndefType *empty);
@@ -2093,7 +2093,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] empty:  The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToEmptyType(const ndefRecord *record, ndefType *empty);
@@ -2106,7 +2106,7 @@ class NdefClass {
      * \param[in]  empty:  Type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefEmptyTypeToRecord(const ndefType *empty, ndefRecord *record);
@@ -2125,7 +2125,7 @@ class NdefClass {
      * \param[in]  devInfoData:      Device Information data
      * \param[in]  devInfoDataCount: Number of Device Information data
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdDeviceInfo(ndefType *devInfo, const ndefDeviceInfoEntry *devInfoData, uint8_t devInfoDataCount);
@@ -2138,7 +2138,7 @@ class NdefClass {
      * \param[in]  devInfo:     Type to get information from
      * \param[out] devInfoData: Device Information data
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetRtdDeviceInfo(const ndefType *devInfo, ndefTypeRtdDeviceInfo *devInfoData);
@@ -2151,7 +2151,7 @@ class NdefClass {
      * \param[in]  record:  Record to convert
      * \param[out] devInfo: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToRtdDeviceInfo(const ndefRecord *record, ndefType *devInfo);
@@ -2164,7 +2164,7 @@ class NdefClass {
      * \param[in]  devInfo: Type to convert
      * \param[out] record:  The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdDeviceInfoToRecord(const ndefType *devInfo, ndefRecord *record);
@@ -2185,7 +2185,7 @@ class NdefClass {
      * \param[in]  bufLanguageCode: ISO/IANA language code buffer
      * \param[in]  bufSentence:     Actual text buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdText(ndefType *text, uint8_t utfEncoding, const ndefConstBuffer8 *bufLanguageCode, const ndefConstBuffer *bufSentence);
@@ -2200,7 +2200,7 @@ class NdefClass {
      * \param[out] bufLanguageCode: ISO/IANA language code buffer
      * \param[out] bufSentence:     Actual text buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetRtdText(const ndefType *text, uint8_t *utfEncoding, ndefConstBuffer8 *bufLanguageCode, ndefConstBuffer *bufSentence);
@@ -2213,7 +2213,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] text:   The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToRtdText(const ndefRecord *record, ndefType *text);
@@ -2226,7 +2226,7 @@ class NdefClass {
      * \param[in]  text:   Type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdTextToRecord(const ndefType *text, ndefRecord *record);
@@ -2245,7 +2245,7 @@ class NdefClass {
      * \param[in]  protocol:     URI protocol
      * \param[in]  bufUriString: URI string buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdUri(ndefType *uri, uint8_t protocol, const ndefConstBuffer *bufUriString);
@@ -2259,7 +2259,7 @@ class NdefClass {
      * \param[out] bufProtocol:  URI protocol buffer
      * \param[out] bufUriString: URI string buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetRtdUri(const ndefType *uri, ndefConstBuffer *bufProtocol, ndefConstBuffer *bufUriString);
@@ -2272,7 +2272,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] uri:    The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToRtdUri(const ndefRecord *record, ndefType *uri);
@@ -2285,7 +2285,7 @@ class NdefClass {
      * \param[in]  uri:    Type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdUriToRecord(const ndefType *uri, ndefRecord *record);
@@ -2303,7 +2303,7 @@ class NdefClass {
      * \param[out] aar:        Type to initialize
      * \param[in]  bufPayload: Payload buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdAar(ndefType *aar, const ndefConstBuffer *bufPayload);
@@ -2316,7 +2316,7 @@ class NdefClass {
      * \param[in]  aar:          Type to get information from
      * \param[out] bufAarString: AAR string buffer
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefGetRtdAar(const ndefType *aar, ndefConstBuffer *bufAarString);
@@ -2329,7 +2329,7 @@ class NdefClass {
      * \param[in]  record: Record to convert
      * \param[out] aar:    The converted AAR external type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToRtdAar(const ndefRecord *record, ndefType *aar);
@@ -2342,7 +2342,7 @@ class NdefClass {
      * \param[in]  aar:    AAR External type to convert
      * \param[out] record: The converted type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRtdAarToRecord(const ndefType *aar, ndefRecord *record);
@@ -2362,7 +2362,7 @@ class NdefClass {
      * \param[in]  record: Record to get the type from
      * \param[out] typeId: The record RTD type
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordTypeStringToTypeId(const ndefRecord *record, ndefTypeId *typeId);
@@ -2375,7 +2375,7 @@ class NdefClass {
      * \param[in]  record: Record to read
      * \param[out] type:   Type to store the converted record
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordToType(const ndefRecord *record, ndefType *type);
@@ -2388,7 +2388,7 @@ class NdefClass {
      * \param[in]  type:    Pointer to the type to read data from
      * \param[out] record:  Record to fill
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefTypeToRecord(const ndefType *type, ndefRecord *record);
@@ -2401,7 +2401,7 @@ class NdefClass {
      * \param[in]  record: Record
      * \param[out] type:   NDEF type structure
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     ReturnCode ndefRecordSetNdefType(ndefRecord *record, const ndefType *type);
@@ -2413,7 +2413,7 @@ class NdefClass {
      *
      * \param[in] record: Record
      *
-     * \return ERR_NONE if successful or a standard error code
+     * \return ST_ERR_NONE if successful or a standard error code
      *****************************************************************************
      */
     const ndefType *ndefRecordGetNdefType(const ndefRecord *record);

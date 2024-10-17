@@ -100,7 +100,7 @@ ReturnCode NdefClass::ndefTypeStringToTypeId(uint8_t tnf, const ndefConstBuffer8
   uint32_t i;
 
   if ((bufTypeString == NULL) || (typeId == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   for (i = 0; i < SIZEOF_ARRAY(typeTable); i++) {
@@ -110,18 +110,18 @@ ReturnCode NdefClass::ndefTypeStringToTypeId(uint8_t tnf, const ndefConstBuffer8
         if (bufTypeString->length == 0U) {
           /* Empty type */
           *typeId = typeTable[i].typeId;
-          return ERR_NONE;
+          return ST_ERR_NONE;
         } else {
           if (ST_BYTECMP(typeTable[i].bufTypeString->buffer, bufTypeString->buffer, bufTypeString->length) == 0) {
             *typeId = typeTable[i].typeId;
-            return ERR_NONE;
+            return ST_ERR_NONE;
           }
         }
       }
     }
   }
 
-  return ERR_NOTFOUND;
+  return ST_ERR_NOTFOUND;
 }
 
 
@@ -134,15 +134,15 @@ ReturnCode NdefClass::ndefRecordTypeStringToTypeId(const ndefRecord *record, nde
   ndefConstBuffer8 bufRecordType;
 
   if ((record == NULL) || (typeId == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   err = ndefRecordGetType(record, &tnf, &bufRecordType);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
   if (tnf >= NDEF_TNF_RESERVED) {
-    return ERR_INTERNAL;
+    return ST_ERR_INTERNAL;
   }
 
   switch (tnf) {
@@ -153,7 +153,7 @@ ReturnCode NdefClass::ndefRecordTypeStringToTypeId(const ndefRecord *record, nde
       err = ndefTypeStringToTypeId(tnf, &bufRecordType, typeId);
       break;
     default:
-      err = ERR_NOT_IMPLEMENTED;
+      err = ST_ERR_NOT_IMPLEMENTED;
       break;
   }
 
@@ -172,11 +172,11 @@ ReturnCode NdefClass::ndefRecordToType(const ndefRecord *record, ndefType *type)
   if (ndeftype != NULL) {
     /* Return the well-known type contained in the record */
     (void)ST_MEMCPY(type, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   err = ndefRecordTypeStringToTypeId(record, &typeId);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
 
@@ -196,7 +196,7 @@ ReturnCode NdefClass::ndefRecordToType(const ndefRecord *record, ndefType *type)
     case NDEF_TYPE_MEDIA_WIFI:
       return ndefRecordToWifi(record, type);
     default:
-      return ERR_NOT_IMPLEMENTED;
+      return ST_ERR_NOT_IMPLEMENTED;
   }
 }
 
@@ -205,7 +205,7 @@ ReturnCode NdefClass::ndefRecordToType(const ndefRecord *record, ndefType *type)
 ReturnCode NdefClass::ndefTypeToRecord(const ndefType *type, ndefRecord *record)
 {
   if (type == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (type->id) {
@@ -224,7 +224,7 @@ ReturnCode NdefClass::ndefTypeToRecord(const ndefType *type, ndefRecord *record)
     case NDEF_TYPE_MEDIA_WIFI:
       return ndefWifiToRecord(type, record);
     default:
-      return ERR_NOT_IMPLEMENTED;
+      return ST_ERR_NOT_IMPLEMENTED;
   }
 }
 
@@ -239,7 +239,7 @@ ReturnCode NdefClass::ndefRecordSetNdefType(ndefRecord *record, const ndefType *
       (type->id                > NDEF_TYPE_ID_COUNT) ||
       (type->getPayloadLength == NULL)               ||
       (type->getPayloadItem   == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   record->ndeftype = type;
@@ -248,7 +248,7 @@ ReturnCode NdefClass::ndefRecordSetNdefType(ndefRecord *record, const ndefType *
   payloadLength = ndefRecordGetPayloadLength(record);
   ndefHeaderSetValueSR(record, (payloadLength <= NDEF_SHORT_RECORD_LENGTH_MAX) ? 1 : 0);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 

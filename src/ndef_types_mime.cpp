@@ -119,7 +119,7 @@ ReturnCode NdefClass::ndefMedia(ndefType *media, const ndefConstBuffer8 *bufType
   if ((media      == NULL) ||
       (bufType    == NULL) || (bufType->buffer    == NULL) || (bufType->length    == 0U) ||
       (bufPayload == NULL) || (bufPayload->buffer == NULL) || (bufPayload->length == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   media->id               = NDEF_TYPE_MEDIA;
@@ -132,7 +132,7 @@ ReturnCode NdefClass::ndefMedia(ndefType *media, const ndefConstBuffer8 *bufType
   typeMedia->bufPayload.buffer = bufPayload->buffer;
   typeMedia->bufPayload.length = bufPayload->length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -143,7 +143,7 @@ ReturnCode NdefClass::ndefGetMedia(const ndefType *media, ndefConstBuffer8 *bufT
 
   if ((media   == NULL) || (media->id != NDEF_TYPE_MEDIA) ||
       (bufType == NULL) || (bufPayload == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   typeMedia = &media->data.media;
@@ -154,7 +154,7 @@ ReturnCode NdefClass::ndefGetMedia(const ndefType *media, ndefConstBuffer8 *bufT
   bufPayload->buffer = typeMedia->bufPayload.buffer;
   bufPayload->length = typeMedia->bufPayload.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -165,17 +165,17 @@ ReturnCode NdefClass::ndefRecordToMedia(const ndefRecord *record, ndefType *medi
   ndefConstBuffer8 bufType;
 
   if ((record == NULL) || (media == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (ndefHeaderTNF(record) != NDEF_TNF_MEDIA_TYPE) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(media, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   bufType.buffer = record->type;
@@ -192,7 +192,7 @@ ReturnCode NdefClass::ndefMediaToRecord(const ndefType *media, ndefRecord *recor
 
   if ((media  == NULL) || (media->id != NDEF_TYPE_MEDIA) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   typeMedia = &media->data.media;
@@ -203,7 +203,7 @@ ReturnCode NdefClass::ndefMediaToRecord(const ndefType *media, ndefRecord *recor
 
   (void)ndefRecordSetPayload(record, &typeMedia->bufPayload);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -422,7 +422,7 @@ ReturnCode NdefClass::ndefVCard(ndefType *vCard, const ndefVCardInput *bufVCardI
 
   if ((vCard == NULL)            || (bufVCardInput == NULL) ||
       (bufVCardInputCount == 0U) || (bufVCardInputCount > NDEF_VCARD_ENTRY_MAX)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   vCard->id               = NDEF_TYPE_MEDIA_VCARD;
@@ -451,7 +451,7 @@ ReturnCode NdefClass::ndefVCard(ndefType *vCard, const ndefVCardInput *bufVCardI
     vCardData->entry[i].bufValueLength   = (uint16_t)bufVCardInput[i].bufValue->length;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -463,7 +463,7 @@ ReturnCode NdefClass::ndefGetVCard(const ndefType *vCard, const ndefConstBuffer 
 
   if ((vCard   == NULL) || (vCard->id != NDEF_TYPE_MEDIA_VCARD) ||
       (bufType == NULL) || (bufSubType == NULL) || (bufValue == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   vCardData = &vCard->data.vCard;
@@ -485,13 +485,13 @@ ReturnCode NdefClass::ndefGetVCard(const ndefType *vCard, const ndefConstBuffer 
           bufValue->buffer = vCardData->entry[i].bufValueBuffer;
           bufValue->length = vCardData->entry[i].bufValueLength;
 
-          return ERR_NONE;
+          return ST_ERR_NONE;
         }
       }
     }
   }
 
-  return ERR_NOTFOUND;
+  return ST_ERR_NOTFOUND;
 }
 
 
@@ -503,7 +503,7 @@ ReturnCode NdefClass::ndefVCardFindMarker(const ndefConstBuffer *bufPayload, con
   if ((bufPayload == NULL) || (bufPayload->buffer == NULL) ||
       (bufMarker  == NULL) || (bufMarker->buffer  == NULL) ||
       (offset     == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   tempOffset = 0;
@@ -512,13 +512,13 @@ ReturnCode NdefClass::ndefVCardFindMarker(const ndefConstBuffer *bufPayload, con
       // TODO Convert To Upper to be case insensitive
       if (ST_BYTECMP(&bufPayload->buffer[tempOffset], bufMarker->buffer, bufMarker->length) == 0) {
         *offset = tempOffset;
-        return ERR_NONE;
+        return ST_ERR_NONE;
       }
     }
     tempOffset++;
   }
 
-  return ERR_NOTFOUND;
+  return ST_ERR_NOTFOUND;
 }
 
 
@@ -531,11 +531,11 @@ ReturnCode NdefClass::ndefVCardExtractLine(const ndefConstBuffer *bufPayload, co
   if ((bufPayload == NULL) || (bufPayload->buffer == NULL) ||
       (bufMarker  == NULL) || (bufMarker->buffer  == NULL) ||
       (bufLine    == NULL) || (bufLine->buffer    == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   err = ndefVCardFindMarker(bufPayload, bufMarker, &markerOffset);
-  if (err == ERR_NONE) {
+  if (err == ST_ERR_NONE) {
     /* Return up to the marker */
     bufLine->buffer = bufPayload->buffer;
     bufLine->length = markerOffset;
@@ -545,7 +545,7 @@ ReturnCode NdefClass::ndefVCardExtractLine(const ndefConstBuffer *bufPayload, co
     bufLine->length = bufPayload->length;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -558,12 +558,12 @@ ReturnCode NdefClass::ndefVCardParseLine(const ndefConstBuffer *bufLine, ndefVCa
   uint32_t colonOffset;
 
   if ((bufLine == NULL) || (bufLine->buffer == NULL) || (vCardEntry == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Look for the type delimiter colon ":" */
   err = ndefVCardFindMarker(bufLine, &bufDelimiterColon, &colonOffset);
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     /* Invalid line */
     return err;
   }
@@ -577,7 +577,7 @@ ReturnCode NdefClass::ndefVCardParseLine(const ndefConstBuffer *bufLine, ndefVCa
 
   /* Look for any subtype delimiter semicolon ";" */
   err = ndefVCardFindMarker(&bufKeyword, &bufDelimiterSemicolon, &semicolonOffset);
-  if (err == ERR_NONE) {
+  if (err == ST_ERR_NONE) {
     /* Subtype found (remove the leading ";") */
     vCardEntry->bufSubTypeBuffer = &bufLine->buffer[semicolonOffset + 1U];
     vCardEntry->bufSubTypeLength = (uint8_t)(colonOffset - semicolonOffset - 1U);
@@ -590,7 +590,7 @@ ReturnCode NdefClass::ndefVCardParseLine(const ndefConstBuffer *bufLine, ndefVCa
   vCardEntry->bufValueBuffer = &bufLine->buffer[colonOffset + 1U];
   vCardEntry->bufValueLength = (uint16_t)(bufLine->length - colonOffset);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -624,7 +624,7 @@ ReturnCode NdefClass::ndefPayloadToVcard(const ndefConstBuffer *bufPayload, ndef
 
   if ((bufPayload == NULL) || (bufPayload->buffer == NULL) || (bufPayload->length == 0U) ||
       (vCard      == NULL)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   vCard->id               = NDEF_TYPE_MEDIA_VCARD;
@@ -653,7 +653,7 @@ ReturnCode NdefClass::ndefPayloadToVcard(const ndefConstBuffer *bufPayload, ndef
 
     /* Parse line and fill vCard entry */
     err = ndefVCardParseLine(&bufLine, &vCardData->entry[entry_count]);
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       entry_count++;
     }
 
@@ -663,16 +663,16 @@ ReturnCode NdefClass::ndefPayloadToVcard(const ndefConstBuffer *bufPayload, ndef
 
   /* Check BEGIN, VERSION and END types exist */
   if (ndefIsVCardTypeFound(vCardData, bufTypeBegin.buffer) == false) {
-    return ERR_SYNTAX;
+    return ST_ERR_SYNTAX;
   } else if (ndefIsVCardTypeFound(vCardData, bufTypeVersion.buffer) == false) {
-    return ERR_SYNTAX;
+    return ST_ERR_SYNTAX;
   } else if (ndefIsVCardTypeFound(vCardData, bufTypeEnd.buffer) == false) {
-    return ERR_SYNTAX;
+    return ST_ERR_SYNTAX;
   } else {
     /* MISRA 15.7 - Empty else */
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -682,17 +682,17 @@ ReturnCode NdefClass::ndefRecordToVCard(const ndefRecord *record, ndefType *vCar
   const ndefType *ndeftype;
 
   if ((record == NULL) || (vCard == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_MEDIA_TYPE, &bufMediaTypeVCard)) { /* "text/x-vCard" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(vCard, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   return ndefPayloadToVcard(&record->bufPayload, vCard);
@@ -704,7 +704,7 @@ ReturnCode NdefClass::ndefVCardToRecord(const ndefType *vCard, ndefRecord *recor
 {
   if ((vCard  == NULL) || (vCard->id != NDEF_TYPE_MEDIA_VCARD) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -713,5 +713,5 @@ ReturnCode NdefClass::ndefVCardToRecord(const ndefType *vCard, ndefRecord *recor
 
   (void)ndefRecordSetNdefType(record, vCard);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

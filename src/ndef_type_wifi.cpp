@@ -338,7 +338,7 @@ ReturnCode NdefClass::ndefWifi(ndefType *wifi, const ndefTypeWifi *wifiConfig)
   ndefTypeWifi *wifiData;
 
   if ((wifi == NULL) || (wifiConfig == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   wifi->id               = NDEF_TYPE_MEDIA_WIFI;
@@ -351,7 +351,7 @@ ReturnCode NdefClass::ndefWifi(ndefType *wifi, const ndefTypeWifi *wifiConfig)
   wifiData->authentication = wifiConfig->authentication;
   wifiData->encryption     = wifiConfig->encryption;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -362,7 +362,7 @@ ReturnCode NdefClass::ndefGetWifi(const ndefType *wifi, ndefTypeWifi *wifiConfig
 
   if ((wifi       == NULL) || (wifi->id != NDEF_TYPE_MEDIA_WIFI) ||
       (wifiConfig == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   wifiData = &wifi->data.wifi;
@@ -374,7 +374,7 @@ ReturnCode NdefClass::ndefGetWifi(const ndefType *wifi, ndefTypeWifi *wifiConfig
   wifiConfig->authentication = wifiData->authentication;
   wifiConfig->encryption     = wifiData->encryption;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -385,7 +385,7 @@ ReturnCode NdefClass::ndefPayloadToWifi(const ndefConstBuffer *bufPayload, ndefT
   uint32_t offset;
 
   if ((bufPayload == NULL) || (wifi == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   wifiConfig.bufNetworkSSID.buffer = NULL;
@@ -407,7 +407,7 @@ ReturnCode NdefClass::ndefPayloadToWifi(const ndefConstBuffer *bufPayload, ndefT
         case NDEF_WIFI_ATTRIBUTE_ID_SSID_MSB:
           /* Network SSID */
           if (length > NDEF_WIFI_NETWORK_SSID_LENGTH) {
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
           wifiConfig.bufNetworkSSID.buffer = &bufPayload->buffer[offset + NDEF_WIFI_ATTRIBUTE_DATA_OFFSET];
           wifiConfig.bufNetworkSSID.length = length;
@@ -416,7 +416,7 @@ ReturnCode NdefClass::ndefPayloadToWifi(const ndefConstBuffer *bufPayload, ndefT
         case NDEF_WIFI_ATTRIBUTE_ID_NETWORK_MSB:
           /* Network key */
           if (length > NDEF_WIFI_NETWORK_KEY_LENGTH) {
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
           wifiConfig.bufNetworkKey.buffer = &bufPayload->buffer[offset + NDEF_WIFI_ATTRIBUTE_DATA_OFFSET];
           wifiConfig.bufNetworkKey.length = length;
@@ -425,7 +425,7 @@ ReturnCode NdefClass::ndefPayloadToWifi(const ndefConstBuffer *bufPayload, ndefT
         case NDEF_WIFI_ATTRIBUTE_AUTHENTICATION:
           /* Authentication */
           if (length != NDEF_WIFI_AUTHENTICATION_TYPE_LENGTH) {
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
           wifiConfig.authentication = bufPayload->buffer[offset + NDEF_WIFI_ATTRIBUTE_AUTHENTICATION_LSB_OFFSET];
           offset += (NDEF_WIFI_ATTRIBUTE_DATA_OFFSET + length);
@@ -433,7 +433,7 @@ ReturnCode NdefClass::ndefPayloadToWifi(const ndefConstBuffer *bufPayload, ndefT
         case NDEF_WIFI_ATTRIBUTE_ENCRYPTION:
           /* Encryption */
           if (length != NDEF_WIFI_ENCRYPTION_TYPE_LENGTH) {
-            return ERR_PROTO;
+            return ST_ERR_PROTO;
           }
           wifiConfig.encryption = bufPayload->buffer[offset + NDEF_WIFI_ATTRIBUTE_ENCRYPTION_LSB_OFFSET];
           offset += (NDEF_WIFI_ATTRIBUTE_DATA_OFFSET + length);
@@ -457,17 +457,17 @@ ReturnCode NdefClass::ndefRecordToWifi(const ndefRecord *record, ndefType *wifi)
   const ndefType *ndeftype;
 
   if ((record == NULL) || (wifi == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_MEDIA_TYPE, &bufMediaTypeWifi)) { /* "application/vnd.wfa.wsc" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(wifi, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   return ndefPayloadToWifi(&record->bufPayload, wifi);
@@ -479,7 +479,7 @@ ReturnCode NdefClass::ndefWifiToRecord(const ndefType *wifi, ndefRecord *record)
 {
   if ((wifi   == NULL) || (wifi->id != NDEF_TYPE_MEDIA_WIFI) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -488,5 +488,5 @@ ReturnCode NdefClass::ndefWifiToRecord(const ndefType *wifi, ndefRecord *record)
 
   (void)ndefRecordSetNdefType(record, wifi);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }

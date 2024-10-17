@@ -235,14 +235,14 @@ static const uint8_t *ndefEmptyTypePayloadItem(const ndefType *empty, ndefConstB
 ReturnCode NdefClass::ndefEmptyType(ndefType *empty)
 {
   if (empty == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   empty->id               = NDEF_TYPE_EMPTY;
   empty->getPayloadLength = ndefEmptyTypePayloadGetLength;
   empty->getPayloadItem   = ndefEmptyTypePayloadItem;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -252,16 +252,16 @@ ReturnCode NdefClass::ndefRecordToEmptyType(const ndefRecord *record, ndefType *
   ndefConstBuffer8 bufEmpty = { NULL, 0 };
 
   if ((record == NULL) || (empty == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_EMPTY, &bufEmpty)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if ((record->idLength          != 0U) || (record->id                != NULL) ||
       (record->bufPayload.length != 0U) || (record->bufPayload.buffer != NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return ndefEmptyType(empty);
@@ -273,14 +273,14 @@ ReturnCode NdefClass::ndefEmptyTypeToRecord(const ndefType *empty, ndefRecord *r
 {
   if ((empty  == NULL) || (empty->id != NDEF_TYPE_EMPTY) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
 
   (void)ndefRecordSetNdefType(record, empty);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -381,7 +381,7 @@ ReturnCode NdefClass::ndefRtdDeviceInfo(ndefType *devInfo, const ndefDeviceInfoE
   if ((devInfo     == NULL)    ||
       (devInfoData == NULL)    || (devInfoData->length == 0U) ||
       (devInfoDataCount == 0U) || (devInfoDataCount > NDEF_DEVICE_INFO_TYPE_COUNT)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   devInfo->id               = NDEF_TYPE_RTD_DEVICE_INFO;
@@ -406,10 +406,10 @@ ReturnCode NdefClass::ndefRtdDeviceInfo(ndefType *devInfo, const ndefDeviceInfoE
     uint8_t type   = devInfoData[count].type;
     uint8_t length = devInfoData[count].length;
     if ((type == NDEF_DEVICE_INFO_UUID) && (length != NDEF_UUID_LENGTH)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     if ((type > NDEF_DEVICE_INFO_TYPE_COUNT) || (length == 0U)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     if (type == NDEF_DEVICE_INFO_MANUFACTURER_NAME) {
       manufacturerNameIndex = count;
@@ -429,9 +429,9 @@ ReturnCode NdefClass::ndefRtdDeviceInfo(ndefType *devInfo, const ndefDeviceInfoE
   if ((manufacturerNameIndex != modelNameIndex) &&
       (rtdDevInfo->devInfo[manufacturerNameIndex].buffer != NULL) &&
       (rtdDevInfo->devInfo[modelNameIndex].buffer        != NULL)) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   } else {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 }
 
@@ -444,7 +444,7 @@ ReturnCode NdefClass::ndefGetRtdDeviceInfo(const ndefType *devInfo, ndefTypeRtdD
 
   if ((devInfo     == NULL) || (devInfo->id != NDEF_TYPE_RTD_DEVICE_INFO) ||
       (devInfoData == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   rtdDevInfo = &devInfo->data.deviceInfo;
@@ -455,7 +455,7 @@ ReturnCode NdefClass::ndefGetRtdDeviceInfo(const ndefType *devInfo, ndefTypeRtdD
     devInfoData->devInfo[i].buffer = rtdDevInfo->devInfo[i].buffer;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -471,7 +471,7 @@ ReturnCode NdefClass::ndefPayloadToRtdDeviceInfo(const ndefConstBuffer *bufDevIn
 
   if ((bufDevInfo == NULL) || (bufDevInfo->buffer == NULL) || (bufDevInfo->length == 0U) ||
       (devInfo    == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   devInfo->id               = NDEF_TYPE_RTD_DEVICE_INFO;
@@ -481,7 +481,7 @@ ReturnCode NdefClass::ndefPayloadToRtdDeviceInfo(const ndefConstBuffer *bufDevIn
 
   if ((bufDevInfo->length < NDEF_RTD_DEVICE_INFO_PAYLOAD_MIN) ||
       (bufDevInfo->length > NDEF_RTD_DEVICE_INFO_PAYLOAD_MAX)) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* Extract device information from the buffer */
@@ -505,10 +505,10 @@ ReturnCode NdefClass::ndefPayloadToRtdDeviceInfo(const ndefConstBuffer *bufDevIn
     uint8_t type   =  bufDevInfo->buffer[offset];
     uint8_t length =  bufDevInfo->buffer[offset + 1U];
     if ((type == NDEF_DEVICE_INFO_UUID) && (length != NDEF_UUID_LENGTH)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     if ((type > NDEF_DEVICE_INFO_TYPE_COUNT) || (length == 0U)) {
-      return ERR_PROTO;
+      return ST_ERR_PROTO;
     }
     if (type == NDEF_DEVICE_INFO_MANUFACTURER_NAME) {
       manufacturerNameIndex = count;
@@ -531,9 +531,9 @@ ReturnCode NdefClass::ndefPayloadToRtdDeviceInfo(const ndefConstBuffer *bufDevIn
   if ((manufacturerNameIndex != modelNameIndex) &&
       (rtdDevInfo->devInfo[manufacturerNameIndex].buffer != NULL) &&
       (rtdDevInfo->devInfo[modelNameIndex].buffer        != NULL)) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   } else {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 }
 
@@ -544,21 +544,21 @@ ReturnCode NdefClass::ndefRecordToRtdDeviceInfo(const ndefRecord *record, ndefTy
   const ndefType *ndeftype;
 
   if ((record == NULL) || (devInfo == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_RTD_WELL_KNOWN_TYPE, &bufRtdTypeDeviceInfo)) { /* "Di" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(devInfo, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   if (record->bufPayload.length < NDEF_RTD_DEVICE_INFO_PAYLOAD_MIN) { /* Device Information Payload Min */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   return ndefPayloadToRtdDeviceInfo(&record->bufPayload, devInfo);
@@ -570,7 +570,7 @@ ReturnCode NdefClass::ndefRtdDeviceInfoToRecord(const ndefType *devInfo, ndefRec
 {
   if ((devInfo == NULL) || (devInfo->id != NDEF_TYPE_RTD_DEVICE_INFO) ||
       (record  == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -580,7 +580,7 @@ ReturnCode NdefClass::ndefRtdDeviceInfoToRecord(const ndefType *devInfo, ndefRec
 
   (void)ndefRecordSetNdefType(record, devInfo);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -666,15 +666,15 @@ ReturnCode NdefClass::ndefRtdText(ndefType *text, uint8_t utfEncoding, const nde
   if ((text            == NULL) ||
       (bufLanguageCode == NULL) || (bufLanguageCode->buffer == NULL) || (bufLanguageCode->length == 0U) ||
       (bufSentence     == NULL) || (bufSentence->buffer     == NULL) || (bufSentence->length     == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (bufLanguageCode->length > NDEF_RTD_TEXT_LANGUAGE_CODE_LEN_MASK) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   if ((utfEncoding != TEXT_ENCODING_UTF8) && (utfEncoding != TEXT_ENCODING_UTF16)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   text->id               = NDEF_TYPE_RTD_TEXT;
@@ -690,7 +690,7 @@ ReturnCode NdefClass::ndefRtdText(ndefType *text, uint8_t utfEncoding, const nde
   rtdText->bufSentence.buffer = bufSentence->buffer;
   rtdText->bufSentence.length = bufSentence->length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -701,7 +701,7 @@ ReturnCode NdefClass::ndefGetRtdText(const ndefType *text, uint8_t *utfEncoding,
 
   if ((text        == NULL) || (text->id != NDEF_TYPE_RTD_TEXT) ||
       (utfEncoding == NULL) || (bufLanguageCode == NULL) || (bufSentence == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   rtdText = &text->data.text;
@@ -714,7 +714,7 @@ ReturnCode NdefClass::ndefGetRtdText(const ndefType *text, uint8_t *utfEncoding,
   bufSentence->buffer     = rtdText->bufSentence.buffer;
   bufSentence->length     = rtdText->bufSentence.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -727,7 +727,7 @@ ReturnCode NdefClass::ndefPayloadToRtdText(const ndefConstBuffer *bufText, ndefT
 
   if ((bufText == NULL) || (bufText->buffer == NULL) || (bufText->length == 0U) ||
       (text    == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   text->id               = NDEF_TYPE_RTD_TEXT;
@@ -750,7 +750,7 @@ ReturnCode NdefClass::ndefPayloadToRtdText(const ndefConstBuffer *bufText, ndefT
   rtdText->bufSentence.buffer = &(bufText->buffer[NDEF_RTD_TEXT_LANGUAGE_OFFSET + languageCodeLength]);
   rtdText->bufSentence.length = bufText->length - sizeof(status) - languageCodeLength;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -760,21 +760,21 @@ ReturnCode NdefClass::ndefRecordToRtdText(const ndefRecord *record, ndefType *te
   const ndefType *ndeftype;
 
   if ((record == NULL) || (text == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_RTD_WELL_KNOWN_TYPE, &bufRtdTypeText)) { /* "T" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(text, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   if (record->bufPayload.length < NDEF_RTD_TEXT_PAYLOAD_LENGTH_MIN) { /* Text Payload Min */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   return ndefPayloadToRtdText(&record->bufPayload, text);
@@ -786,7 +786,7 @@ ReturnCode NdefClass::ndefRtdTextToRecord(const ndefType *text, ndefRecord *reco
 {
   if ((text   == NULL) || (text->id != NDEF_TYPE_RTD_TEXT) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -796,7 +796,7 @@ ReturnCode NdefClass::ndefRtdTextToRecord(const ndefType *text, ndefRecord *reco
 
   (void)ndefRecordSetNdefType(record, text);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -875,7 +875,7 @@ ReturnCode NdefClass::ndefRtdUriProtocolAutodetect(uint8_t *protocol, ndefConstB
   if ((protocol  == NULL)                       ||
       (*protocol != NDEF_URI_PREFIX_AUTODETECT) ||
       (bufUriString == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   for (i = 0; i < NDEF_URI_PREFIX_COUNT; i++) {
@@ -885,14 +885,14 @@ ReturnCode NdefClass::ndefRtdUriProtocolAutodetect(uint8_t *protocol, ndefConstB
         /* Move after the protocol string */
         bufUriString->buffer  = &bufUriString->buffer[ndefUriPrefix[i].length];
         bufUriString->length -= ndefUriPrefix[i].length;
-        return ERR_NONE;
+        return ST_ERR_NONE;
       }
     }
   }
 
   *protocol = NDEF_URI_PREFIX_NONE;
 
-  return ERR_NOTFOUND;
+  return ST_ERR_NOTFOUND;
 }
 
 
@@ -905,7 +905,7 @@ ReturnCode NdefClass::ndefRtdUri(ndefType *uri, uint8_t protocol, const ndefCons
 
   if ((uri == NULL) || (protocol >= NDEF_URI_PREFIX_COUNT) ||
       (bufUriString == NULL) || (bufUriString->buffer == NULL) || (bufUriString->length == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   uri->id               = NDEF_TYPE_RTD_URI;
@@ -925,7 +925,7 @@ ReturnCode NdefClass::ndefRtdUri(ndefType *uri, uint8_t protocol, const ndefCons
   rtdUri->bufUriString.buffer = bufUri.buffer;
   rtdUri->bufUriString.length = bufUri.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -936,7 +936,7 @@ ReturnCode NdefClass::ndefGetRtdUri(const ndefType *uri, ndefConstBuffer *bufPro
 
   if ((uri         == NULL) || (uri->id != NDEF_TYPE_RTD_URI) ||
       (bufProtocol == NULL) || (bufUriString == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   rtdUri = &uri->data.uri;
@@ -947,7 +947,7 @@ ReturnCode NdefClass::ndefGetRtdUri(const ndefType *uri, ndefConstBuffer *bufPro
   bufUriString->buffer = rtdUri->bufUriString.buffer;
   bufUriString->length = rtdUri->bufUriString.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 /*****************************************************************************/
@@ -957,7 +957,7 @@ ReturnCode NdefClass::ndefPayloadToRtdUri(const ndefConstBuffer *bufUri, ndefTyp
 
   if ((bufUri == NULL) || (bufUri->buffer == NULL) || (bufUri->length == 0U) ||
       (uri    == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Extract info from the payload */
@@ -977,21 +977,21 @@ ReturnCode NdefClass::ndefRecordToRtdUri(const ndefRecord *record, ndefType *uri
   const ndefType *ndeftype;
 
   if ((record == NULL) || (uri == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_RTD_WELL_KNOWN_TYPE, &bufRtdTypeUri)) { /* "U" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   ndeftype = ndefRecordGetNdefType(record);
   if (ndeftype != NULL) {
     (void)ST_MEMCPY(uri, ndeftype, sizeof(ndefType));
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   if (record->bufPayload.length < NDEF_RTD_URI_PAYLOAD_LENGTH_MIN) {
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   return ndefPayloadToRtdUri(&record->bufPayload, uri);
@@ -1003,7 +1003,7 @@ ReturnCode NdefClass::ndefRtdUriToRecord(const ndefType *uri, ndefRecord *record
 {
   if ((uri    == NULL) || (uri->id != NDEF_TYPE_RTD_URI) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   (void)ndefRecordReset(record);
@@ -1013,7 +1013,7 @@ ReturnCode NdefClass::ndefRtdUriToRecord(const ndefType *uri, ndefRecord *record
 
   (void)ndefRecordSetNdefType(record, uri);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1029,7 +1029,7 @@ ReturnCode NdefClass::ndefRtdAar(ndefType *aar, const ndefConstBuffer *bufPayloa
 
   if ((aar == NULL) ||
       (bufPayload == NULL) || (bufPayload->buffer == NULL) || (bufPayload->length == 0U)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   aar->id               = NDEF_TYPE_RTD_AAR;
@@ -1042,7 +1042,7 @@ ReturnCode NdefClass::ndefRtdAar(ndefType *aar, const ndefConstBuffer *bufPayloa
   rtdAar->bufPayload.buffer = bufPayload->buffer;
   rtdAar->bufPayload.length = bufPayload->length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1053,7 +1053,7 @@ ReturnCode NdefClass::ndefGetRtdAar(const ndefType *aar, ndefConstBuffer *bufAar
 
   if ((aar          == NULL) || (aar->id != NDEF_TYPE_RTD_AAR) ||
       (bufAarString == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   rtdAar = &aar->data.aar;
@@ -1061,7 +1061,7 @@ ReturnCode NdefClass::ndefGetRtdAar(const ndefType *aar, ndefConstBuffer *bufAar
   bufAarString->buffer = rtdAar->bufPayload.buffer;
   bufAarString->length = rtdAar->bufPayload.length;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1069,11 +1069,11 @@ ReturnCode NdefClass::ndefGetRtdAar(const ndefType *aar, ndefConstBuffer *bufAar
 ReturnCode NdefClass::ndefRecordToRtdAar(const ndefRecord *record, ndefType *aar)
 {
   if ((record == NULL) || (aar == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (! ndefRecordTypeMatch(record, NDEF_TNF_RTD_EXTERNAL_TYPE, &bufRtdTypeAar)) { /* "android.com:pkg" */
-    return ERR_PROTO;
+    return ST_ERR_PROTO;
   }
 
   /* No constraint on payload length */
@@ -1089,7 +1089,7 @@ ReturnCode NdefClass::ndefRtdAarToRecord(const ndefType *aar, ndefRecord *record
 
   if ((aar    == NULL) || (aar->id != NDEF_TYPE_RTD_AAR) ||
       (record == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   rtdAar = &aar->data.aar;
@@ -1101,5 +1101,5 @@ ReturnCode NdefClass::ndefRtdAarToRecord(const ndefType *aar, ndefRecord *record
 
   (void)ndefRecordSetPayload(record, &rtdAar->bufPayload);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
