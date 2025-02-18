@@ -30,7 +30,7 @@
 #ifndef NDEF_BUFFER_H
 #define NDEF_BUFFER_H
 
-
+#include <stdint.h>
 /*
  ******************************************************************************
  * INCLUDES
