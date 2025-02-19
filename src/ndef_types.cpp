@@ -270,3 +270,90 @@ const ndefType *NdefClass::ndefRecordGetNdefType(const ndefRecord *record)
 
   return NULL;
 }
+
+
+const char *NdefClass::errorToString(ReturnCode error_code)
+{
+    switch (error_code) {
+      case ST_ERR_NONE:
+          return "no error occurred";
+      case ST_ERR_NOMEM:
+          return "not enough memory to perform the requested operation";
+      case ST_ERR_BUSY:
+          return "device or resource busy";
+      case ST_ERR_IO:
+          return "generic IO error";
+      case ST_ERR_TIMEOUT:
+          return "error due to timeout";
+      case ST_ERR_REQUEST:
+          return "invalid request or requested function can't be executed at the moment";
+      case ST_ERR_NOMSG:
+          return "No message of desired type";
+      case ST_ERR_PARAM:
+          return "Parameter error";
+      case ST_ERR_SYSTEM:
+          return "System error";
+      case ST_ERR_FRAMING:
+          return "Framing error";
+      case ST_ERR_OVERRUN:
+          return "lost one or more received bytes";
+      case ST_ERR_PROTO:
+          return "protocol error";
+      case ST_ERR_INTERNAL:
+          return "Internal Error";
+      case ST_ERR_AGAIN:
+          return "Call again";
+      case ST_ERR_MEM_CORRUPT:
+          return "memory corruption";
+      case ST_ERR_NOT_IMPLEMENTED:
+          return "not implemented";
+      case ST_ERR_PC_CORRUPT:
+          return "Program Counter has been manipulated or spike/noise trigger illegal operation";
+      case ST_ERR_SEND:
+          return "error sending";
+      case ST_ERR_IGNORE:
+          return "indicates error detected but to be ignored";
+      case ST_ERR_SEMANTIC:
+          return "indicates error in state machine (unexpected cmd)";
+      case ST_ERR_SYNTAX:
+          return "indicates error in state machine (unknown cmd)";
+      case ST_ERR_CRC:
+          return "crc error";
+      case ST_ERR_NOTFOUND:
+          return "transponder not found";
+      case ST_ERR_NOTUNIQUE:
+          return "transponder not unique - more than one transponder in field";
+      case ST_ERR_NOTSUPP:
+          return "requested operation not supported";
+      case ST_ERR_WRITE:
+          return "write error";
+      case ST_ERR_FIFO:
+          return "fifo over or underflow error";
+      case ST_ERR_PAR:
+          return "parity error";
+      case ST_ERR_DONE:
+          return "transfer has already finished";
+      case ST_ERR_RF_COLLISION:
+          return "collision error (Bit Collision or during RF Collision avoidance )";
+      case ST_ERR_HW_OVERRUN:
+          return "lost one or more received bytes";
+      case ST_ERR_RELEASE_REQ:
+          return "device requested release";
+      case ST_ERR_SLEEP_REQ:
+          return "device requested sleep";
+      case ST_ERR_WRONG_STATE:
+          return "incorrect state for requested operation";
+      case ST_ERR_MAX_RERUNS:
+          return "blocking procedure reached maximum runs";
+      case ST_ERR_DISABLED:
+          return "operation aborted due to disabled configuration";
+      case ST_ERR_HW_MISMATCH:
+          return "expected hw do not match  ";
+      case ST_ERR_LINK_LOSS:
+          return "Other device's field didn't behave as expected: turned off by Initiator in Passive mode, or AP2P did not turn on field";
+      case ST_ERR_INVALID_HANDLE:
+          return "invalid or not initialized device handle";
+      default:
+          return "Unknown error code";
+  }
+}

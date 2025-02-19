@@ -2418,6 +2418,9 @@ class NdefClass {
      */
     const ndefType *ndefRecordGetNdefType(const ndefRecord *record);
 
+
+    const char *errorToString(ReturnCode error_code);
+
     rfalNfcDevice                device;                       /*!< ndef Device                                        */
     ndefDeviceType               type;                         /*!< ndef Device type                                   */
     ndefState                    state;                        /*!< Tag state e.g. NDEF_STATE_INITIALIZED              */
