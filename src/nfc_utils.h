@@ -57,8 +57,12 @@
     if ((EC) == (ERR)) goto LABEL;
 
 #define SIZEOF_ARRAY(a)     (sizeof(a) / sizeof((a)[0]))  /*!< Compute the size of an array           */
+#ifndef MAX
 #define MAX(a, b)           (((a) > (b)) ? (a) : (b))     /*!< Return the maximum of the 2 values     */
+#endif
+#ifndef MIN
 #define MIN(a, b)           (((a) < (b)) ? (a) : (b))     /*!< Return the minimum of the 2 values     */
+#endif
 #define BITMASK_1           (0x01)                        /*!< Bit mask for lsb bit                   */
 #define BITMASK_2           (0x03)                        /*!< Bit mask for two lsb bits              */
 #define BITMASK_3           (0x07)                        /*!< Bit mask for three lsb bits            */
